@@ -41,7 +41,7 @@ include("${FPRIME_FRAMEWORK_PATH}/cmake/FPrime-Code.cmake")
 
 # Add Topology subdirectory
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Top/")
-
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Gnc/")
 set(SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/Top/Main.cpp")
 set(MOD_DEPS ${PROJECT_NAME}/Top)
 
