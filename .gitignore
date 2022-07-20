@@ -76,6 +76,10 @@ GTestBase.*
 /Gds/src/fprime_gds.egg-info
 **/DefaultDict/serializable/*
 
+cmake-build-debug
+cmake-build-testing
+cmake-build-imu
+coverage/
 fprime-venv
 xml
 depend
