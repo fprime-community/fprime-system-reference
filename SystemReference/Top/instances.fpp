@@ -192,6 +192,80 @@ module SystemReference {
 
   }
 
+  instance camera: Payload.Camera base id 0x0E00 \
+    queue size Default.queueSize \
+    stack size Default.stackSize \
+    priority 100 \
+    {
+       phase Fpp.ToCpp.Phases.configComponents"""
+       if (!camera.open(0)){
+           Fw::Logger::logMsg("[ERROR] Failed to open camera device\\n");
+       }
+       """
+    }
+
+  # saves two images before closing
+  instance saveImageBufferLogger: Svc.BufferLogger base id 0x0F00 \
+    queue size 30 \
+    stack size Default.stackSize \
+    priority 100 \
+    {
+        phase Fpp.ToCpp.Phases.configConstants """
+        enum {
+            MAX_FILE_SIZE = 1024*1024,
+            SIZE_OF_SIZE = 4,
+            };
+        """
+
+        phase Fpp.ToCpp.Phases.configComponents """
+        const char* const name = "/home/pi/images/save/saveImage";
+        const char* const type = ".data";
+        saveImageBufferLogger.initLog(
+            name,
+            type,
+            ConfigConstants::saveImageBufferLogger::MAX_FILE_SIZE,
+            ConfigConstants::saveImageBufferLogger::SIZE_OF_SIZE
+        );
+        """
+
+    }
+
+
+   instance imageProcessor: Payload.ImageProcessor base id 0x1000 \
+    queue size 30 \
+    stack size Default.stackSize \
+    priority 100 
+
+   instance processedImageBufferLogger: Svc.BufferLogger base id 0x1100 \
+    queue size 30 \
+    stack size Default.stackSize \
+    priority 100 \
+    {
+        phase Fpp.ToCpp.Phases.configConstants """
+        enum {
+            MAX_FILE_SIZE = 1024*1024,
+            SIZE_OF_SIZE = 4,
+            };
+        """
+
+        phase Fpp.ToCpp.Phases.configComponents """
+        const char* const filename = "/home/pi/images/process/processedImage";
+        const char* const filetype = ".data";
+        processedImageBufferLogger.initLog(
+            filename,
+            filetype,
+            ConfigConstants::processedImageBufferLogger::MAX_FILE_SIZE,
+            ConfigConstants::processedImageBufferLogger::SIZE_OF_SIZE
+        );
+        """
+
+    }
+
+  instance radio: Com.XBee base id 0x1200 \
+    queue size Default.queueSize \
+    stack size Default.stackSize \
+    priority 140
+
   # ----------------------------------------------------------------------
   # Queued component instances
   # ----------------------------------------------------------------------
@@ -215,11 +289,6 @@ module SystemReference {
     """
 
   }
-
-  instance radio: Com.XBee base id 0x2100 \
-    queue size Default.queueSize \
-    stack size Default.stackSize \
-    priority 140
 
   # ----------------------------------------------------------------------
   # Passive component instances
@@ -297,7 +366,6 @@ module SystemReference {
 
 
   instance framer: Svc.Framer base id 0x4200 {
-
     phase Fpp.ToCpp.Phases.configObjects """
     Svc::FprimeFraming framing;
     """
@@ -337,6 +405,8 @@ module SystemReference {
       upBuffMgrBins.bins[1].numBuffers = COM_BUFFER_COUNT;
       upBuffMgrBins.bins[2].bufferSize = FILE_UPLINK_BUFFER_SIZE;
       upBuffMgrBins.bins[2].numBuffers = FILE_UPLINK_BUFFER_COUNT;
+      upBuffMgrBins.bins[3].bufferSize = 1024*1024*32;
+      upBuffMgrBins.bins[3].numBuffers = 3;
 
       comBufferManager.setup(
           BUFFER_MANAGER_ID,
@@ -358,7 +428,6 @@ module SystemReference {
     at "../../Svc/LinuxTime/LinuxTime.hpp"
 
   instance rateGroupDriverComp: Svc.RateGroupDriver base id 0x4700 {
-
     phase Fpp.ToCpp.Phases.configObjects """
     NATIVE_INT_TYPE rgDivs[Svc::RateGroupDriver::DIVIDER_SIZE] = { 1, 2, 4 };
     """
@@ -375,7 +444,6 @@ module SystemReference {
   instance textLogger: Svc.PassiveTextLogger base id 0x4900
 
   instance deframer: Svc.Deframer base id 0x4A00 {
-
     phase Fpp.ToCpp.Phases.configObjects """
     Svc::FprimeDeframing deframing;
     """
@@ -387,13 +455,16 @@ module SystemReference {
   }
 
   instance systemResources: Svc.SystemResources base id 0x4B00
-
-  instance imu: Gnc.Imu base id 0x4C00
+  instance imu: Gnc.Imu base id 0x4C00 {
+    phase Fpp.ToCpp.Phases.configComponents """
+     imu.setup(Gnc::Imu::I2C_DEV0_ADDR);
+     """
+  }
 
   instance imuI2cBus: Drv.LinuxI2cDriver  base id 0x4D00 {
     phase Fpp.ToCpp.Phases.configComponents """
-    if (imuI2cBus.open("/dev/i2c-1")) {
-        printf("Failed to open I2C device %s\n", "/dev/i2c-1");
+    if (!imuI2cBus.open("/dev/i2c-1")) {
+         Fw::Logger::logMsg("[ERROR] Failed to open I2C device\\n");
     }
     """
   }

@@ -48,7 +48,10 @@ module SystemReference {
     instance systemResources
     instance imu
     instance imuI2cBus
-
+    instance camera
+    instance saveImageBufferLogger
+    instance imageProcessor
+    instance processedImageBufferLogger
     # ----------------------------------------------------------------------
     # Pattern graph specifiers
     # ----------------------------------------------------------------------
@@ -116,7 +119,6 @@ module SystemReference {
       rateGroup3Comp.RateGroupMemberOut[0] -> $health.Run
       rateGroup3Comp.RateGroupMemberOut[1] -> blockDrv.Sched
       rateGroup3Comp.RateGroupMemberOut[2] -> comBufferManager.schedIn
-
     }
 
     connections Sequencer {
@@ -141,14 +143,26 @@ module SystemReference {
     }
 
     connections Radio {
-        radio.allocate -> comBufferManager.bufferGetCallee
-        radio.deallocate -> comBufferManager.bufferSendIn
+      radio.allocate -> comBufferManager.bufferGetCallee
+      radio.deallocate -> comBufferManager.bufferSendIn
     }
 
     connections I2c {
         imu.read -> imuI2cBus.read
         imu.write -> imuI2cBus.write
+    }
 
+    connections Camera {
+         camera.allocate -> fileUplinkBufferManager.bufferGetCallee
+         camera.deallocate -> fileUplinkBufferManager.bufferSendIn
+         camera.$save -> saveImageBufferLogger.bufferSendIn
+         saveImageBufferLogger.bufferSendOut -> fileUplinkBufferManager.bufferSendIn
+
+         camera.process->imageProcessor.imageData
+         imageProcessor.postProcess -> processedImageBufferLogger.bufferSendIn
+         imageProcessor.bufferAllocate -> fileUplinkBufferManager.bufferGetCallee
+         imageProcessor.bufferDeallocate -> fileUplinkBufferManager.bufferSendIn
+         processedImageBufferLogger.bufferSendOut -> fileUplinkBufferManager.bufferSendIn
     }
 
   }
