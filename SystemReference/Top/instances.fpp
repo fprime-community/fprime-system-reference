@@ -109,7 +109,6 @@ module SystemReference {
     stack size Default.stackSize \
     priority 100 \
   {
-
     phase Fpp.ToCpp.Phases.configConstants """
     enum {
       BUFFER_SIZE = 5*1024
@@ -261,10 +260,10 @@ module SystemReference {
 
     }
 
-  instance radio: Com.XBee base id 0x1200 \
-    queue size Default.queueSize \
-    stack size Default.stackSize \
-    priority 140
+#  instance radio: Com.XBee base id 0x1200 \
+#    queue size Default.queueSize \
+#    stack size Default.stackSize \
+#    priority 140
 
   # ----------------------------------------------------------------------
   # Queued component instances
@@ -294,42 +293,15 @@ module SystemReference {
   # Passive component instances
   # ----------------------------------------------------------------------
 
+  # NOTE: use only one of XBee or comStub
+  instance radio: Svc.ComStub base id 0x1200
+
 #  @ Communications driver. May be swapped with other comm drivers like UART
 #  @ Note: Here we have TCP reliable uplink and UDP (low latency) downlink
-#  instance comDriver: Drv.ByteStreamDriverModel base id 0x4000 \
-#    type "Drv::TcpClient" \
-#    at "../../Drv/TcpClient/TcpClient.hpp" \
-#  {
-#
-#    phase Fpp.ToCpp.Phases.configConstants """
-#    enum {
-#      PRIORITY = 100,
-#      STACK_SIZE = Default::stackSize
-#    };
-#    """
-#
-#    phase Fpp.ToCpp.Phases.startTasks """
-#    // Initialize socket server if and only if there is a valid specification
-#    if (state.hostName != nullptr && state.portNumber != 0) {
-#        Os::TaskString name("ReceiveTask");
-#        // Uplink is configured for receive so a socket task is started
-#        comDriver.configure(state.hostName, state.portNumber);
-#        comDriver.startSocketTask(
-#            name,
-#            true,
-#            ConfigConstants::comDriver::PRIORITY,
-#            ConfigConstants::comDriver::STACK_SIZE
-#        );
-#    }
-#    """
-#
-#    phase Fpp.ToCpp.Phases.freeThreads """
-#    comDriver.stopSocketTask();
-#    (void) comDriver.joinSocketTask(nullptr);
-#    """
-#
-#  }
- instance comDriver: Drv.LinuxUartDriver base id 0x4000 {
+  instance comDriver: Drv.ByteStreamDriverModel base id 0x4000 \
+    type "Drv::TcpClient" \
+    at "../../Drv/TcpClient/TcpClient.hpp" \
+  {
     phase Fpp.ToCpp.Phases.configConstants """
     enum {
       PRIORITY = 100,
@@ -339,29 +311,59 @@ module SystemReference {
 
     phase Fpp.ToCpp.Phases.startTasks """
     // Initialize socket server if and only if there is a valid specification
-    if (state.hostName != nullptr) {
+    if (state.hostName != nullptr && state.portNumber != 0) {
         Os::TaskString name("ReceiveTask");
         // Uplink is configured for receive so a socket task is started
-        if (comDriver.open(state.hostName, static_cast<Drv::LinuxUartDriver::UartBaudRate>(state.portNumber), Drv::LinuxUartDriver::NO_FLOW,
-                       Drv::LinuxUartDriver::PARITY_NONE, 1024)) {
-            comDriver.startReadThread(
-                ConfigConstants::comDriver::PRIORITY,
-                ConfigConstants::comDriver::STACK_SIZE
-            );
-        } else {
-            printf("Failed to open UART port %s at speed %" PRIu32 "\n", state.hostName, state.portNumber);
-        }
+        comDriver.configure(state.hostName, state.portNumber);
+        comDriver.startSocketTask(
+            name,
+            true,
+            ConfigConstants::comDriver::PRIORITY,
+            ConfigConstants::comDriver::STACK_SIZE
+        );
     }
     """
 
-    phase Fpp.ToCpp.Phases.stopTasks """
-    comDriver.quitReadThread();
-    """
+   phase Fpp.ToCpp.Phases.freeThreads """
+   comDriver.stopSocketTask();
+   (void) comDriver.joinSocketTask(nullptr);
+   """
 
-    phase Fpp.ToCpp.Phases.freeThreads """
-    comDriver.join(nullptr);
-    """
  }
+
+# instance comDriver: Drv.LinuxUartDriver base id 0x4000 {
+#    phase Fpp.ToCpp.Phases.configConstants """
+#    enum {
+#      PRIORITY = 100,
+#      STACK_SIZE = Default::stackSize
+#    };
+#    """
+#
+#    phase Fpp.ToCpp.Phases.startTasks """
+#    // Initialize socket server if and only if there is a valid specification
+#    if (state.hostName != nullptr) {
+#        Os::TaskString name("ReceiveTask");
+#        // Uplink is configured for receive so a socket task is started
+#        if (comDriver.open(state.hostName, static_cast<Drv::LinuxUartDriver::UartBaudRate>(state.portNumber), Drv::LinuxUartDriver::NO_FLOW,
+#                       Drv::LinuxUartDriver::PARITY_NONE, 1024)) {
+#            comDriver.startReadThread(
+#                ConfigConstants::comDriver::PRIORITY,
+#                ConfigConstants::comDriver::STACK_SIZE
+#            );
+#        } else {
+#            printf("Failed to open UART port %s at speed %" PRIu32 "\n", state.hostName, state.portNumber);
+#        }
+#    }
+#    """
+#
+#    phase Fpp.ToCpp.Phases.stopTasks """
+#    comDriver.quitReadThread();
+#    """
+#
+#    phase Fpp.ToCpp.Phases.freeThreads """
+#    comDriver.join(nullptr);
+#    """
+# }
 
 
 
