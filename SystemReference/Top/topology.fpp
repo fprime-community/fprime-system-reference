@@ -153,16 +153,16 @@ module SystemReference {
     }
 
     connections Camera {
-         camera.allocate -> fileUplinkBufferManager.bufferGetCallee
-         camera.deallocate -> fileUplinkBufferManager.bufferSendIn
+         camera.allocate -> comBufferManager.bufferGetCallee
+         camera.deallocate -> comBufferManager.bufferSendIn
          camera.$save -> saveImageBufferLogger.bufferSendIn
-         saveImageBufferLogger.bufferSendOut -> fileUplinkBufferManager.bufferSendIn
+         saveImageBufferLogger.bufferSendOut -> comBufferManager.bufferSendIn
 
          camera.process->imageProcessor.imageData
          imageProcessor.postProcess -> processedImageBufferLogger.bufferSendIn
-         imageProcessor.bufferAllocate -> fileUplinkBufferManager.bufferGetCallee
-         imageProcessor.bufferDeallocate -> fileUplinkBufferManager.bufferSendIn
-         processedImageBufferLogger.bufferSendOut -> fileUplinkBufferManager.bufferSendIn
+         imageProcessor.bufferAllocate -> comBufferManager.bufferGetCallee
+         imageProcessor.bufferDeallocate -> comBufferManager.bufferSendIn
+         processedImageBufferLogger.bufferSendOut -> comBufferManager.bufferSendIn
     }
 
   }
