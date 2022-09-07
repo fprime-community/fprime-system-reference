@@ -38,6 +38,7 @@ void Imu::power(PowerState powerState){
       case PowerState::OFF:
         // Enables sleep mode
         data[1] = 0x40;
+        m_power = false; 
         break;
       default:
          FW_ASSERT(0);
