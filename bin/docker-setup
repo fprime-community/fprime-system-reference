@@ -1,0 +1,13 @@
+#!/bin/sh
+####
+# docker-setup:
+#
+# This command sets up the docker image needed for building the system reference.
+####
+
+if ! which docker > /dev/null
+then
+    echo "[ERROR] 'docker' command not found. Please ensure 'docker' or 'Rancher Desktop' installed." 1 >&2
+    exit 1
+fi
+docker pull nasafprime/fprime-raspi:devel
