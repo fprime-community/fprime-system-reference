@@ -41,12 +41,9 @@ to help is limited.
       3. Configure PATH Automatic
 
    ![Rancher Config](../img/rancher-config.png)
-4. Acquire the F´ Docker Image
-   1. (Unix) Run `fprime-system-reference/bin/docker-setup`
-   2. (Windows) Run `docker pull nasafprime/fprime-raspi:devel`
-5. Run the F´ Docker Raspberry PI Docker Container
-   1. (Unix) Run `fprime-system-reference/bin/docker-run`
-   2. (Windows) `docker run -itv /path/to/fprime-system-reference:/project nasafprime/fprime-raspi:devel`
+4. Run the F´ Docker Raspberry PI Docker Container
+   1. (Unix/WSL) Run `fprime-system-reference/bin/docker-run`
+   2. (Windows) Run `fprime-system-reference\bin\docker-run.bat`
 
 **Note:** from here on out commands will be run **within** the terminal provided by the F´ docker image. Please run
 commands there unless otherwise specified.
