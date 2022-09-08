@@ -5,15 +5,14 @@
 # This command runs up the docker image needed for building the system reference.
 ####
 DIRNAME="`dirname $0`"
-cd "${DIRNAME}"
-DIRNAME=`cd "${DIRNAME}"; pwd;`
+DIRNAME="`cd "${DIRNAME}"; pwd;`"
 
 if ! which docker > /dev/null
 then
     echo "[ERROR] 'docker' command not found. Please ensure 'docker' or 'Rancher Desktop' installed." 1 >&2
     exit 1
 fi
-if [ "`docker images -q nasafprime/fprime-raspi:devel 2> /dev/null`" == "" ]
+if [ "`docker images -q nasafprime/fprime-raspi:devel 2> /dev/null`" = "" ]
 then
     echo "[INFO] Pulling Docker Image: nasafprime/fprime-raspi:devel"
     "${DIRNAME}/docker-setup"

@@ -1,0 +1,5 @@
+# Ensures consistent behavior when mapping in and out of docker environments
+# across systems including Windows
+* lf
+bin/docker-run.bat crlf
+bin/docker-setup.bat crlf
