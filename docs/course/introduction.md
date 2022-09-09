@@ -34,6 +34,8 @@ to help is limited.
 1. Ensure that git is installed on your computer
 2. Clone the F´ System Reference
    1. Run `git clone https://github.com/fprime-community/fprime-system-reference`
+   2. Run `cd fprime-system-reference`
+   3. Run `git submodule update --init`
 3. Install [Rancher Desktop](https://rancherdesktop.io/) or other software for running docker containers locally
    1. (Rancher Desktop) When presented with a "Welcome to Rancher Desktop" dialog, choose the following settings:
       1. Disable Kubernetes
