@@ -46,17 +46,11 @@ class Imu : public ImuComponentBase {
     void init(const NATIVE_INT_TYPE instance = 0 /*!< The instance number*/
     );
 
-    //! Turn power on/off of device
-    //!
-    void power(PowerState powerState);
-
-    void setup(U8 devAddress);
-
-    void config();
-
     //! Destroy object Imu
     //!
     ~Imu();
+
+    void setup(U8 devAddress);
 
   PRIVATE:
     // ----------------------------------------------------------------------
@@ -89,20 +83,67 @@ class Imu : public ImuComponentBase {
     // Helper Functions
     // ----------------------------------------------------------------------
 
-    Drv::I2cStatus read(U8 dev_addr, Fw::Buffer& buffer);
-    Drv::I2cStatus setupReadRegister(U8 dev_addr, U8 reg);
-    Drv::I2cStatus readRegisterBlock(U8 registerAdd, Fw::Buffer& buffer);
+    /**
+     * \brief sets up the IMU to know what register the next read should be from
+     *
+     * The MPU-6050 requires a write call with a register's address before a read will function correctly. This helper
+     * sets up that read address by writing it to the IMU via the I2C write port.
+     *
+     * \param reg: IMU internal address to the first register to be read
+     * \return: I2C from the write call
+     */
+    Drv::I2cStatus setupReadRegister(U8 reg);
+
+    /**
+     * \brief reads a block of registers from the IMU
+     *
+     * This function starts by writing the startRegister to the IMU by passing it to `setupReadRegister`. It then calls
+     * the read port of the I2C bus to read data from the IMU. It will read `buffer.getSize()` bytes from the I2C device
+     * and as such the caller must set this up.
+     *
+     * \param startRegister: register address to start reading from
+     * \param buffer: buffer to read into. Determines size of read.
+     * \return: I2C status of transactions
+     */
+    Drv::I2cStatus readRegisterBlock(U8 startRegister, Fw::Buffer& buffer);
+
+    /**
+     * \brief unpacks a buffer into a vector with scaled elements
+     *
+     * This will unpack data from buffer into a Gnc::Vector type by unpacking 3x I16 values (in big endian format) and
+     * scales each by dividing by the scaleFactor provided.
+     *
+     * \param buffer: buffer wrapping data, must contain at least 6 byes (3x I16)
+     * \param scaleFactor: scale factor to divide each element by
+     * \return initalized vector
+     */
+    Vector deserializeVector(Fw::Buffer& buffer, F32 scaleFactor);
+
+    //! Configure the accelerometer and gyroscope
+    //!
+    void config();
+
+    //! Turn power on/off of device
+    //!
+    void power(PowerState powerState);
+
+    //! Read, telemeter, and update local compy of accelerometer data
+    //!
     void updateAccel();
+
+    //! Read, telemeter, and update local compy of gyroscope data
+    //!
     void updateGyro();
+
 
     // ----------------------------------------------------------------------
     // Member Variables
     // ----------------------------------------------------------------------
 
-    Gnc::ImuData m_gyro;
-    Gnc::ImuData m_accel;
-    U8 m_i2cDevAddress;
-    bool m_power;
+    Gnc::ImuData m_gyro; //!< Local copy of gyroscope data
+    Gnc::ImuData m_accel; //!< Local copy of accelerometer data
+    U8 m_i2cDevAddress; //!< Stored device address
+    PowerState::t m_power; //!< Power state of device
 };
 
 }  // end namespace Gnc

@@ -29,7 +29,20 @@ To build our implementation we run `fprime-util build` while in the `Imu` folder
 system is configured correctly for the component. Feel free to re-run the `build` command to check for compiler errors
 or other problems as you build.
 
-Let's take a look at one specific handler `TODO`. 
+Let's take a look at one specific handler.  This is the power on command handler:
+
+```C++
+void Imu ::PowerSwitch_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq, PowerState powerState) {
+    power(powerState);
+    this->log_ACTIVITY_HI_PowerStatus(powerState);
+    this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
+}
+```
+
+The critical functions of this handler are:
+1. The `power` helper is called to send the I2C traffic to power on or off the IMU
+2. An event announces the change in power state
+3. A response is sent to the command dispatcher to inform it the command is complete
 
 **Note:** some helper functions for working with the specifics of the Imu are available in [Appendix I](./appendix-1.md)
 and are useful for developers who are less familiar with C++ and working with hardware. Feel-free to use these helpers
