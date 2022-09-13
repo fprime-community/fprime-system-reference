@@ -1,4 +1,4 @@
-# Component Implementation
+# IMU Exercise: Component Implementation
 
 Now it is time to write code! F´ implements components using C++ and as we saw in the design section, this
 implementation typically involves filling-in template files allowing us to focus on the specific challenges at-hand.
@@ -15,6 +15,9 @@ set(SOURCE_FILES
         )
 register_fprime_module()
 ```
+
+We should also ensure that the `#include <SystemReference/Gnu/Imu/Imu.hpp>` import exists in `Imu.cpp`.  If you find
+something like `#include <SystemReference/Gnu/Imu/ImuComponentImpl.hpp>` please change it now.
 
 ## Component Implementation
 
@@ -35,8 +38,10 @@ in your code, or write your own!
 A full implementation of the component is available [here](../../SystemReference/Gnc/Imu/Imu.cpp) and the associated
 header is available [here](../../SystemReference/Gnc/Imu/Imu.hpp).
 
-## Next Steps
+## Additional Resources
+- [F´ User Guide](https://nasa.github.io/fprime/UsersGuide/guide.html)
 
+## Next Steps
 - [Topology Integration and Testing](./topology-integration.md)
 
 
