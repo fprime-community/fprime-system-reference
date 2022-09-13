@@ -1,8 +1,8 @@
 # IMU Exercise: Requirements and Design
 
-When developing flight software and using F´ it is important to start the development of a component ny laying out the
-requirements of that component and generating a design of that component of that component. In this portion of the
-exercise we will walk through both of these steps.
+When developing flight software and using F´ it is important to start the development of a component by laying out the
+requirements of that component and generating a design of that component. In this portion of the exercise we will walk
+through both of these steps.
 
 F´ formalizes the design of the component using the FPP modeling language. This allows us to take the design (called a
 model in FPP parlance) and generate code that performs much of the work within that component. This greatly simplifies
@@ -11,15 +11,15 @@ the implementation later on.
 ## Preparation
 
 In order to prepare to specify a design we need to do some folder setup. First, make sure to have followed the class
-[prerequisites](./introduction.md#prerequisites) including starting the docker container and running generating the F´
-build cache.
+[prerequisites](./introduction.md#prerequisites) including starting the docker container and generating the F´ build
+cache.
 
 Next, move the existing IMU folder out of the way as we will be replacing it with our own design. We'll replace it with
 a basic folder with and initial `CMakeList.txt` file inside.
 
-**On Unix Systems**
+**Inside Docker**
 ```bash
-cd fprime-system-reference/SystemReference/Gnc
+cd /project/SystemReference/Gnc
 mv Imu Imu.reference
 mkdir Imu
 ```
@@ -38,16 +38,11 @@ We are now setup to generate requirements for our component, codify them into a 
 implementation. **Note:** the above directory will not build until after we add the FPP file as noted in the design
 section.
 
-
-
-
-
-
 ## Requirements
 
 Good requirements capture both the behavior of a component and its interaction with other components within the system.
 Requirements should also capture necessary commands, events, telemetry channels, and parameters for the component.
-Additionally, failure and off-nominal behaviors should be captured.
+Additionally, failure and off-nominal behaviors should be included in the requirements.
 
 For this exercise, we can follow the GNC sensor integration guide "Step 1: Define Component Requirements" to determine
 the necessary  requirements for the IMU. This section can be found
@@ -58,8 +53,6 @@ In order to check the requirements we defined, let's compare with the requiremen
 channels, and defined error conditions.
 
 ## Design
-
-
 
 In F´ the design of the component needs to be formally captured in a model. To do this, we write an FPP file. The design
 should fall out from the requirements previously captured. Generally, if there are aspects of the design that do not map
@@ -73,8 +66,11 @@ Go ahead and construct an FPP file in your `Imu` directory called `Imu.fpp`.  Be
 started. Notice we chose a module of `Gnc` which will result in the Imu being part of the `Gnc` namespace.
 
 ```fpp
-
 module Gnc {
+    @ The power state enumeration
+    enum PowerState {OFF, ON}
+
+    @ Component for receiving IMU data via poll method
     passive component Imu {
         # ----------------------------------------------------------------------
         # General ports
@@ -83,22 +79,31 @@ module Gnc {
         @ Port to send telemetry to ground
         guarded input port Run: Svc.Sched
         ...
-
+        
         # ----------------------------------------------------------------------
         # Special ports
         # ----------------------------------------------------------------------
 
-        @ Port for emitting events
-        event port Log
+        @ Command receive
+        command recv port cmdIn
 
-        @ Port for emitting text events
-        text event port LogText
+        @ Command registration
+        command reg port cmdRegOut
 
-        @ Port for getting the time
-        time get port Time
+        @ Command response
+        command resp port cmdResponseOut
+        ...
 
-        @ Telemetry port
-        telemetry port Tlm
+        # ----------------------------------------------------------------------
+        # Commands
+        # ----------------------------------------------------------------------
+
+        @ Command to turn on the device
+        guarded command PowerSwitch(
+            powerState: PowerState
+        ) \
+        opcode 0x01
+
 
         # ----------------------------------------------------------------------
         # Events
@@ -109,18 +114,15 @@ module Gnc {
             status: Drv.I2cStatus @< the status value returned
         ) \
         severity warning high \
-        format "I2C request failed with status {}" \
-        throttle 1
-        
+        format "Telemetry request failed with status {}" \
         ...
-
+        
         # ----------------------------------------------------------------------
         # Telemetry
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         @ X, Y, Z acceleration from accelerometer
-        telemetry accelerometer: Vector id 0 update always
-
+        telemetry accelerometer: Vector id 0 update always format "{} g"
         ...
     }
 }
@@ -144,10 +146,12 @@ mv ImyComponentImpl.hpp-template Imu.hpp
 These template files contain fill-in functions that allow us to implement the logic for the IMU without needing to focus
 on all the boilerplate code needed to make the `Imu` work with the rest of the system.
 
-## Next Steps
+## Additional Resources
+- [FPP User Guide](https://fprime-community.github.io/fpp/fpp-users-guide.html)
+- [F´ User Guide](https://nasa.github.io/fprime/UsersGuide/guide.html)
+- [MPU-6050 Datasheet](http://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf)
+- [MPU-6050 Register Map](https://www.invensense.com/wp-content/uploads/2015/02/MPU-6000-Register-Map1.pdf)
 
+## Next Steps
 - [Component implementation](./component-implementation.md)
 
-## Additional Resources
-
--[FPP User Guide](https://fprime-community.github.io/fpp/fpp-users-guide.html)

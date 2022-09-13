@@ -1,4 +1,4 @@
-# Introduction
+# IMU Exercise: Introduction
 
 This document will describe the use of the F´ system reference as a reference for the flight software workshop. We will
 explore flight software through the lens of F´ and this exercise. In the exercise, we will integrate the

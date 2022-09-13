@@ -24,16 +24,6 @@ module Gnc {
         output port write: Drv.I2c
 
         # ----------------------------------------------------------------------
-        # Commands
-        # ----------------------------------------------------------------------
-
-        @ Command to turn on the device
-        guarded command PowerSwitch(
-            powerState: PowerState
-        ) \
-        opcode 0x01
-
-        # ----------------------------------------------------------------------
         # Special ports
         # ----------------------------------------------------------------------
 
@@ -57,6 +47,16 @@ module Gnc {
 
         @ Telemetry port
         telemetry port Tlm
+
+        # ----------------------------------------------------------------------
+        # Commands
+        # ----------------------------------------------------------------------
+
+        @ Command to turn on the device
+        guarded command PowerSwitch(
+            powerState: PowerState
+        ) \
+        opcode 0x01
 
         # ----------------------------------------------------------------------
         # Events
