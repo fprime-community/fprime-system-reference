@@ -57,7 +57,7 @@ the sensor. From these considerations the example requirements derived are shown
 | GNC-IMU-002     | The Gnc::Imu component shall produce telemetry of gyroscope data at 1Hz                          | Unit Test           |
 | GNC-IMU-003     | The Gnc::Imu component shall be able to communicate with the MPU6050 over I2C                    | Inspection          |
 | GNC-IMU-004     | The Gnc::IMu component shall produce the latest gyroscope and accelerometer data via a port call | Unit Test           |
-
+| GNC-IMU-005     | The Gnc::Imu component shall support power on and power off commands                             | Unit Test           |
 
 ## Step 2: Component Design 
 
