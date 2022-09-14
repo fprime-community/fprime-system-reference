@@ -13,7 +13,7 @@ namespace Gnc {
 // Construction, initialization, and destruction
 // ----------------------------------------------------------------------
 
-Imu ::Imu(const char* const compName) : ImuComponentBase(compName), m_power(PowerState::ON) {}
+Imu ::Imu(const char* const compName) : ImuComponentBase(compName), m_power(PowerState::OFF) {}
 
 void Imu ::init(const NATIVE_INT_TYPE instance) {
     ImuComponentBase::init(instance);
@@ -30,7 +30,7 @@ Imu ::~Imu() {}
 // ----------------------------------------------------------------------
 
 void Imu ::Run_handler(const NATIVE_INT_TYPE portNum, NATIVE_UINT_TYPE context) {
-    if (m_power) {
+    if (m_power == PowerState::ON) {
         updateAccel();
         updateGyro();
     }
@@ -75,10 +75,11 @@ Drv::I2cStatus Imu ::readRegisterBlock(U8 startRegister, Fw::Buffer& buffer) {
 Gnc::Vector Imu ::deserializeVector(Fw::Buffer& buffer, F32 scaleFactor) {
     Gnc::Vector vector;
     I16 value;
-    FW_ASSERT(buffer.getSize() > 6, buffer.getSize());
+    FW_ASSERT(buffer.getSize() >= 6, buffer.getSize());
     FW_ASSERT(buffer.getData() != nullptr);
     // Data is big-endian as is fprime internal storage so we can use the built-in buffer deserialization
     Fw::SerializeBufferBase& deserializeHelper = buffer.getSerializeRepr();
+    deserializeHelper.setBuffLen(buffer.getSize()); // Inform the helper what size we have available
     FW_ASSERT(deserializeHelper.deserialize(value) == Fw::FW_SERIALIZE_OK);
     vector[0] = static_cast<F32>(value) / scaleFactor;
 
@@ -123,7 +124,7 @@ void Imu ::power(PowerState powerState) {
     }
 
     data[0] = POWER_MGMT_ADDR;
-    data[0] = (powerState.e == PowerState::ON) ? POWER_ON_VALUE : POWER_OFF_VALUE;
+    data[1] = (powerState.e == PowerState::ON) ? POWER_ON_VALUE : POWER_OFF_VALUE;
 
     Drv::I2cStatus status = this->write_out(0, m_i2cDevAddress, buffer);
     if (status != Drv::I2cStatus::I2C_OK) {
