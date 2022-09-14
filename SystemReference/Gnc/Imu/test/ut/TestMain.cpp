@@ -10,21 +10,26 @@ TEST(Nominal, getGyroscope) {
 }
 
 TEST(Nominal, getAccelerometer) {
-  Gnc::Tester tester;
-  tester.testGetAccelTlm();
+    Gnc::Tester tester;
+    tester.testGetAccelTlm();
 }
 
 TEST(Nominal, TelemetryError) {
-  Gnc::Tester tester;
-  tester.testTlmError();
+    Gnc::Tester tester;
+    tester.testTlmError();
+}
+
+TEST(Nominal, PowerError) {
+    Gnc::Tester tester;
+    tester.testPowerError();
 }
 
 TEST(Nominal, SetupError) {
-  Gnc::Tester tester;
-  tester.testSetupError();
+    Gnc::Tester tester;
+    tester.testSetupError();
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
