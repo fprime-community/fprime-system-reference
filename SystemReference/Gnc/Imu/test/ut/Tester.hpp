@@ -8,106 +8,99 @@
 #define TESTER_HPP
 
 #include "GTestBase.hpp"
-#include "SystemReference/Gnc/Imu/Imu.hpp"
 #include "STest/Pick/Pick.hpp"
 #include "STest/Random/Random.hpp"
+#include "SystemReference/Gnc/Imu/Imu.hpp"
 
 namespace Gnc {
 
-  class Tester :
-    public ImuGTestBase
-  {
+class Tester : public ImuGTestBase {
+    // ----------------------------------------------------------------------
+    // Construction and destruction
+    // ----------------------------------------------------------------------
 
-      // ----------------------------------------------------------------------
-      // Construction and destruction
-      // ----------------------------------------------------------------------
+  public:
+    //! Construct object Tester
+    //!
+    Tester();
 
-    public:
+    //! Destroy object Tester
+    //!
+    ~Tester();
 
-      //! Construct object Tester
-      //!
-      Tester();
+  public:
+    // ----------------------------------------------------------------------
+    // Tests
+    // ----------------------------------------------------------------------
 
-      //! Destroy object Tester
-      //!
-      ~Tester();
+    //! Test to get gyroscope telemetry
+    //!
+    void testGetGyroTlm();
 
-    public:
+    //! Test to get accelerometer telemetry
+    //!
+    void testGetAccelTlm();
 
-      // ----------------------------------------------------------------------
-      // Tests
-      // ----------------------------------------------------------------------
+    //! Test to check event of bad telemetry request
+    //!
+    void testTlmError();
 
-      //! Test to get gyroscope telemetry
-      //!
-      void testGetGyroTlm();
+    //! Test to check power on error
+    //!
+    void testPowerError();
 
-      //! Test to get accelerometer telemetry
-      //!
-      void testGetAccelTlm();
+    //! Test to check setup error
+    //!
+    void testSetupError();
 
-      //! Test to check event of bad telemetry request
-      //!
-      void testTlmError();
+  private:
+    // ----------------------------------------------------------------------
+    // Handlers for typed from ports
+    // ----------------------------------------------------------------------
 
-      //! Test to check setup error
-      //!
-      void testSetupError();
+    //! Handler for from_read
+    //!
+    Drv::I2cStatus from_read_handler(const NATIVE_INT_TYPE portNum, /*!< The port number*/
+                                     U32 addr,                      /*!< I2C slave device address*/
+                                     Fw::Buffer& serBuffer          /*!< Buffer with data to read/write to/from*/
+    );
 
-    private:
+    //! Handler for from_write
+    //!
+    Drv::I2cStatus from_write_handler(const NATIVE_INT_TYPE portNum, /*!< The port number*/
+                                      U32 addr,                      /*!< I2C slave device address*/
+                                      Fw::Buffer& serBuffer          /*!< Buffer with data to read/write to/from*/
+    );
 
-      // ----------------------------------------------------------------------
-      // Handlers for typed from ports
-      // ----------------------------------------------------------------------
+  private:
+    // ----------------------------------------------------------------------
+    // Helper methods
+    // ----------------------------------------------------------------------
 
-      //! Handler for from_read
-      //!
-      Drv::I2cStatus from_read_handler(
-          const NATIVE_INT_TYPE portNum, /*!< The port number*/
-          U32 addr, /*!< I2C slave device address*/
-          Fw::Buffer &serBuffer /*!< Buffer with data to read/write to/from*/
-      );
+    //! Connect ports
+    //!
+    void connectPorts();
 
-      //! Handler for from_write
-      //!
-      Drv::I2cStatus from_write_handler(
-          const NATIVE_INT_TYPE portNum, /*!< The port number*/
-          U32 addr, /*!< I2C slave device address*/
-          Fw::Buffer &serBuffer /*!< Buffer with data to read/write to/from*/
-      );
+    //! Initialize components
+    //!
+    void initComponents();
 
-    private:
+  private:
+    // ----------------------------------------------------------------------
+    // Variables
+    // ----------------------------------------------------------------------
 
-      // ----------------------------------------------------------------------
-      // Helper methods
-      // ----------------------------------------------------------------------
+    //! The component under test
+    //!
+    Imu component;
 
-      //! Connect ports
-      //!
-      void connectPorts();
+    //! The read status from the driver
+    Drv::I2cStatus m_readStatus;
 
-      //! Initialize components
-      //!
-      void initComponents();
+    //! The write status from the driver
+    Drv::I2cStatus m_writeStatus;
+};
 
-    private:
-
-      // ----------------------------------------------------------------------
-      // Variables
-      // ----------------------------------------------------------------------
-
-      //! The component under test
-      //!
-      Imu component;
-
-      //! The read status from the driver
-      Drv::I2cStatus m_readStatus;
-
-      //! The write status from the driver
-      Drv::I2cStatus m_writeStatus;
-
-  };
-
-} // end namespace Gnc
+}  // end namespace Gnc
 
 #endif
