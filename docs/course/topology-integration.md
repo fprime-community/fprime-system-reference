@@ -63,46 +63,49 @@ our Raspberry PI and run it.
 
 ### Step 1: Cross-Compile
 
-In this step we will set up a build cache specifically for building for raspberry pi. This is done using generate and
-passing in the name of the desired toolchain file. Here we pass in `raspberrypi`.  Then we build passing in the same
+In this step we will set up a build cache specifically for building for ARM hardware. This is done using generate and
+passing in the name of the desired toolchain file. Here we pass in `aarch64`.  Then we build passing in the same
 named toolchain.
 
-**In Docker**
+> Mac users must pair with a Linux user or run inside a docker shell for these steps
+
 ```bash
-cd /project/SystemReference
-fprime-util generate raspberrypi
-fprime-util build raspberrypi
+cd ~/fprime-system-reference/SystemReference
+fprime-util generate aarch64
+fprime-util build aarch64
 ```
 
 ### Step 2: Upload the Built Binary
 
 The next step is to upload the binary file onto the Raspberry PI.  Output products are placed in the
-`build-artifacts/<platform>` directory. In our case the binary is in `build-artifacts/raspberrypi/bin`. We can upload it
+`build-artifacts/<platform>` directory. In our case the binary is in `build-artifacts/aarch64/bin`. We can upload it
 using ssh.
 
 ```bash
-scp build-artifacts/raspberrypi/bin/SystemReference pi@<pi hostname>:SystemReference
+scp build-artifacts/aarch64/bin/SystemReference odroid@<hostname>:SystemReference
 ```
 
-**Note:** your team should have been provided the hostname and password for your pi. 
+**Note:** your team should have been provided the hostname and password for your hardware. 
 
 ### Step 3: Running It!
 
 To run it we need to do two things: launch the GDS and launch the binary on the PI. First, let us launch the GDS. This
-is done with the `fprime-gds` command using the `-n` flag that prevents the GDS from also running the binary and we pass
-in a dictionary, which was automatically built in the build step.
+is done with the `fprime-gds` command using the `-n` flag that prevents the GDS from also running the binary, and we
+pass in a dictionary, which was automatically built in the build step.
 
-**Launching the GDS (In Docker)**
+> Macintosh users can launch the GDS outside of docker. Only the cross-compilation must use it.
+
+**Launching the GDS**
 ```bash
-cd /project/SystemReference
-fprime-gds -n --dictionary build-artifacts/raspberrypi/dict/SystemReferenceTopologyAppDictionary.xml
+cd ~/fprime-system-reference/SystemReference
+fprime-gds -n --dictionary build-artifacts/aarch64/dict/SystemReferenceTopologyAppDictionary.xml
 ```
 
 Next we run the binary and tell it to connect back to the running GDS. This is done from within the PI.
 
-**Running the Binary**
+**Running the Binary on Hardware**
 ```bash
-pi@<pi hostname>
+odroid@<hostname>
 ./SystemReference -a <ip of laptop> -p 50000
 ```
 

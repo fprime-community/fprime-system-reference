@@ -19,7 +19,7 @@ a basic folder with and initial `CMakeList.txt` file inside.
 
 **Inside Docker**
 ```bash
-cd /project/SystemReference/Gnc
+cd ~/fprime-system-reference/SystemReference/Gnc
 mv Imu Imu.reference
 mkdir Imu
 ```
