@@ -101,7 +101,8 @@ void Tester::testPowerError() {
 }
 
 void Tester::testSetupError() {
-    this->m_writeStatus = Drv::I2cStatus::I2C_ADDRESS_ERR;  // Used to denote "OK" then "ERROR", see handler
+    // Used to denote "OK" then "ERROR"; see handler
+    this->m_writeStatus = Drv::I2cStatus::I2C_ADDRESS_ERR;
     sendCmd_PowerSwitch(0, 0, PowerState::ON);
     ASSERT_EVENTS_SetUpConfigError_SIZE(2);
     ASSERT_EVENTS_SetUpConfigError(0, m_writeStatus);
