@@ -4,6 +4,8 @@
 // \brief  cpp file for Imu test harness implementation class
 // ======================================================================
 
+#include <cstring>
+
 #include "Tester.hpp"
 #include <STest/STest/Pick/Pick.hpp>
 
@@ -17,7 +19,14 @@ namespace Gnc {
 // Construction and destruction
 // ----------------------------------------------------------------------
 
-Tester ::Tester() : ImuGTestBase("Tester", MAX_HISTORY_SIZE), component("Imu") {
+Tester ::Tester() :
+  ImuGTestBase("Tester", MAX_HISTORY_SIZE), component("Imu"),
+  addrBuf(0),
+  accelSerBuf(this->accelBuf, sizeof this->accelBuf),
+  gyroSerBuf(this->gyroBuf, sizeof this->gyroBuf)
+{
+    memset(this->accelBuf, 0, sizeof this->accelBuf);
+    memset(this->gyroBuf, 0, sizeof this->gyroBuf);
     this->initComponents();
     this->connectPorts();
     this->component.setup(ADDRESS_TEST);
@@ -30,19 +39,22 @@ Tester ::~Tester() {}
 // ----------------------------------------------------------------------
 
 void Tester ::testGetAccelTlm() {
-    Gnc::ImuData accelData;
-    accelData = this->invoke_to_getAcceleration(0);
+    Gnc::ImuData accelData = this->invoke_to_getAcceleration(0);
     ASSERT_EQ(accelData.getstatus(), Svc::MeasurementStatus::STALE);
     sendCmd_PowerSwitch(0, 0, PowerState::ON);
     for (U32 i = 0; i < 5; i++) {
         this->invoke_to_Run(0, 0);
-        Gnc::ImuData newData = this->invoke_to_getAcceleration(0);
-        ASSERT_EQ(newData.getstatus(), Svc::MeasurementStatus::OK);
+        accelData = this->invoke_to_getAcceleration(0);
+        ASSERT_EQ(accelData.getstatus(), Svc::MeasurementStatus::OK);
         ASSERT_EQ(component.m_accel.getstatus(), Svc::MeasurementStatus::STALE);
-        ASSERT_FALSE(newData.getvector()[0] == accelData.getvector()[0] &&
-                     newData.getvector()[1] == accelData.getvector()[1] &&
-                     newData.getvector()[2] == accelData.getvector()[2]);
-        accelData = newData;
+        for (U32 j = 0; j < 3; ++j) {
+            I16 intCoord = 0;
+            const auto status = this->accelSerBuf.deserialize(intCoord);
+            EXPECT_EQ(status, Fw::FW_SERIALIZE_OK);
+            const F32 f32Coord =
+                static_cast<F32>(intCoord) / Imu::accelScaleFactor;
+            EXPECT_EQ(accelData.getvector()[j], f32Coord);
+        }
     }
 }
 
@@ -101,12 +113,27 @@ Drv::I2cStatus Tester ::from_read_handler(const NATIVE_INT_TYPE portNum, U32 add
     EXPECT_EQ(addr, ADDRESS_TEST);
     if (this->m_readStatus == Drv::I2cStatus::I2C_OK) {
         // Fill buffer with random data
-        U8* const data = (U8*)serBuffer.getData();
+        U8* const data = serBuffer.getData();
         const U32 size = serBuffer.getSize();
-        const U32 max_size = Gnc::Imu::IMU_MAX_DATA_SIZE_BYTES;
-        EXPECT_LE(size, max_size);
+        const U32 imu_max_data_size = Gnc::Imu::IMU_MAX_DATA_SIZE_BYTES;
+        EXPECT_LE(size, imu_max_data_size);
         for (U32 i = 0; i < size; ++i) {
-            data[i] = STest::Pick::any();
+            const U8 byte = STest::Pick::any();
+            data[i] = byte;
+        }
+        if (this->addrBuf == Imu::IMU_RAW_ACCEL_ADDR) {
+            // Last address write was IMU_RAW_ACCEL_ADDR
+            // Copy data into the accel buffer
+            this->accelSerBuf.resetSer();
+            const auto status = this->accelSerBuf.pushBytes(&data[0], size);
+            EXPECT_EQ(status, Fw::FW_SERIALIZE_OK);
+        }
+        else if (this->addrBuf == Imu::IMU_RAW_GYRO_ADDR) {
+            // Last address write was IMU_RAW_GYRO_ADDR
+            // Copy data into the gyro buffer
+            this->gyroSerBuf.resetSer();
+            const auto status = this->gyroSerBuf.pushBytes(&data[0], size);
+            EXPECT_EQ(status, Fw::FW_SERIALIZE_OK);
         }
     }
     return this->m_readStatus;
@@ -118,10 +145,20 @@ Drv::I2cStatus Tester ::from_write_handler(const NATIVE_INT_TYPE portNum, U32 ad
     const U32 size = serBuffer.getSize();
     EXPECT_GT(size, 0);
     U8* const data = (U8*)serBuffer.getData();
-    Drv::I2cStatus status =
-        (this->m_writeStatus == Drv::I2cStatus::I2C_ADDRESS_ERR) ? Drv::I2cStatus::I2C_OK : this->m_writeStatus;
-    this->m_writeStatus =
-        (this->m_writeStatus == Drv::I2cStatus::I2C_ADDRESS_ERR) ? Drv::I2cStatus::I2C_WRITE_ERR : this->m_writeStatus;
+    Drv::I2cStatus status = Drv::I2cStatus::I2C_OK;
+    if (size == 1) {
+        // Address write: store the address in the address buffer
+        this->addrBuf = data[0];
+    }
+    if (this->m_writeStatus == Drv::I2cStatus::I2C_ADDRESS_ERR) {
+        // If the write status indicates an address error, then return
+        // OK this time and set up the write status for a write error next time
+        this->m_writeStatus = Drv::I2cStatus::I2C_WRITE_ERR;
+    }
+    else {
+        // Otherwise return the write status
+        status = this->m_writeStatus;
+    }
     return status;
 }
 

@@ -4,8 +4,8 @@
 // \brief  hpp file for Imu component implementation class
 // ======================================================================
 
-#ifndef Imu_HPP
-#define Imu_HPP
+#ifndef Gnc_Imu_HPP
+#define Gnc_Imu_HPP
 
 #include "SystemReference/Gnc/Imu/ImuComponentAc.hpp"
 

@@ -7,6 +7,7 @@
 #ifndef TESTER_HPP
 #define TESTER_HPP
 
+#include "Fw/Types/SerialBuffer.hpp"
 #include "GTestBase.hpp"
 #include "STest/Pick/Pick.hpp"
 #include "STest/Random/Random.hpp"
@@ -15,11 +16,19 @@
 namespace Gnc {
 
 class Tester : public ImuGTestBase {
+  public:
+    // ----------------------------------------------------------------------
+    // Constants and Types
+    // ----------------------------------------------------------------------
+
+    //! The size of the read buffer
+    static constexpr U16 READ_BUF_SIZE_BYTES = Imu::IMU_MAX_DATA_SIZE_BYTES;
+
+  public:
     // ----------------------------------------------------------------------
     // Construction and destruction
     // ----------------------------------------------------------------------
 
-  public:
     //! Construct object Tester
     //!
     Tester();
@@ -99,6 +108,21 @@ class Tester : public ImuGTestBase {
 
     //! The write status from the driver
     Drv::I2cStatus m_writeStatus;
+
+    //! Buffer for storing last address written
+    U8 addrBuf;
+
+    //! Buffer for storing accel data read by the component
+    U8 accelBuf[READ_BUF_SIZE_BYTES];
+
+    //! Serial buffer wrapping accelBuf
+    Fw::SerialBuffer accelSerBuf;
+
+    //! Buffer for storing gyro data read by the component
+    U8 gyroBuf[READ_BUF_SIZE_BYTES];
+
+    //! Serial buffer wrapping gyroBuf
+    Fw::SerialBuffer gyroSerBuf;
 };
 
 }  // end namespace Gnc
