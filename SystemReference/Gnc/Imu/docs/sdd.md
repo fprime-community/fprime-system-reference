@@ -2,31 +2,29 @@
 # Gnc::Imu (Passive Component)
 
 ## 1. Introduction
-'Gnc::Imu' is an F' passive component that collects data from the MPU6050 6-DoF Accelerometer and Gyro. 
+`Gnc::Imu` is an F' passive component that collects data from the MPU6050 6-DoF Accelerometer and Gyro. 
 
 ### 1.1 Hardware Overview
 
 **I2C interface:**
 The sensor uses an I2C interface to collect data and at AD0 low logic has an address of 0x68. 
-I2C data bytes are defined to be 8 bits wide, where the 8th bit represents the read/write bit that 
-indicates whether data is being received or written. 
+I2C data bytes are eight bits wide. The high-order bit is a 
+read/write bit indicating whether data is being read or written. 
 
 **Power management:**
-Since there are different power modes for the MPU6050, in order for the sensor to begin collecting
+The MPU6050 has several power modes. In order for the sensor to begin collecting
 data it needs to be "awakened" by the entry of 0 at the "Power Management 1" register at 0x6B. 
 
 **Accelerometer:**
-Hardware registers 0x3B through 0x40 store the most recent accelerometer measurement.
-The hardware reports accelerometer measurements as triples of coordinates (x, y, z) in units of g
-(gravitational constant).
+Hardware registers 0x3B through 0x40 store the most recent accelerometer measurement
+as a triple of coordinates (x, y, z) in units of g (gravitational constant).
 The full scale range of the digital output from the accelerometer can be set to ±2g, ±4g, ±8g, or ±16g.
 Each coordinate is reported as a scaled 16-bit signed integer.
 The scale factor is 32768 / _m_, where _m_ is the maximum acceleration (2, 4, 8, or 16).
 
 **Gyroscope:**
-Hardware registers 0x43 through 0x48 store the most recent gyroscope measurement. 
-The hardware reports gyroscope measurements as a triples of coordinates (x, y, z) in units of
-deg/s (degrees per second).
+Hardware registers 0x43 through 0x48 store the most recent gyroscope measurement
+as a triple of coordinates (x, y, z) in units of deg/s (degrees per second).
 The gyro sensors may be digitally programmed to ±250, ±500, ±1000, or ±2000/s.
 Each coordinate is reported as a scaled 16-bit signed integer.
 The scale factor is 32768 / _m_, where _m_ is the maximum output (250, 500, 100, or 2000).
