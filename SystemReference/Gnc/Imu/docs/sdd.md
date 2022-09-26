@@ -19,14 +19,14 @@ data it needs to be "awakened" by the entry of 0 at the "Power Management 1" reg
 Hardware registers 0x3B through 0x40 store the most recent accelerometer measurement
 as a triple of coordinates (x, y, z) in units of g (gravitational constant).
 The full scale range of the digital output from the accelerometer can be set to ±2g, ±4g, ±8g, or ±16g.
-Each coordinate is reported as a scaled 16-bit signed integer.
+Each coordinate is stored as a scaled 16-bit signed integer.
 The scale factor is 32768 / _m_, where _m_ is the maximum acceleration (2, 4, 8, or 16).
 
 **Gyroscope:**
 Hardware registers 0x43 through 0x48 store the most recent gyroscope measurement
 as a triple of coordinates (x, y, z) in units of deg/s (degrees per second).
 The gyro sensors may be digitally programmed to ±250, ±500, ±1000, or ±2000/s.
-Each coordinate is reported as a scaled 16-bit signed integer.
+Each coordinate is stored as a scaled 16-bit signed integer.
 The scale factor is 32768 / _m_, where _m_ is the maximum output (250, 500, 100, or 2000).
 
 **Data sheet:** More information can be found from the [data 
