@@ -47,8 +47,7 @@ It provides ports for getting the latest accelerometer and gyroscope data.
 | Gyroscope       | 250 deg/s | 131.072      |
 
 ## 2. Assumptions
-The design of `Imu` assumes the following:
-1. Data collected by the Imu arrives through a pull interface
+None.
 
 ## 3. Requirements
 | Requirement ID | Description                                                                                      | Verification Method |
@@ -122,6 +121,4 @@ telemetry error occurred while setting the measurement status as `FAILURE`.
 
 #### 4.5.6 powerOn
 Activates the sensor, by setting the Power Management 1 register to 0. 
-
-## 5. Sequence Diagram
 
