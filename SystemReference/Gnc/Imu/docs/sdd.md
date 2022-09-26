@@ -7,7 +7,7 @@
 ### 1.1 Hardware Overview
 
 **I2C interface:**
-The sensor uses an I2C interface to collect data and at AD0 low logic has an address of 0x68. 
+The sensor reports data via an I2C interface.
 I2C data bytes are eight bits wide. The high-order bit is a 
 read/write bit indicating whether data is being read or written. 
 
