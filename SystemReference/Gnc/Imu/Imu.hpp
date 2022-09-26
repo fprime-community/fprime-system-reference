@@ -30,7 +30,7 @@ class Imu : public ImuComponentBase {
     static const U8 POWER_ON_VALUE = 0;
     static const U8 POWER_OFF_VALUE = 0x40;
     static constexpr float accelScaleFactor = 16384.0f;
-    static constexpr float gyroScaleFactor = 131.0f;
+    static constexpr float gyroScaleFactor = 131.072f;
 
     // ----------------------------------------------------------------------
     // Construction, initialization, and destruction

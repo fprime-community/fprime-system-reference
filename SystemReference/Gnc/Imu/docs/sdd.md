@@ -4,6 +4,8 @@
 ## 1. Introduction
 'Gnc::Imu' is an F' passive component that collects data from the MPU6050 6-DoF Accelerometer and Gyro. 
 
+### 1.1 Hardware Overview
+
 **I2C interface:**
 The sensor uses an I2C interface to collect data and at AD0 low logic has an address of 0x68. 
 I2C data bytes are defined to be 8 bits wide, where the 8th bit represents the read/write bit that 
@@ -13,30 +15,48 @@ indicates whether data is being received or written.
 Since there are different power modes for the MPU6050, in order for the sensor to begin collecting
 data it needs to be "awakened" by the entry of 0 at the "Power Management 1" register at 0x6B. 
 
-**Gyroscope:**
-Registers 0x43 through 0x48 are used to store the most recent gyroscope measurement. 
-The output for the x, y, and z values of the gyroscope are stored as 16-bit signed integers.
-The gyro sensors may be digitally programmed to ±250, ±500, ±1000, or ±2000 degrees per second (dps).
-
 **Accelerometer:**
-Registers 0x3B through 0x40 store the most recent accelerometer measurements.
-The output for the x, y, and z values of the accelerometer are stored as 16-bit signed integers.
-The full scale range of the digital output from the accelerometer can be adjusted to ±2g, ±4g, ±8g, or ±16g.
+Hardware registers 0x3B through 0x40 store the most recent accelerometer measurement.
+The hardware reports accelerometer measurements as triples of coordinates (x, y, z) in units of g
+(gravitational constant).
+The full scale range of the digital output from the accelerometer can be set to ±2g, ±4g, ±8g, or ±16g.
+Each coordinate is reported as a scaled 16-bit signed integer.
+The scale factor is 32768 / _m_, where _m_ is the maximum acceleration (2, 4, 8, or 16).
+
+**Gyroscope:**
+Hardware registers 0x43 through 0x48 store the most recent gyroscope measurement. 
+The hardware reports gyroscope measurements as a triples of coordinates (x, y, z) in units of
+deg/s (degrees per second).
+The gyro sensors may be digitally programmed to ±250, ±500, ±1000, or ±2000/s.
+Each coordinate is reported as a scaled 16-bit signed integer.
+The scale factor is 32768 / _m_, where _m_ is the maximum output (250, 500, 100, or 2000).
 
 **Data sheet:** More information can be found from the [data 
 sheet](https://learn.adafruit.com/mpu6050-6-dof-accelerometer-and-gyro/downloads), 
 provided by the manufacturer.
 
+### 1.2 Component Overview
+
+`Gnc::Imu` provides a run port that periodically requests updated accelerometer and
+gyroscope data from the hardware.
+It provides ports for getting the latest accelerometer and gyroscope data.
+
+`Gnc::Imu` is currently hard-coded to use the following hardware configuration:
+
+| Hardware Output | Max Value | Scale Factor |
+|-----------------|-----------|--------------|
+| Accelerometer   | 2g        | 16384.0      |
+| Gyroscope       | 250 deg/s | 131.072      |
+
 ## 2. Assumptions
 The design of `Imu` assumes the following:
 1. Data collected by the Imu arrives through a pull interface
 
-
 ## 3. Requirements
 | Requirement ID | Description                                                                                      | Verification Method |
 |----------------|--------------------------------------------------------------------------------------------------|---------------------|
-| GNC-IMU-001    | The Gnc::Imu component shall produce telemetry of accelerometer data at 1Hz                      | Unit Test           |
-| GNC-IMU-002    | The Gnc::Imu component shall produce telemetry of gyroscope data at 1Hz                          | Unit Test           |
+| GNC-IMU-001    | The Gnc::Imu component shall produce telemetry of accelerometer data when its run port is invoked | Unit Test           |
+| GNC-IMU-002    | The Gnc::Imu component shall produce telemetry of gyroscope data when its run port is invoked    | Unit Test           |
 | GNC-IMU-003    | The Gnc::Imu component shall be able to communicate with the MPU6050 over I2C                    | Inspection          |
 | GNC-IMU-004    | The Gnc::Imu component shall produce the latest gyroscope and accelerometer data via a port call | Unit Test           |
 | GNC-IMU-005    | The Gnc::Imu component shall support power on and power off commands                             | Unit Test           |
