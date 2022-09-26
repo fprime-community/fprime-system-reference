@@ -3,18 +3,28 @@
 
 ## 1. Introduction
 'Gnc::Imu' is an F' passive component that collects data from the MPU6050 6-DoF Accelerometer and Gyro. 
+
+**I2C interface:**
 The sensor uses an I2C interface to collect data and at AD0 low logic has an address of 0x68. 
+I2C data bytes are defined to be 8 bits wide, where the 8th bit represents the read/write bit that 
+indicates whether data is being received or written. 
+
+**Power management:**
 Since there are different power modes for the MPU6050, in order for the sensor to begin collecting
 data it needs to be "awakened" by the entry of 0 at the "Power Management 1" register at 0x6B. 
-I2C data bytes are defined to be 8-bits long, where the 8th bit represents the read/write bit that 
-indicates whether data is being received or written. 
-Registers 43-48 (in hexadecimal) are used to store the most recent gyroscope measurement. 
-The output for the x, y, and z values of the gyroscope are stored as 16-bit 2's complement values.
+
+**Gyroscope:**
+Registers 0x43 through 0x48 are used to store the most recent gyroscope measurement. 
+The output for the x, y, and z values of the gyroscope are stored as 16-bit signed integers.
 The gyro sensors may be digitally programmed to ±250, ±500, ±1000, or ±2000 degrees per second (dps).
-For the accelerometer, registers 3B-40 (in hexadecimal) store the most recent accelerometer measurements.
-The output for the x, y, and z values of the accelerometer are stored as 16-bit 2's complement values.
+
+**Accelerometer:**
+Registers 0x3B through 0x40 store the most recent accelerometer measurements.
+The output for the x, y, and z values of the accelerometer are stored as 16-bit signed integers.
 The full scale range of the digital output from the accelerometer can be adjusted to ±2g, ±4g, ±8g, or ±16g.
-More information can be found from the [data sheet](https://learn.adafruit.com/mpu6050-6-dof-accelerometer-and-gyro/downloads), 
+
+**Data sheet:** More information can be found from the [data 
+sheet](https://learn.adafruit.com/mpu6050-6-dof-accelerometer-and-gyro/downloads), 
 provided by the manufacturer.
 
 ## 2. Assumptions
