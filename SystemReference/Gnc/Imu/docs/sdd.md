@@ -87,6 +87,8 @@ The diagram below shows the `Imu` component.
 
 `Imu` uses the following externally defined types:
 
+1. [`Vector`](../../ImuPort/ImuPort.fpp) is an array of three `F32` values.
+
 1. [`ImuData`](../../ImuPort/ImuPort.fpp) is an FPP struct that defines
 the type of IMU data.
 
