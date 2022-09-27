@@ -4,7 +4,7 @@
 ## 1. Introduction
 `Gnc::Imu` is an F' passive component that collects data from the MPU6050 6-DoF Accelerometer and Gyro. 
 
-### 1.1 Hardware Overview
+### 1.1. Hardware Overview
 
 **I2C interface:**
 The sensor reports data via an I2C interface.
@@ -32,7 +32,7 @@ The scale factor is 32768 / _m_, where _m_ is the maximum output (250, 500, 100,
 **Data sheet:** For more details, see the [manufacturer's data 
 sheet](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf).
 
-### 1.2 Component Overview
+### 1.2. Component Overview
 
 `Gnc::Imu` provides a run port that periodically requests updated accelerometer and
 gyroscope data from the hardware.
@@ -75,61 +75,73 @@ The diagram below shows the `Imu` component.
 | `guarded input` | `getAcceleration` | `Gnc.ImuDataPort` | Port that returns acceleration data                |
 | `guarded input` | `run`             | `Svc.Sched`       | Port that updates accelerometer and gyroscope data |
 
+### Externally Defined Types
+
+`Imu` uses the following externally defined types:
+
+1. [`ImuData`](../../ImuPort/ImuPort.fpp) is an FPP struct that defines
+the type of IMU data.
+
+### Types
+
+`Imu` defines the following type:
+
+1. [`I2cDevAddr`](../Imu.hpp) is a C++ enumeration that defines the type
+of an I2C device address.
+The I2C bus uses the device address to identify the device.
+
 ### 4.3. State
 `Imu` maintains the following state:
 1. `m_gyro`: An instance of `Gnc::ImuData` that stores the latest gyroscope data
 2. `m_accel`: An instance of `Gnc::ImuData` that stores the latest acceleration data
 3. `m_i2cDevAddress`: A type `U8` that stores the address of the MPU6050 sensor
-4. `m_setup`: An instance of `bool` that indicates if sensor has been properly activated or not
+4. `m_setup`: An instance of `bool` that indicates whether the sensor has been activated
 
-### Runtime Configuration
+### 4.4. Runtime Configuration
 At startup, the F Prime software must call the `setup` method of the
 `Imu` object.
 ```
-void setup(U8 devAddress);
+void setup(I2cDevAddr devAddress);
 ```
 `devAddress` is the I2C device address.
-This value should be 0x68 or 0x69 depending on whether AD0 is set to
-zero or one in the hardware configuration.
-The I2C bus uses the device address to identify the device.
-See the hardware documentation for details.
+The value should correspond to the configuration of the hardware.
 
-### 4.4. Port Handlers
+### 4.5. Port Handlers
 
-#### 4.4.1. getAcceleration
+#### 4.5.1. getAcceleration
 The `getAcceleration` port handler does the following: 
 1. Sets the measurement status to `STALE`
 2. Returns the acceleration data
 
-#### 4.4.2. getGyroscope
+#### 4.5.2. getGyroscope
 The `getGyroscope` port handler does the following:
 1. Sets the measurement status to `STALE`
 2. Returns the gyroscope data
 
-#### 4.4.3. Run
+#### 4.5.3. Run
 Ensures that the sensor has been properly setup and calls the `updateAccel` and `updateGyro` helper functions. 
 
-### 4.5. Helper Functions
+### 4.6. Helper Functions
 
-#### 4.5.1 read 
+#### 4.6.1. read 
 Returns the read data from the sensor.
 
-#### 4.5.2 setupReadRegister
+#### 4.6.2. setupReadRegister
 Returns the written data from the sensor in order for the data to be read. 
 
-#### 4.5.3 readRegisterBlock
+#### 4.6.3. readRegisterBlock
 Reads the data from the sensors registers. Returns a status of type `Drv::I2cStatus` if the read was successful or not. 
 
-#### 4.5.4 updateAccel
+#### 4.6.4. updateAccel
 Reads the data from the accelerometer registers of the sensor. Depending on the status of the read it will either store 
 the accelerometer data and emit it as telemetry while setting the measurement status as `OK`, or it will emit an event 
 that a telemetry error occurred while setting the measurement status as `FAILURE`. 
 
-#### 4.5.5 updateGyro
+#### 4.6.5. updateGyro
 Reads the data from the gyroscope registers of the sensor. Depending on the status of the read it will either store the
 gyroscope data and emit it as telemetry while setting the measurement status as `OK`, or it will emit an event that 
 telemetry error occurred while setting the measurement status as `FAILURE`.
 
-#### 4.5.6 powerOn
+#### 4.6.6. powerOn
 Activates the sensor, by setting the Power Management 1 register to 0. 
 
