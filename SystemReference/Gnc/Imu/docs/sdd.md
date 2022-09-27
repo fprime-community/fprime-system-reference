@@ -13,7 +13,8 @@ read/write bit indicating whether data is being read or written.
 
 **Power management:**
 The MPU6050 has several power modes. In order for the sensor to begin collecting
-data it needs to be "awakened" by the entry of 0 at the "Power Management 1" register at 0x6B. 
+data it needs to be "awakened" by the entry of 0 at the "Power Management 1" register at
+address 0x6B. 
 
 **Accelerometer:**
 Hardware registers 0x3B through 0x40 store the most recent accelerometer measurement
@@ -67,13 +68,20 @@ The diagram below shows the `Imu` component.
 ### 4.2. Ports
 `Imu` has the following ports: 
 
-| Kind            | Name              | Port Type         | Usage                                              |
-|-----------------|-------------------|-------------------|----------------------------------------------------|
-| `output`        | `read`            | `Drv.I2c`         | Port that outputs the read data from sensor        |
-| `output`        | `write`           | `Drv.I2c`         | Port that outputs written data from sensor         |
-| `guarded input` | `getGyroscope`    | `Gnc.ImuDataPort` | Port that returns gyroscope data                   |
-| `guarded input` | `getAcceleration` | `Gnc.ImuDataPort` | Port that returns acceleration data                |
-| `guarded input` | `run`             | `Svc.Sched`       | Port that updates accelerometer and gyroscope data |
+| Kind | Name | Port Type | Usage |
+|------|------|-----------|-------|
+| `guarded input` | `Run` | `Svc.Sched` | Port to send telemetry to ground |
+| `guarded input` | `getAcceleration` | `ImuDataPort` | Port that attains current acceleration value |
+| `guarded input` | `getGyroscope` | `ImuDataPort` | Port that attains current rotation value |
+| `output` | `read` | `Drv.I2c` | Port that reads data from device |
+| `output` | `write` | `Drv.I2c` | Port that writes data to device |
+| `command recv` | `cmdIn` | `Fw.Cmd` | Command receive |
+| `command reg` | `cmdRegOut` | `Fw.CmdReg` | Command registration |
+| `command resp` | `cmdResponseOut` | `Fw.CmdResponse` | Command response |
+| `event` | `Log` | `Fw.Log` | Port for emitting events |
+| `text event` | `LogText` | `Fw.LogText` | Port for emitting text events |
+| `time get` | `Time` | `Fw.Time` | Port for getting the time |
+| `telemetry` | `Tlm` | `Fw.Tlm` | Telemetry port |
 
 ### Externally Defined Types
 
