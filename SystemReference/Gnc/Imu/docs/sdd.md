@@ -83,14 +83,14 @@ The diagram below shows the `Imu` component.
 | `time get` | `Time` | `Fw.Time` | Port for getting the time |
 | `telemetry` | `Tlm` | `Fw.Tlm` | Telemetry port |
 
-### Externally Defined Types
+### 4.3. Externally Defined Types
 
 `Imu` uses the following externally defined types:
 
 1. [`ImuData`](../../ImuPort/ImuPort.fpp) is an FPP struct that defines
 the type of IMU data.
 
-### Types
+### 4.4. Types
 
 `Imu` defines the following type:
 
@@ -98,14 +98,14 @@ the type of IMU data.
 of an I2C device address.
 The I2C bus uses the device address to identify the device.
 
-### 4.3. State
+### 4.5. State
 `Imu` maintains the following state:
 1. `m_gyro`: An instance of `Gnc::ImuData` that stores the latest gyroscope data
 2. `m_accel`: An instance of `Gnc::ImuData` that stores the latest acceleration data
 3. `m_i2cDevAddress`: A type `U8` that stores the address of the MPU6050 sensor
 4. `m_setup`: An instance of `bool` that indicates whether the sensor has been activated
 
-### 4.4. Runtime Configuration
+### 4.6. Runtime Configuration
 At startup, the F Prime software must call the `setup` method of the
 `Imu` object.
 ```
@@ -114,42 +114,42 @@ void setup(I2cDevAddr devAddress);
 `devAddress` is the I2C device address.
 The value should correspond to the configuration of the hardware.
 
-### 4.5. Port Handlers
+### 4.7. Port Handlers
 
-#### 4.5.1. getAcceleration
+#### 4.7.1. getAcceleration
 The `getAcceleration` port handler does the following: 
 1. Sets the measurement status to `STALE`
 2. Returns the acceleration data
 
-#### 4.5.2. getGyroscope
+#### 4.7.2. getGyroscope
 The `getGyroscope` port handler does the following:
 1. Sets the measurement status to `STALE`
 2. Returns the gyroscope data
 
-#### 4.5.3. Run
+#### 4.7.3. Run
 Ensures that the sensor has been properly setup and calls the `updateAccel` and `updateGyro` helper functions. 
 
-### 4.6. Helper Functions
+### 4.8. Helper Functions
 
-#### 4.6.1. read 
+#### 4.8.1. read 
 Returns the read data from the sensor.
 
-#### 4.6.2. setupReadRegister
+#### 4.8.2. setupReadRegister
 Returns the written data from the sensor in order for the data to be read. 
 
-#### 4.6.3. readRegisterBlock
+#### 4.8.3. readRegisterBlock
 Reads the data from the sensors registers. Returns a status of type `Drv::I2cStatus` if the read was successful or not. 
 
-#### 4.6.4. updateAccel
+#### 4.8.4. updateAccel
 Reads the data from the accelerometer registers of the sensor. Depending on the status of the read it will either store 
 the accelerometer data and emit it as telemetry while setting the measurement status as `OK`, or it will emit an event 
 that a telemetry error occurred while setting the measurement status as `FAILURE`. 
 
-#### 4.6.5. updateGyro
+#### 4.8.5. updateGyro
 Reads the data from the gyroscope registers of the sensor. Depending on the status of the read it will either store the
 gyroscope data and emit it as telemetry while setting the measurement status as `OK`, or it will emit an event that 
 telemetry error occurred while setting the measurement status as `FAILURE`.
 
-#### 4.6.6. powerOn
+#### 4.8.6. powerOn
 Activates the sensor, by setting the Power Management 1 register to 0. 
 
