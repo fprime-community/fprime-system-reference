@@ -105,10 +105,10 @@ The I2C bus uses the device address to identify the device.
 
 ### 4.5. State
 `Imu` maintains the following state:
-1. `m_gyro`: An instance of `Gnc::ImuData` that stores the latest gyroscope data
-2. `m_accel`: An instance of `Gnc::ImuData` that stores the latest acceleration data
-3. `m_i2cDevAddress`: A type `U8` that stores the address of the MPU6050 sensor
-4. `m_setup`: An instance of `bool` that indicates whether the sensor has been activated
+1. `m_gyro`: A value of type `Gnc::ImuData` that stores the latest gyroscope data
+2. `m_accel`: A value of type `Gnc::ImuData` that stores the latest acceleration data
+3. `m_i2cDevAddress`: A value of type `U8` that stores the address of the MPU6050 sensor
+4. `m_setup`: A value of type `bool` that indicates whether the sensor has been activated
 
 ### 4.6. Runtime Configuration
 At startup, the F Prime software must call the `setup` method of the
