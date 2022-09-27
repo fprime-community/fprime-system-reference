@@ -92,7 +92,7 @@ the type of IMU data.
 
 ### 4.4. Types
 
-`Imu` defines the following type:
+`Imu` defines the following types:
 
 1. [`I2cDevAddr`](../Imu.hpp) is a C++ enumeration that defines the type
 of an I2C device address.
@@ -153,3 +153,20 @@ telemetry error occurred while setting the measurement status as `FAILURE`.
 #### 4.8.6. powerOn
 Activates the sensor, by setting the Power Management 1 register to 0. 
 
+## 5. Ground Interface
+
+### 5.1. Commands
+
+`Imu` provides the following commands:
+
+| Kind | Name | Description |
+|------|------|-------------|
+| `guarded` | `PowerSwitch` | Command to turn on the device |
+
+### 5.2. Telemetry
+
+TODO
+
+### 5.3. Events
+
+TODO
