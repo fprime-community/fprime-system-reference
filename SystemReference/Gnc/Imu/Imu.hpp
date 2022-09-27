@@ -23,9 +23,9 @@ class Imu : public ImuComponentBase {
     //! The I2C device addresses
     struct I2cDevAddr {
       enum T {
-        //! The I2C device address with ADC0 set to zero
+        //! The I2C device address with AD0 set to zero
         AD0_0 = 0x68,
-        //! The I2C device address with ADC0 set to one
+        //! The I2C device address with AD0 set to one
         AD0_1 = 0x69
       };
     };
