@@ -165,8 +165,18 @@ Activates the sensor, by setting the Power Management 1 register to 0.
 
 ### 5.2. Telemetry
 
-TODO
+`Imu` provides the following telemetry channels:
+
+| Name | Type | Description |
+|------|------|-------------|
+| `accelerometer:` | `Vector` | X, Y, Z acceleration from accelerometer |
+| `gyroscope:` | `Vector` | X, Y, Z degrees from gyroscope |
 
 ### 5.3. Events
 
-TODO
+| Name | Description |
+|------|-------------|
+| `TelemetryError` | Error occurred when requesting telemetry |
+| `SetUpConfigError` | Configuration failed |
+| `PowerModeError` | Device was not taken out of sleep mode |
+| `PowerStatus` | Report power state |
