@@ -89,8 +89,11 @@ The diagram below shows the `Imu` component.
 
 1. [`Vector`](../../ImuPort/ImuPort.fpp) is an array of three `F32` values.
 
-1. [`ImuData`](../../ImuPort/ImuPort.fpp) is an FPP struct that defines
-the type of IMU data.
+1. [`ImuData`](../../ImuPort/ImuPort.fpp) is an FPP struct that represents
+IMU data.
+
+1. [`Drv::I2cStatus`](https://github.com/nasa/fprime/blob/master/Drv/I2cDriverPorts/I2cDriverPorts.fpp)
+is an FPP enum that represents the status of an I2C transaction.
 
 ### 4.4. Types
 
