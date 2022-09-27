@@ -18,7 +18,7 @@ address 0x6B.
 
 **Accelerometer:**
 Hardware registers 0x3B through 0x40 store the most recent accelerometer measurement
-as a triple of coordinates (x, y, z) in units of g (gravitational constant).
+as a triple of coordinates (x, y, z) in units of g (gravitational acceleration).
 The full scale range of the digital output from the accelerometer can be set to ±2g, ±4g, ±8g, or ±16g.
 Each coordinate is stored as a scaled 16-bit signed integer.
 The scale factor is 32768 / _m_, where _m_ is the maximum acceleration (2, 4, 8, or 16).
