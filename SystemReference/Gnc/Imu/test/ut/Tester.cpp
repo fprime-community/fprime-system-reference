@@ -11,7 +11,7 @@
 
 #define INSTANCE 0
 #define MAX_HISTORY_SIZE 100
-#define ADDRESS_TEST 0xDE
+#define ADDRESS_TEST Gnc::Imu::I2cDevAddr::AD0_0
 
 namespace Gnc {
 

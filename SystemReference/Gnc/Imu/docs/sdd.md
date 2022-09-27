@@ -29,9 +29,8 @@ The gyro sensors may be digitally programmed to ±250, ±500, ±1000, or ±2000/
 Each coordinate is stored as a scaled 16-bit signed integer.
 The scale factor is 32768 / _m_, where _m_ is the maximum output (250, 500, 100, or 2000).
 
-**Data sheet:** More information can be found from the [data 
-sheet](https://learn.adafruit.com/mpu6050-6-dof-accelerometer-and-gyro/downloads), 
-provided by the manufacturer.
+**Data sheet:** For more details, see the [manufacturer's data 
+sheet](https://invensense.tdk.com/wp-content/uploads/2015/02/MPU-6000-Datasheet1.pdf).
 
 ### 1.2 Component Overview
 
@@ -82,6 +81,18 @@ The diagram below shows the `Imu` component.
 2. `m_accel`: An instance of `Gnc::ImuData` that stores the latest acceleration data
 3. `m_i2cDevAddress`: A type `U8` that stores the address of the MPU6050 sensor
 4. `m_setup`: An instance of `bool` that indicates if sensor has been properly activated or not
+
+### Runtime Configuration
+At startup, the F Prime software must call the `setup` method of the
+`Imu` object.
+```
+void setup(U8 devAddress);
+```
+`devAddress` is the I2C device address.
+This value should be 0x68 or 0x69 depending on whether AD0 is set to
+zero or one in the hardware configuration.
+The I2C bus uses the device address to identify the device.
+See the hardware documentation for details.
 
 ### 4.4. Port Handlers
 

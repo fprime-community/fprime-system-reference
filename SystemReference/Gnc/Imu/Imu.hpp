@@ -19,7 +19,16 @@ class Imu : public ImuComponentBase {
 
     // Values for the static consts were attained from the data sheet of the
     // MPU6050
-    static const U8 I2C_DEV0_ADDR = 0x68;
+
+    //! The I2C device addresses
+    struct I2cDevAddr {
+      enum T {
+        //! The I2C device address with ADC0 set to zero
+        AD0_0 = 0x68,
+        //! The I2C device address with ADC0 set to one
+        AD0_1 = 0x69
+      };
+    };
     static const U8 POWER_MGMT_ADDR = 0x6B;
     static const U16 IMU_MAX_DATA_SIZE_BYTES = 6;
     static const U16 IMU_REG_SIZE_BYTES = 1;
@@ -50,7 +59,7 @@ class Imu : public ImuComponentBase {
     //!
     ~Imu();
 
-    void setup(U8 devAddress);
+    void setup(I2cDevAddr::T devAddress);
 
   PRIVATE:
     // ----------------------------------------------------------------------
@@ -142,7 +151,7 @@ class Imu : public ImuComponentBase {
 
     Gnc::ImuData m_gyro; //!< Local copy of gyroscope data
     Gnc::ImuData m_accel; //!< Local copy of accelerometer data
-    U8 m_i2cDevAddress; //!< Stored device address
+    I2cDevAddr::T m_i2cDevAddress; //!< Stored device address
     PowerState::t m_power; //!< Power state of device
 };
 
