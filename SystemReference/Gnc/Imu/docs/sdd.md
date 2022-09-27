@@ -112,7 +112,7 @@ The I2C bus uses the device address to identify the device.
 At startup, the F Prime software must call the `setup` method of the
 `Imu` object.
 ```
-void setup(I2cDevAddr devAddress);
+void setup(I2cDevAddr::T devAddress);
 ```
 `devAddress` is the I2C device address.
 The value should correspond to the configuration of the hardware.
