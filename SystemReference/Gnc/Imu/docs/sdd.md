@@ -8,8 +8,6 @@
 
 **I2C interface:**
 The sensor reports data via an I2C interface.
-I2C data bytes are eight bits wide. The high-order bit is a 
-read/write bit indicating whether data is being read or written. 
 
 **Power management:**
 The MPU6050 has several power modes. In order for the sensor to begin collecting
