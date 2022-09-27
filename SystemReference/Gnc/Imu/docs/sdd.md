@@ -169,8 +169,8 @@ Activates the sensor, by setting the Power Management 1 register to 0.
 
 | Name | Type | Description |
 |------|------|-------------|
-| `accelerometer:` | `Vector` | X, Y, Z acceleration from accelerometer |
-| `gyroscope:` | `Vector` | X, Y, Z degrees from gyroscope |
+| `accelerometer` | `Vector` | X, Y, Z acceleration from accelerometer |
+| `gyroscope` | `Vector` | X, Y, Z degrees from gyroscope |
 
 ### 5.3. Events
 
