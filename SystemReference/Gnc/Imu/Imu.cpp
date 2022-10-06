@@ -19,7 +19,7 @@ void Imu ::init(const NATIVE_INT_TYPE instance) {
     ImuComponentBase::init(instance);
 }
 
-void Imu ::setup(U8 devAddress) {
+void Imu ::setup(I2cDevAddr::T devAddress) {
     m_i2cDevAddress = devAddress;
 }
 

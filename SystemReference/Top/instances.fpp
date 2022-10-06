@@ -459,8 +459,9 @@ module SystemReference {
   instance systemResources: Svc.SystemResources base id 0x4B00
   instance imu: Gnc.Imu base id 0x4C00 {
     phase Fpp.ToCpp.Phases.configComponents """
-     imu.setup(Gnc::Imu::I2C_DEV0_ADDR);
-     """
+    // The AdaFruit board uses AD0 = 0
+    imu.setup(Gnc::Imu::I2cDevAddr::AD0_0);
+    """
   }
 
   instance imuI2cBus: Drv.LinuxI2cDriver  base id 0x4D00 {

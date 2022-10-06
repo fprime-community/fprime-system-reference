@@ -62,32 +62,34 @@ module Gnc {
         # Events
         # ----------------------------------------------------------------------
 
-        @ Event where error occurred when requesting telemetry
+        @ Error occurred when requesting telemetry
         event TelemetryError(
             status: Drv.I2cStatus @< the status value returned
         ) \
         severity warning high \
-        format "Telemetry request failed with status {}" \
+        format "Telemetry request failed with status {}"
 
-        @ Error where configuration failed
+        @ Configuration failed
         event SetUpConfigError(
             writeStatus: Drv.I2cStatus @< the status of writing data to device
         ) \
         severity warning high \
-        format "Setup Error: Write status failed with code {}" \
+        format "Setup Error: Write status failed with code {}"
 
-        @ Error where device was not taken out of sleep mode
+        @ Device was not taken out of sleep mode
         event PowerModeError(
             writeStatus: Drv.I2cStatus @< the status of writing data to device
         ) \
         severity warning high \
-        format "Setup Error: Power mode failed to set up with write code {}" \
+        format "Setup Error: Power mode failed to set up with write code {}"
 
+        @ Report power state
         event PowerStatus(
             powerStatus: PowerState @< power state of device
         ) \
         severity activity high \
-        format "The device has been turned {}" \
+        format "The device has been turned {}"
+
         # ----------------------------------------------------------------------
         # Telemetry
         # ---------------------------------------------------------------------

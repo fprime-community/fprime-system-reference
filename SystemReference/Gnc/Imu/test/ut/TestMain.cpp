@@ -14,22 +14,23 @@ TEST(Nominal, getAccelerometer) {
     tester.testGetAccelTlm();
 }
 
-TEST(Nominal, TelemetryError) {
+TEST(Error, TelemetryError) {
     Gnc::Tester tester;
     tester.testTlmError();
 }
 
-TEST(Nominal, PowerError) {
+TEST(Error, PowerError) {
     Gnc::Tester tester;
     tester.testPowerError();
 }
 
-TEST(Nominal, SetupError) {
+TEST(Error, SetupError) {
     Gnc::Tester tester;
     tester.testSetupError();
 }
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
+    STest::Random::seed();
     return RUN_ALL_TESTS();
 }
