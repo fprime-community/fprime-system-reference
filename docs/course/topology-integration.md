@@ -64,25 +64,27 @@ our Raspberry PI and run it.
 ### Step 1: Cross-Compile
 
 In this step we will set up a build cache specifically for building for ARM hardware. This is done using generate and
-passing in the name of the desired toolchain file. Here we pass in `aarch64`.  Then we build passing in the same
+passing in the name of the desired toolchain file. Here we pass in `aarch64-linux`.  Then we build passing in the same
 named toolchain.
+
+> Students working with the Raspberry PI 3 may use `arm-hf-linux` in place of `aarch64-linux`
 
 > Mac users must pair with a Linux user or run inside a docker shell for these steps
 
 ```bash
 cd ~/fprime-system-reference/SystemReference
-fprime-util generate aarch64
-fprime-util build aarch64
+fprime-util generate aarch64-linux
+fprime-util build aarch64-linux
 ```
 
 ### Step 2: Upload the Built Binary
 
 The next step is to upload the binary file onto the Raspberry PI.  Output products are placed in the
-`build-artifacts/<platform>` directory. In our case the binary is in `build-artifacts/aarch64/bin`. We can upload it
-using ssh.
+`build-artifacts/<platform>` directory. In our case the binary is in `build-artifacts/aarch64-linux/bin`. We can upload
+it using ssh.
 
 ```bash
-scp build-artifacts/aarch64/bin/SystemReference odroid@<hostname>:SystemReference
+scp build-artifacts/aarch64-linux/bin/SystemReference odroid@<hostname>:SystemReference
 ```
 
 **Note:** your team should have been provided the hostname and password for your hardware. 
@@ -98,7 +100,7 @@ pass in a dictionary, which was automatically built in the build step.
 **Launching the GDS**
 ```bash
 cd ~/fprime-system-reference/SystemReference
-fprime-gds -n --dictionary build-artifacts/aarch64/dict/SystemReferenceTopologyAppDictionary.xml
+fprime-gds -n --dictionary build-artifacts/aarch64-linux/dict/SystemReferenceTopologyAppDictionary.xml
 ```
 
 Next we run the binary and tell it to connect back to the running GDS. This is done from within the PI.
