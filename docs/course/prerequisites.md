@@ -196,3 +196,6 @@ fprime-gds
 ```
 
 You should now be prepared for the completing the remaining IMU exercise.
+
+## Next Steps
+- [Hardware Setup](./hardware.md)
