@@ -4,6 +4,8 @@ In order to complete the lab exercise we need to wire-up hardware. In this exerc
 Odroid M1 depending on the hardware supplied to the class.  The IMU will be the MPU-6050 IMU. The IMU uses I2C to
 communicate and should be connected to the computers I2C pins as shown below
 
+> In-class participants will be provided hardware and should verify the hardware is setup properly.
+
 ## Wiring Specification
 
 The IMU should be connected using the IMU wiring harness. The black connector connects to the IMU PCB and the jumper

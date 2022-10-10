@@ -18,6 +18,9 @@ The class will consist of the following sections.
 - [Appendix I: Code Snippets](./appendix-1.md)
 - [Appendix II: Installing Rancher Desktop and the F´ ARM Container](./appendix-2.md)
 - [Appendix III: Common Errors](./appendix-3.md)
+- [In-Person Class Information](./teams.md)
+
+> In-class participants may find hardware access information in the [in-person class information](./teams.md) document.
 
 
 ## Next Steps
