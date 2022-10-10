@@ -69,13 +69,15 @@ named toolchain.
 
 > Students working with the Raspberry PI 3 may use `arm-hf-linux` in place of `aarch64-linux`
 
-> Mac users must pair with a Linux user or run inside a docker shell for these steps
+> Mac users must pair with a Linux user or run inside a docker shell for these steps and must then use  `/project`
+> instead of `~/fprime-system-reference` in the following instruction.
 
 ```bash
 cd ~/fprime-system-reference/SystemReference
 fprime-util generate aarch64-linux
 fprime-util build aarch64-linux
 ```
+
 
 ### Step 2: Upload the Built Binary
 
