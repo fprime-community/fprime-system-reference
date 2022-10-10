@@ -107,7 +107,7 @@ Next we run the binary and tell it to connect back to the running GDS. This is d
 
 **Running the Binary on Hardware**
 ```bash
-odroid@<hostname>
+ssh odroid@<hostname>
 ./SystemReference -a <ip of laptop> -p 50000
 ```
 
