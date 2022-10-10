@@ -41,8 +41,7 @@ with the container.
 
 The command to run a terminal in the docker container is:
 ```bash
-cd ~/fprime-system-reference
-docker run --net host -itv "`pwd`:/project" nasafprime/fprime-arm:devel
+docker run --net host -itv ~/fprime-system-reference:/project nasafprime/fprime-arm:devel
 ```
 
 > Anytime Macintosh users run cross-compilation commands, they **must** do so in a terminal inside the docker container.
