@@ -150,6 +150,11 @@ python3 -m venv ~/class-venv
 . ~/class-venv/bin/activate
 ```
 
+**Update Python Packages**
+```bash
+pip install -U setuptools setuptools_scm wheel pip
+```
+
 **Install F´ Tools**
 ```bash
 pip install -r ~/fprime-system-reference/fprime/requirements.txt
