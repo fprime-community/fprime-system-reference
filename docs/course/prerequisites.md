@@ -70,9 +70,13 @@ wsl hostname -I
 Next, we will add a firewall rule and forward it to the WSL instance. This is done with the following commands in
 *an administrator PowerShell*. Remember, to chane `127.0.0.1` to the address you noted above.
 
+> Warning: these commands work with the Windows firewall. Security and anti-virus tools can run extra firewalls. Users
+> must allow the port `50000` or disable these extra firewalls.
+
 **PowerShell: Add and Forward External Firewall Rule**
 ```bash
 New-NetFirewallRule -DisplayName "fprime" -Direction inbound -Profile Any -Action Allow -LocalPort 50000 -Protocol TCP
+
 netsh interface portproxy add v4tov4 listenport=50000 listenaddress=0.0.0.0 connectport=50000 connectaddress=127.0.0.1
 ```
 > Remember to change `127.0.0.1` to your recorded ip address as discovered with `wsl hostname -I`
