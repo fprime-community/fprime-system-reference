@@ -49,6 +49,8 @@ commands should be run these Ubuntu 20.04 terminals.
 Once WSL is running, you can install the base F´ required packages from the Ubuntu shell using:
 
 ```bash
+sudo apt update
+
 sudo apt install build-essential git g++ gdb cmake python3 python3-venv python3-pip 
 ```
 
