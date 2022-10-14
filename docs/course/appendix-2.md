@@ -45,4 +45,5 @@ docker run --net host -itv ~/fprime-system-reference:/project nasafprime/fprime-
 ```
 
 > Anytime Macintosh users run cross-compilation commands, they **must** do so in a terminal inside the docker container.
-> `~/fprime-system-reference` should be replaced with `/project` in commands run in the container.
+> `~/fprime-system-reference` should be replaced with `/project` in commands run in the container or a user may run 
+> `ln -s /project ~/fprime-system-reference` each time the container is started.
