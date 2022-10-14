@@ -133,7 +133,7 @@ and initialized with the following commands.
 cd ~
 git clone https://github.com/fprime-community/fprime-system-reference
 cd fprime-system-reference
-git submodule update --init
+git submodule update --init --recursive
 ```
 
 > This class assumes we work within the home directory. Choosing differently means you **must** be prepared to adjust
