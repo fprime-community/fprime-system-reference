@@ -48,3 +48,11 @@ CMake Error at CMakeLists.txt:43 (add_fprime_subdirectory):
 Unknown CMake command "add_fprime_subdirectory".
 ```
 
+## macOS Python SSL Certificate Issue
+
+When installing Python on macOS, an SSL certificate issue may arise. This is caused when macOS certifificates are not 
+made available to Python. The fix is covered in our
+[installation guide](https://github.com/nasa/fprime/blob/devel/docs/INSTALL.md#ssl-error-with-python-36-on-macos) 
+as this is a common issue with Python on macOS.
+
+
