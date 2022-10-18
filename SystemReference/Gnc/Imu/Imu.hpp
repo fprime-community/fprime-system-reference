@@ -72,16 +72,6 @@ class Imu : public ImuComponentBase {
                      NATIVE_UINT_TYPE context       /*!<The call order*/
     );
 
-    //! Handler implementation for getAcceleration
-    //!
-    Gnc::ImuData getAcceleration_handler(const NATIVE_INT_TYPE portNum /*!< The port number*/
-    );
-
-    //! Handler implementation for getGyroscope
-    //!
-    Gnc::ImuData getGyroscope_handler(const NATIVE_INT_TYPE portNum /*!< The port number*/
-    );
-
     //! Implementation for PowerSwitch command handler
     //! Command to turn on the device
     void PowerSwitch_cmdHandler(const FwOpcodeType opCode, /*!< The opcode*/
@@ -148,9 +138,6 @@ class Imu : public ImuComponentBase {
     // ----------------------------------------------------------------------
     // Member Variables
     // ----------------------------------------------------------------------
-
-    Gnc::ImuData m_gyro; //!< Local copy of gyroscope data
-    Gnc::ImuData m_accel; //!< Local copy of accelerometer data
     I2cDevAddr::T m_i2cDevAddress; //!< Stored device address
     PowerState::t m_power; //!< Power state of device
 };

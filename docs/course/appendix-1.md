@@ -192,15 +192,9 @@ void Imu ::updateAccel() {
     // Check a successful read of 6 bytes before processing data
     if ((status == Drv::I2cStatus::I2C_OK) && (buffer.getSize() == 6) && (buffer.getData() != nullptr)) {
         Gnc::Vector vector = deserializeVector(buffer, accelScaleFactor);
-
-        m_accel.setvector(vector);
-        m_accel.settime(this->getTime());
-        m_accel.setstatus(Svc::MeasurementStatus::OK);
-
-        this->tlmWrite_accelerometer(m_accel.getvector(), m_accel.gettime());
+        this->tlmWrite_accelerometer(vector);
     } else {
         this->log_WARNING_HI_TelemetryError(status);
-        m_accel.setstatus(Svc::MeasurementStatus::FAILURE);
     }
 }
 ```

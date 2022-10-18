@@ -36,18 +36,6 @@ void Imu ::Run_handler(const NATIVE_INT_TYPE portNum, NATIVE_UINT_TYPE context) 
     }
 }
 
-Gnc::ImuData Imu ::getAcceleration_handler(const NATIVE_INT_TYPE portNum) {
-    ImuData accelData = m_accel;
-    m_accel.setstatus(Svc::MeasurementStatus::STALE);
-    return accelData;
-}
-
-Gnc::ImuData Imu ::getGyroscope_handler(const NATIVE_INT_TYPE portNum) {
-    ImuData gyroData = m_gyro;
-    m_gyro.setstatus(Svc::MeasurementStatus::STALE);
-    return gyroData;
-}
-
 void Imu ::PowerSwitch_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq, PowerState powerState) {
     power(powerState);
     this->log_ACTIVITY_HI_PowerStatus(powerState);
@@ -148,15 +136,9 @@ void Imu ::updateAccel() {
     // Check a successful read of 6 bytes before processing data
     if ((status == Drv::I2cStatus::I2C_OK) && (buffer.getSize() == 6) && (buffer.getData() != nullptr)) {
         Gnc::Vector vector = deserializeVector(buffer, accelScaleFactor);
-
-        m_accel.setvector(vector);
-        m_accel.settime(this->getTime());
-        m_accel.setstatus(Svc::MeasurementStatus::OK);
-
-        this->tlmWrite_accelerometer(m_accel.getvector(), m_accel.gettime());
+        this->tlmWrite_accelerometer(vector);
     } else {
         this->log_WARNING_HI_TelemetryError(status);
-        m_accel.setstatus(Svc::MeasurementStatus::FAILURE);
     }
 }
 
@@ -170,15 +152,9 @@ void Imu ::updateGyro() {
     // Check a successful read of 6 bytes before processing data
     if ((status == Drv::I2cStatus::I2C_OK) && (buffer.getSize() == 6) && (buffer.getData() != nullptr)) {
         Gnc::Vector vector = deserializeVector(buffer, gyroScaleFactor);
-
-        m_gyro.setvector(vector);
-        m_gyro.settime(this->getTime());
-        m_gyro.setstatus(Svc::MeasurementStatus::OK);
-
-        this->tlmWrite_gyroscope(m_gyro.getvector(), m_gyro.gettime());
+        this->tlmWrite_gyroscope(vector);
     } else {
         this->log_WARNING_HI_TelemetryError(status);
-        m_gyro.setstatus(Svc::MeasurementStatus::FAILURE);
     }
 }
 }  // end namespace Gnc

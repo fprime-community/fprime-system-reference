@@ -2,6 +2,9 @@ module Gnc {
     @ The power state enumeration
     enum PowerState {OFF, ON}
 
+    @ 3-tuple type used for telemetry
+    array Vector = [3] F32
+
     @ Component for receiving IMU data via poll method
     passive component Imu {
         # ----------------------------------------------------------------------
@@ -10,12 +13,6 @@ module Gnc {
 
         @ Port to send telemetry to ground
         guarded input port Run: Svc.Sched
-
-        @ Port that attains current acceleration value
-        guarded input port getAcceleration: ImuDataPort
-
-        @ Port that attains current rotation value
-        guarded input port getGyroscope: ImuDataPort
 
         @ Port that reads data from device
         output port read: Drv.I2c

@@ -50,11 +50,12 @@ None.
 ## 3. Requirements
 | Requirement ID | Description                                                                                      | Verification Method |
 |----------------|--------------------------------------------------------------------------------------------------|---------------------|
-| GNC-IMU-001    | The `Gnc::Imu` component shall produce telemetry of accelerometer data when its run port is invoked | Unit Test           |
-| GNC-IMU-002    | The `Gnc::Imu` component shall produce telemetry of gyroscope data when its run port is invoked    | Unit Test           |
-| GNC-IMU-003    | The `Gnc::Imu` component shall be able to communicate with the MPU6050 over I2C                    | Inspection          |
-| GNC-IMU-004    | The `Gnc::Imu` component shall produce the latest gyroscope and accelerometer data via a port call | Unit Test           |
-| GNC-IMU-005    | The `Gnc::Imu` component shall support power on and power off commands                             | Unit Test           |
+| GNC-IMU-001    | The `Gnc::Imu` component shall produce telemetry of accelerometer data when its run port is invoked | Unit Test        |
+| GNC-IMU-002    | The `Gnc::Imu` component shall produce telemetry of gyroscope data when its run port is invoked    | Unit Test         |
+| GNC-IMU-003    | The `Gnc::Imu` component shall be able to communicate with the MPU6050 over I2C                    | Inspection        |
+| GNC-IMU-004    | The `Gnc::Imu` component shall support power on and power off commands                             | Unit Test         |
+| GNC-IMU-005    | The `Gnc::Imu` component shall emit warning events in case of I2C error                            | Unit Test         |
+| GNC-IMU-006    | The `Gnc::Imu` component shall emit events to indicate power on and power off conditions            | Unit Test         |
 
 ## 4. Design 
 
@@ -69,8 +70,6 @@ The diagram below shows the `Imu` component.
 | Kind | Name | Port Type | Usage |
 |------|------|-----------|-------|
 | `guarded input` | `Run` | `Svc.Sched` | Port to send telemetry to ground |
-| `guarded input` | `getAcceleration` | `ImuDataPort` | Port that attains current acceleration value |
-| `guarded input` | `getGyroscope` | `ImuDataPort` | Port that attains current rotation value |
 | `output` | `read` | `Drv.I2c` | Port that reads data from device |
 | `output` | `write` | `Drv.I2c` | Port that writes data to device |
 | `command recv` | `cmdIn` | `Fw.Cmd` | Command receive |
@@ -81,14 +80,11 @@ The diagram below shows the `Imu` component.
 | `time get` | `Time` | `Fw.Time` | Port for getting the time |
 | `telemetry` | `Tlm` | `Fw.Tlm` | Telemetry port |
 
-### 4.3. Externally Defined Types
+### 4.3. Defined Types
 
-`Imu` uses the following externally defined types:
+`Imu` uses the following defined types:
 
-1. [`Vector`](../../ImuPort/ImuPort.fpp) is an array of three `F32` values.
-
-1. [`ImuData`](../../ImuPort/ImuPort.fpp) is an FPP struct that represents
-IMU data.
+1. [`Vector`](../../Imu/Imu.fpp) is an array of three `F32` values.
 
 1. [`Drv::I2cStatus`](https://github.com/nasa/fprime/blob/master/Drv/I2cDriverPorts/I2cDriverPorts.fpp)
 is an FPP enum that represents the status of an I2C transaction.
@@ -103,10 +99,8 @@ The I2C bus uses the device address to identify the device.
 
 ### 4.5. State
 `Imu` maintains the following state:
-1. `m_gyro`: A value of type `Gnc::ImuData` that stores the latest gyroscope data
-2. `m_accel`: A value of type `Gnc::ImuData` that stores the latest acceleration data
-3. `m_i2cDevAddress`: A value of type `U8` that stores the address of the MPU6050 sensor
-4. `m_setup`: A value of type `bool` that indicates whether the sensor has been activated
+1. `m_i2cDevAddress`: A value of type `U8` that stores the address of the MPU6050 sensor
+2. `m_setup`: A value of type `bool` that indicates whether the sensor has been activated
 
 ### 4.6. Runtime Configuration
 At startup, the F Prime software must call the `setup` method of the
@@ -119,17 +113,7 @@ The value should correspond to the configuration of the hardware.
 
 ### 4.7. Port Handlers
 
-#### 4.7.1. getAcceleration
-The `getAcceleration` port handler does the following: 
-1. Sets the measurement status to `STALE`
-2. Returns the acceleration data
-
-#### 4.7.2. getGyroscope
-The `getGyroscope` port handler does the following:
-1. Sets the measurement status to `STALE`
-2. Returns the gyroscope data
-
-#### 4.7.3. Run
+#### 4.7.1. Run
 Ensures that the sensor has been properly setup and calls the `updateAccel` and `updateGyro` helper functions. 
 
 ### 4.8. Helper Functions
