@@ -55,7 +55,7 @@ None.
 | GNC-IMU-003    | The `Gnc::Imu` component shall be able to communicate with the MPU6050 over I2C                    | Inspection        |
 | GNC-IMU-004    | The `Gnc::Imu` component shall support power on and power off commands                             | Unit Test         |
 | GNC-IMU-005    | The `Gnc::Imu` component shall emit warning events in case of I2C error                            | Unit Test         |
-| GNC-IMU-006    | The `Gnc::Imu` component shall emit events to indicat power on and power off conditions            | Unit Test         |
+| GNC-IMU-006    | The `Gnc::Imu` component shall emit events to indicate power on and power off conditions            | Unit Test         |
 
 ## 4. Design 
 
