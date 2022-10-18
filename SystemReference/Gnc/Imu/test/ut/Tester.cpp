@@ -39,42 +39,35 @@ Tester ::~Tester() {}
 // ----------------------------------------------------------------------
 
 void Tester ::testGetAccelTlm() {
-    Gnc::ImuData accelData = this->invoke_to_getAcceleration(0);
-    ASSERT_EQ(accelData.getstatus(), Svc::MeasurementStatus::STALE);
     sendCmd_PowerSwitch(0, 0, PowerState::ON);
     for (U32 i = 0; i < 5; i++) {
         this->invoke_to_Run(0, 0);
-        accelData = this->invoke_to_getAcceleration(0);
-        ASSERT_EQ(accelData.getstatus(), Svc::MeasurementStatus::OK);
-        ASSERT_EQ(component.m_accel.getstatus(), Svc::MeasurementStatus::STALE);
+        Gnc::Vector expectedVector;
         for (U32 j = 0; j < 3; ++j) {
             I16 intCoord = 0;
             const auto status = this->accelSerBuf.deserialize(intCoord);
             EXPECT_EQ(status, Fw::FW_SERIALIZE_OK);
-            const F32 f32Coord =
-                static_cast<F32>(intCoord) / Imu::accelScaleFactor;
-            EXPECT_EQ(accelData.getvector()[j], f32Coord);
+            const F32 f32Coord = static_cast<F32>(intCoord) / Imu::accelScaleFactor;
+            expectedVector[j] = f32Coord;
         }
+        ASSERT_TLM_accelerometer(i, expectedVector);
     }
 }
 
 void Tester ::testGetGyroTlm() {
-    Gnc::ImuData gyroData = this->invoke_to_getGyroscope(0);
-    ASSERT_EQ(gyroData.getstatus(), Svc::MeasurementStatus::STALE);
     sendCmd_PowerSwitch(0, 0, PowerState::ON);
     for (U32 i = 0; i < 5; i++) {
         this->invoke_to_Run(0, 0);
-        gyroData = this->invoke_to_getGyroscope(0);
-        ASSERT_EQ(gyroData.getstatus(), Svc::MeasurementStatus::OK);
-        ASSERT_EQ(component.m_gyro.getstatus(), Svc::MeasurementStatus::STALE);
+        Gnc::Vector expectedVector;
         for (U32 j = 0; j < 3; ++j) {
             I16 intCoord = 0;
             const auto status = this->gyroSerBuf.deserialize(intCoord);
             EXPECT_EQ(status, Fw::FW_SERIALIZE_OK);
             const F32 f32Coord =
                 static_cast<F32>(intCoord) / Imu::gyroScaleFactor;
-            EXPECT_EQ(gyroData.getvector()[j], f32Coord);
+            expectedVector[j] = f32Coord;
         }
+        ASSERT_TLM_gyroscope(i, expectedVector);
     }
 }
 
@@ -84,9 +77,7 @@ void Tester::testTlmError() {
     this->m_writeStatus = Drv::I2cStatus::I2C_OTHER_ERR;
     this->invoke_to_Run(0, 0);
     ASSERT_EVENTS_TelemetryError_SIZE(2);
-    ASSERT_EQ(invoke_to_getAcceleration(0).getstatus(), Svc::MeasurementStatus::FAILURE);
     ASSERT_EVENTS_TelemetryError(0, m_readStatus);
-    ASSERT_EQ(invoke_to_getGyroscope(0).getstatus(), Svc::MeasurementStatus::FAILURE);
     ASSERT_EVENTS_TelemetryError(0, m_readStatus);
 }
 
@@ -176,12 +167,6 @@ void Tester ::connectPorts() {
 
     // cmdIn
     this->connect_to_cmdIn(0, this->component.get_cmdIn_InputPort(0));
-
-    // getAcceleration
-    this->connect_to_getAcceleration(0, this->component.get_getAcceleration_InputPort(0));
-
-    // getGyroscope
-    this->connect_to_getGyroscope(0, this->component.get_getGyroscope_InputPort(0));
 
     // Log
     this->component.set_Log_OutputPort(0, this->get_from_Log(0));
