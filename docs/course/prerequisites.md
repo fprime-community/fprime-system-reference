@@ -43,7 +43,7 @@ wsl --install
 To start Ubuntu under WSL, search for Ubuntu in the start menu and select the "Ubuntu 20.04 on Windows" APP. All class
 commands should be run these Ubuntu 20.04 terminals.
 
-**Note:** full instructions and troubleshooting helpe is available in the 
+**Note:** full instructions and troubleshooting help are available in the 
 [Microsoft documentation](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 Once WSL is running, you can install the base F´ required packages from the Ubuntu shell using:
@@ -70,7 +70,7 @@ wsl hostname -I
 > Record the output of this command for the next step. For this guide, we will use the value `127.0.0.1`.
 
 Next, we will add a firewall rule and forward it to the WSL instance. This is done with the following commands in
-*an administrator PowerShell*. Remember, to chane `127.0.0.1` to the address you noted above.
+*an administrator PowerShell*. Remember to change `127.0.0.1` to the address you noted above.
 
 > Warning: these commands work with the Windows firewall. Security and anti-virus tools can run extra firewalls. Users
 > must allow the port `50000` or disable these extra firewalls.
@@ -101,19 +101,19 @@ sudo apt install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-li
 
 ### Mac OS X
 
-MacOS like Linux is a unix system and thus may be used directly for most of this class. However, Mac users must install
+MacOS like Linux is a Unix system and thus may be used directly for most of this class. However, Mac users must install
 the following utilities *and ensure they are available on the command line path*.
 
 1. [Python 3](https://www.python.org/downloads/release/python-3913/)
 2. [CMake](https://cmake.org/download/)
-3. GCC/CLang typically installed with xcode-select
+3. GCC/Clang typically installed with xcode-select
 
-**Installing GCC/CLang on macOS**
+**Installing GCC/Clang on macOS**
 ```bash
 xcode-select --install
 ```
 
-Installing Python and running the above command to install gcc/CLang should ensure that those tools are on the path.
+Installing Python and running the above command to install gcc/clang should ensure that those tools are on the path.
 CMake requires one additional step to ensure it is on the path:
 
 ```bash

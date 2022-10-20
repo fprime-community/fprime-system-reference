@@ -13,7 +13,7 @@ This exercise consists of several learning goals:
 
 ## Setup
 
-Given the varied state of the project that various students have it may be beneficial to reset ot the instructor model.
+Given the varied state of the project that various students have it may be beneficial to reset to the instructor model.
 This will allow us to cover unit testing without accumulating issues from the implementation section. This can be
 accomplished with the following commands. 
 
@@ -43,7 +43,7 @@ git checkout origin/main
 
 ### Preparing for Unit Testing
 
-Like our modeling and implementation steps, we will need to move away the example unit tests in order to we may write
+Like our modeling and implementation steps, we will need to move away the example unit tests in order to write
 our own. This is done with the following commands:
 
 ```bash
@@ -52,13 +52,13 @@ mv test test.bak
 mkdir -p test/ut
 ```
 
-We also need to pull the unittest `.cpp` source files out of our CMakeList.txt. That file should now contain:
+We also need to pull the unittest `.cpp` source files out of our CMakeLists.txt. That file should now contain:
 
 ```cmake
 ####
 # F prime CMakeLists.txt:
 #
-# SOURCE_FILES: combined list of source and autocoding diles
+# SOURCE_FILES: combined list of source and autocoding files
 # MOD_DEPS: (optional) module dependencies
 #
 # Note: using PROJECT_NAME as EXECUTABLE_NAME
