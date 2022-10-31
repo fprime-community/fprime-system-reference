@@ -64,7 +64,7 @@ the sensor. From these considerations the example requirements derived are shown
 The second step to integrating a GNC sensor is designing the component model. This section will go through each design stage
 and each decision behind the design. Projects should implement design decisions based on their component requirements. 
 
-The final FPP model for the MPU6050 IMU component can be found [here](https://github.com/fprime-community/fprime-system-reference/blob/devel/SystemReference/Gnc/Imu/Imu.fpp).
+The final FPP model for the MPU6050 IMU component can be found [here](https://github.com/fprime-community/fprime-system-reference/blob/main/SystemReference/Gnc/Imu/Imu.fpp).
 
 ### 2.1 Base Component Design 
 
@@ -131,7 +131,7 @@ Projects will need to implement the port handlers and implementation for their G
 Specific implementations will diverge based on hardware and design choices.
 
 In order to help in this process, the example component implementation is available for 
-[reference](https://github.com/fprime-community/fprime-system-reference/blob/devel/SystemReference/Gnc/Imu/Imu.cpp).
+[reference](https://github.com/fprime-community/fprime-system-reference/blob/main/SystemReference/Gnc/Imu/Imu.cpp).
 
 
 ## Topology Integration
