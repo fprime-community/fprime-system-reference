@@ -64,7 +64,7 @@ void XBee ::drvDataIn_handler(const NATIVE_INT_TYPE portNum,
 }
 
 Drv::SendStatus XBee ::comDataIn_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& sendBuffer) {
-    Svc::ComSendStatus radioReady = Svc::ComSendStatus::FAIL;
+    Fw::Success radioReady = Fw::Success::FAILURE;
     m_lock.lock();
     // Only attempt to send data when in transparent mode. Sending data in command mode is an error
     if (PASSTHROUGH == m_state) {
@@ -73,7 +73,7 @@ Drv::SendStatus XBee ::comDataIn_handler(const NATIVE_INT_TYPE portNum, Fw::Buff
             driverStatus = drvDataOut_out(0, const_cast<Fw::Buffer&>(sendBuffer));
         }
         radioReady =
-            (driverStatus.e == Drv::SendStatus::SEND_OK) ? Svc::ComSendStatus::READY : Svc::ComSendStatus::FAIL;
+            (driverStatus.e == Drv::SendStatus::SEND_OK) ? Fw::Success::SUCCESS : Fw::Success::FAILURE;
     } else {
         m_reinit = true;
     }
@@ -205,7 +205,7 @@ void XBee ::state_machine() {
 
 void XBee ::report_ready() {
     if (m_reinit) {
-        Svc::ComSendStatus radioReady = Svc::ComSendStatus::READY;
+        Fw::Success radioReady = Fw::Success::SUCCESS;
         if (isConnected_comStatus_OutputPort(0)) {
             comStatus_out(0, radioReady);
         }
