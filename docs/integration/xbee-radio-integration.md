@@ -2,18 +2,15 @@
 
 ## Table of Contents
 
-* [1. Ensure XBee devices are working together](#1-ensure-xbee-devices-are-working-together)
-* [2. Change the topology of the Com Components to iclude the Linux UART Driver](#2-change-the-topology-of-the-com-components-to-include-the-linux-uart-driver)
-* [3. Change the instances of the Com components to use XBee Radio Com](#3-change-the-instances-of-the-com-components-to-use-xbee-radio-com)
+* [1. Initializing XBee Radios](#1-ensure-xbee-devices-are-working-together)
+* [2. Topology Changes for UART Driver](#2-change-the-topology-of-the-com-components-to-include-the-linux-uart-driver)
+* [3. Instance Changes for Com Component](#3-change-the-instances-of-the-com-components-to-use-xbee-radio-com)
 * [4. Rerun build](#4-rerun-build)
 * [5. Running F Prime with UART Devices](#5-running-f-prime-with-uart-devices)
     * [F Prime GDS](#f-prime-gds)
     * [F Prime Binary](#f-prime-binary)
 
-
-
-
-## 1. Ensure XBee devices are working together
+## 1. Initializing XBee Radios
 
 We recommend you to test your XBee radios before implementing them into the F Prime ecosystem
 
@@ -24,7 +21,7 @@ We recommend you to test your XBee radios before implementing them into the F Pr
 
 [Link](https://www.digi.com/resources/documentation/digidocs/PDFs/90001458-13.pdf) to Digi documentation for XCTU.
 
-## 2. Change the topology of the Com components to include the Linux UART Driver
+## 2. Topology Changes for UART Driver
 
 Find the following code snippets and uncomment them in the `SystemReference/Top/topology.fpp` file. 
 
@@ -41,7 +38,7 @@ Line: 145-148 * Subject to change *
 ```
 
 
-## 3. Change the instances of the Com components to use XBee Radio Com
+## 3. Instance Changes for Com Component
 
 Find the following code snippets and uncomment them in `SystemReference/Top/instances.fpp` file.
 
@@ -133,7 +130,7 @@ Line: 297-332
 
 ## 4. Rerun build
 
-After making these changes, you must rebuild system-reference
+After making these changes, you must rebuild the system reference
 
 ```bash
 #In: SystemReference
