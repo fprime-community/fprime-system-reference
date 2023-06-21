@@ -180,15 +180,15 @@ module SystemReference {
     stack size Default.stackSize \
     priority 96 \
   {
-
     phase Fpp.ToCpp.Phases.instances """
-    Svc::PrmDb prmDb(FW_OPTIONAL_NAME("prmDb"), "PrmDb.dat");
+    Svc::PrmDb prmDb(FW_OPTIONAL_NAME("prmDb"));
     """
-
+    phase Fpp.ToCpp.Phases.configComponents """
+    prmDb.configure("PrmDb.dat");
+    """
     phase Fpp.ToCpp.Phases.readParameters """
     prmDb.readParamFile();
     """
-
   }
 
   instance camera: Payload.Camera base id 0x0E00 \
