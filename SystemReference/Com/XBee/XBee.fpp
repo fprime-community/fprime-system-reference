@@ -10,7 +10,7 @@ module Com {
         sync input port comDataIn: Drv.ByteStreamSend
 
         @ Status of the last radio transmission
-        output port comStatus: Svc.ComStatus
+        output port comStatus: Fw.SuccessCondition
 
         @ Com data passing back out
         output port comDataOut: Drv.ByteStreamRecv

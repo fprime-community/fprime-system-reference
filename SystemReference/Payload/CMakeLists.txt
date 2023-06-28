@@ -1,8 +1,8 @@
 if(DEFINED SYSTEM_REFERENCE_OPENCV_PATH AND NOT DEFINED FPRIME_PRESCAN)
-    set(OpenCV_DIR "${SYSTEM_REFERENCE_OPENCV_PATH}/lib/cmake/opencv4/")
+    set(OpenCV_DIR "${SYSTEM_REFERENCE_OPENCV_PATH}")
     find_package(OpenCV REQUIRED)
     set(OpenCV_STATIC ON)
-    add_compile_definitions(-DUSES_OPENCV)
+    add_compile_definitions(USES_OPENCV)
 endif()
 
 
