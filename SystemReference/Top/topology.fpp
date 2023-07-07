@@ -22,6 +22,7 @@ module SystemReference {
     # ----------------------------------------------------------------------
 
     instance $health
+    instance actuator
     instance blockDrv
     instance chanTlm
     instance cmdDisp
@@ -150,6 +151,10 @@ module SystemReference {
     connections I2c {
         imu.read -> imuI2cBus.read
         imu.write -> imuI2cBus.write
+    }
+
+    connections Actuator{
+        imu.imuAccelOut -> actuator.imuAccelIn
     }
 
     connections Camera {

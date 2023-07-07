@@ -5,6 +5,9 @@ module Gnc {
     @ 3-tuple type used for telemetry
     array Vector = [3] F32
 
+    @ Port for sending data to actuator 
+    port ImuData( imuVector: Vector )
+    
     @ Component for receiving IMU data via poll method
     passive component Imu {
         # ----------------------------------------------------------------------
@@ -19,6 +22,9 @@ module Gnc {
 
         @ Port that writes data to device
         output port write: Drv.I2c
+
+        @ Port that sends data to the actuator 
+        output port imuAccelOut: ImuData
 
         # ----------------------------------------------------------------------
         # Special ports

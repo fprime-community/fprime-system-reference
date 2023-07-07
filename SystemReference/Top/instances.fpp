@@ -260,6 +260,13 @@ module SystemReference {
 
     }
 
+    
+    instance actuator: Gnc.Actuator base id 0x1300 \
+      queue size Default.queueSize\
+      stack size Default.stackSize \
+      priority 100
+    
+
 #  instance radio: Com.XBee base id 0x1200 \
 #    queue size Default.queueSize \
 #    stack size Default.stackSize \

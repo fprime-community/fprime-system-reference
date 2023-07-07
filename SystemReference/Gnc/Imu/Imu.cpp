@@ -137,6 +137,9 @@ void Imu ::updateAccel() {
     if ((status == Drv::I2cStatus::I2C_OK) && (buffer.getSize() == 6) && (buffer.getData() != nullptr)) {
         Gnc::Vector vector = deserializeVector(buffer, accelScaleFactor);
         this->tlmWrite_accelerometer(vector);
+        if( this->isConnected_imuAccelOut_OutputPort(0) ){
+            this->imuAccelOut_out( 0, vector );
+        }
     } else {
         this->log_WARNING_HI_TelemetryError(status);
     }
