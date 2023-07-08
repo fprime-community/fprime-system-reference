@@ -67,7 +67,7 @@ namespace Gnc {
           Fw::On on_off 
       );
 
-
+      F32 accelData[3];
     };
 
 } // end namespace Gnc

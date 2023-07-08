@@ -473,7 +473,7 @@ module SystemReference {
 
   instance imuI2cBus: Drv.LinuxI2cDriver  base id 0x4D00 {
     phase Fpp.ToCpp.Phases.configComponents """
-    if (!imuI2cBus.open("/dev/i2c-0")) {
+    if (!imuI2cBus.open("/dev/i2c-1")) {
          Fw::Logger::logMsg("[ERROR] Failed to open I2C device\\n");
     }
     """

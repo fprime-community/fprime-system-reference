@@ -7,6 +7,8 @@
 
 #include <SystemReference/Gnc/Actuator/Actuator.hpp>
 #include <FpConfig.hpp>
+#include <Fw/Logger/Logger.hpp> // for debugging
+#include <stdio.h> // for debugging 
 
 namespace Gnc {
 
@@ -31,14 +33,20 @@ namespace Gnc {
   // ----------------------------------------------------------------------
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
-
+  F32 testBob = 13.31; 
   void Actuator ::
     imuAccelIn_handler(
         const NATIVE_INT_TYPE portNum,
         const Gnc::Vector &imuVector
     )
   {
-    // TODO
+    this->accelData[0] = imuVector[0];
+    this->accelData[1] = imuVector[1]; //the one we want
+    this->accelData[2] = imuVector[2];
+    //@TODO: remove prints and print headers
+    printf( "accelData[1] = %f\n", this->accelData[1] ); 
+    //Fw::Logger::logMsg( "testBob(logger) = %f\n", testBob );
+    //printf( "testBob(printf) = %f\n", testBob );  
   }
 
   void Actuator ::
