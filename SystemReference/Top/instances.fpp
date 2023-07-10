@@ -479,4 +479,12 @@ module SystemReference {
     """
   }
 
+
+  instance gpioDriver: Drv.LinuxGpioDriver base id 4E00 {
+    phase Fpp.ToCpp.Phases.configComponents """
+        gpioDriver.open(26, Drv::LinuxGpioDriver::GpioDirection::GPIO_OUT); 
+    """
+  }
+
+  
 }

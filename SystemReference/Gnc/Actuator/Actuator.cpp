@@ -33,7 +33,6 @@ namespace Gnc {
   // ----------------------------------------------------------------------
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
-  F32 testBob = 13.31; 
   void Actuator ::
     imuAccelIn_handler(
         const NATIVE_INT_TYPE portNum,
@@ -42,11 +41,7 @@ namespace Gnc {
   {
     this->accelData[0] = imuVector[0];
     this->accelData[1] = imuVector[1]; //the one we want
-    this->accelData[2] = imuVector[2];
-    //@TODO: remove prints and print headers
-    printf( "accelData[1] = %f\n", this->accelData[1] ); 
-    //Fw::Logger::logMsg( "testBob(logger) = %f\n", testBob );
-    //printf( "testBob(printf) = %f\n", testBob );  
+    this->accelData[2] = imuVector[2]; 
   }
 
   void Actuator ::
@@ -55,7 +50,15 @@ namespace Gnc {
         NATIVE_UINT_TYPE context
     )
   {
-    // TODO
+    if( actuatorIsOn == Fw::On::ON ){ // If Component is activated 
+      if( accelData[1] > 1.0 ){ // Turn on LED when IMU is pointed nearly straight up
+        this->gpioSet_out( 0, Fw::Logic::HIGH );
+        printf( "Winner winner chicker dinner!\n" ); 
+      }
+      else{
+        this->gpioSet_out( 0, Fw::Logic::LOW );
+      }
+    }
   }
 
   // ----------------------------------------------------------------------
@@ -69,6 +72,7 @@ namespace Gnc {
         Fw::On on_off
     )
   {
+    this->actuatorIsOn = on_off;
     // TODO
     this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
   }

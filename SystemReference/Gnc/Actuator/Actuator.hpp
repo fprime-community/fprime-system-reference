@@ -68,6 +68,8 @@ namespace Gnc {
       );
 
       F32 accelData[3];
+
+      Fw::On actuatorIsOn; 
     };
 
 } // end namespace Gnc
