@@ -8,6 +8,7 @@
 #define Actuator_HPP
 
 #include "SystemReference/Gnc/Actuator/ActuatorComponentAc.hpp"
+#include <Os/File.hpp> // For driver testing 
 
 namespace Gnc {
 
@@ -67,9 +68,18 @@ namespace Gnc {
           Fw::On on_off 
       );
 
+      Os::File::Status setExport();
+      Os::File::Status setUnexport();
+    
+      U8 buf[8]; // for writing to pwm files 
+
+      NATIVE_INT_TYPE bufSize; 
+
       F32 accelData[3];
 
       Fw::On actuatorIsOn; 
+
+      Os::File fd; 
     };
 
 } // end namespace Gnc

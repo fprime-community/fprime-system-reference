@@ -486,5 +486,6 @@ module SystemReference {
     """
   }
 
+  #pwm driver instance 
   
 }

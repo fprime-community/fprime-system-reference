@@ -5,3 +5,4 @@ venv
 **/logs
 **/build-artifacts
 **/build-fprime-automatic*
+*.sh

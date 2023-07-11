@@ -41,6 +41,7 @@ module SystemReference {
     instance comBufferManager
     instance linuxTime
     instance prmDb
+    #pwm driver
     instance rateGroup1Comp
     instance rateGroup2Comp
     instance rateGroup3Comp
@@ -158,6 +159,7 @@ module SystemReference {
     connections Actuator{
         imu.imuAccelOut -> actuator.imuAccelIn
         actuator.gpioSet -> gpioDriver.gpioWrite
+        #pwm driver connection 
     }
 
     connections Camera {
