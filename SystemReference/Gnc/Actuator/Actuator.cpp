@@ -82,35 +82,68 @@ namespace Gnc {
   }
 // Driver testing ------------------
 
-Os::File::Status Actuator::setExport(){
-    Os::File::Status status = fd.open( exportPath, Os::File::Mode::OPEN_WRITE );
+Os::File::Status Actuator::setOneByte( const char* filePath, U8 writeValue ){
+    Os::File::Status status = fd.open( filePath, Os::File::Mode::OPEN_WRITE );
     if ( status != Os::File::Status::OP_OK ){
+      fd.close();
       return status; 
     }
-    this->buf[0] = '0'; 
-    bufSize = 1; 
+    this->buf[0] = writeValue;  
+    this->bufSize = 1; 
     status = fd.write( buf, bufSize ); 
+    //printf( "write status %d\n", status);
     if ( status != Os::File::Status::OP_OK ){
+      fd.close();
       return status; 
     }
     fd.close(); 
     return status; 
 }
 
-Os::File::Status Actuator::setUnexport(){
-    Os::File::Status status = fd.open( unexportPath, Os::File::Mode::OPEN_WRITE );
-    if ( status != Os::File::Status::OP_OK ){
+  Os::File::Status Actuator::setExport(){
+    return Actuator::setOneByte( exportPath, '0' );
+  }
+
+  Os::File::Status Actuator::setUnexport(){ //correct 
+    return setOneByte( unexportPath, '0' );
+  }
+
+  Os::File::Status Actuator::enable(){
+    return setOneByte( enablePath, '1' );
+  }
+
+  Os::File::Status Actuator::disable(){
+    return setOneByte( enablePath, '0' );
+  }
+
+  Os::File::Status Actuator::setBytes( const char* filePath, const char * inBuf, NATIVE_INT_TYPE inBufSize ){
+      Os::File::Status status = fd.open( filePath, Os::File::Mode::OPEN_WRITE );
+      if ( status != Os::File::Status::OP_OK ){
+        fd.close();
+        return status; 
+      }
+      this->bufSize = inBufSize; 
+      memcpy( this->buf, inBuf, bufSize ); 
+      status = fd.write( buf, bufSize ); 
+      printf( "write status %d\n", status);
+      if ( status != Os::File::Status::OP_OK ){
+        fd.close();
+        return status; 
+      }
+      fd.close(); 
       return status; 
-    }
-    this->buf[0] = '0'; 
-    bufSize = 1; 
-    status = fd.write( buf, bufSize ); 
-    if ( status != Os::File::Status::OP_OK ){
-      return status; 
-    }
-    fd.close(); 
-    return status; 
-}
+  }
+
+  Os::File::Status Actuator::setPeriod( const char * newPeriod, NATIVE_INT_TYPE inBufSize ){
+    // For SG90 Servos, the optimum period is 5e+6
+    // Period is measured in nanoseconds
+    return setBytes( periodPath, newPeriod, inBufSize ); 
+  }
+
+  Os::File::Status Actuator::setDutyCycle( const char * newDutyCycle, NATIVE_INT_TYPE inBufSize ){
+    // For SG90 Servos, duty cycle should range between 1e6 and 2e6
+    return setBytes( dutyPath, newDutyCycle, inBufSize ); 
+  }
 
 
 // End Driver testing --------------
@@ -136,14 +169,17 @@ Os::File::Status Actuator::setUnexport(){
     )
   {
     if( actuatorIsOn == Fw::On::ON ){ // If Component is activated 
-      Os::File::Status status = this->setExport();
-      printf( "export status %d\n", status ); 
-
-      status = this->setUnexport();
-      printf( "unexport status %d\n", status );
-
+      
       if( accelData[1] > 1.0 ){ // Turn on LED when IMU is pointed nearly straight up
         this->gpioSet_out( 0, Fw::Logic::HIGH );
+        // Driver testing ------------
+        Os::File::Status status = this->setDutyCycle( "1500000", 7);
+        printf( "set duty cycle statys status %d\n", status);
+        this->enable();
+        Os::Task::delay(400); 
+        status = this->disable();
+        printf( "disable status %d\n", status);
+        // End driver testing --------
       }
       else{
         this->gpioSet_out( 0, Fw::Logic::LOW );
@@ -162,14 +198,29 @@ Os::File::Status Actuator::setUnexport(){
         Fw::On on_off
     )
   {
+    this->actuatorIsOn = on_off;
+    this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
     // Driver testing ------------------
+    Os::File::Status status = this->setExport(); // This can only be ran successfully 
+                                                 // once before setUnexport is run
+                                                 // it is okay for this to fail! (it created pwm0, which only needs to be done once)
+
+    printf( "export status %d\n", status);
+    status = this->setPeriod( "5000000", 7 );
+    printf( "set period status %d\n", status);
+    if ( actuatorIsOn == Fw::On::ON ){
+      status = this->enable();
+      printf( "enable status %d\n", status);
+    }
+    else{ // Actuator is off
+      status = this->disable();
+      printf( "disable status %d\n", status);
+      //this->setUnexport(); // Removes pwm0 directory
+    }
     
 
 
     // End driver testing --------------
-
-    this->actuatorIsOn = on_off;
-    this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
   }
 
 } // end namespace Gnc
