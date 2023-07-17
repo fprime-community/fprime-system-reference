@@ -41,7 +41,7 @@ module SystemReference {
     instance comBufferManager
     instance linuxTime
     instance prmDb
-    #pwm driver
+    instance pwmDriver
     instance rateGroup1Comp
     instance rateGroup2Comp
     instance rateGroup3Comp
@@ -112,7 +112,7 @@ module SystemReference {
       rateGroup1Comp.RateGroupMemberOut[2] -> systemResources.run
       rateGroup1Comp.RateGroupMemberOut[3] -> imu.Run
 #      rateGroup1Comp.RateGroupMemberOut[4] -> radio.run
-      rateGroup1Comp.RateGroupMemberOut[5] -> actuator.run
+      rateGroup1Comp.RateGroupMemberOut[5] -> actuator.run #remove when driving by imu data
 
       # Rate group 2
       rateGroupDriverComp.CycleOut[Ports_RateGroups.rateGroup2] -> rateGroup2Comp.CycleIn
@@ -159,7 +159,8 @@ module SystemReference {
     connections Actuator{
         imu.imuAccelOut -> actuator.imuAccelIn
         actuator.gpioSet -> gpioDriver.gpioWrite
-        #pwm driver connection 
+        actuator.pwmPeriodandOnTime -> pwmDriver.periodAndCycle
+        actuator.pwmExportAndEnable -> pwmDriver.enableAndExport
     }
 
     connections Camera {

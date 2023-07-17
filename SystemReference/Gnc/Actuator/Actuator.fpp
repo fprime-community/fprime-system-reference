@@ -21,17 +21,20 @@ module Gnc {
         # event ExampleStateEvent(example_state: Fw.On) severity activity high id 0 format "State set to {}"
 
         @ Example port: receiving calls from the rate group
-        sync input port run: Svc.Sched
+        sync input port run: Svc.Sched  # TODO: ask tim if this should be driven by the reception of IMU data
 
         @ Servo Speed 
-        param SERVO_SPEED: U32
+        param SERVO_SPEED: U32 #@TODO CONTROLLER_GAIN
 
         @ Receive data from the IMU 
         guarded input port imuAccelIn: Gnc.ImuData
 
-        #TEMP
         @ Port to send commands to gpio driver
         output port gpioSet: Drv.GpioWrite
+        
+        # TODO: actuator should write to manager
+        output port pwmPeriodandOnTime: Drv.PeriodAndOnTime
+        output port pwmExportAndEnable: Drv.EnableAndExport
 
         ###############################################################################
         # Standard AC Ports: Required for Channels, Events, Commands, and Parameters  #
