@@ -6,6 +6,7 @@
 # UT_SOURCE_FILES: list of source files for unit tests
 #
 ####
+restrict_platforms(Linux)
 set(SOURCE_FILES
   "${CMAKE_CURRENT_LIST_DIR}/LinuxPwmDriver.fpp"
   "${CMAKE_CURRENT_LIST_DIR}/LinuxPwmDriver.cpp"

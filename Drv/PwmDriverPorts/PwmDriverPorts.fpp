@@ -1,15 +1,12 @@
 module Drv {
-    enum OneByteOps {   ENABLE,
-                        DISABLE,
-                        EXPORT,
-                        UNEXPORT  }
-
-    enum MultiByteOps{  PERIOD, 
-                        ON_TIME,  }
-
-    port EnableAndExport( operationType: OneByteOps )
+    
+    port EnableDisable( operationType: Fw.Enabled ) -> Fw.Success 
  
-    port PeriodAndOnTime( operationType: MultiByteOps,
-                         operationValue: U32 @< On time in nanoseconds 
-                        ) #-> Fw.Success 
+    port OnTime( 
+                    operationValue: U32 @< On time in nanoseconds 
+                ) -> Fw.Success 
+    
+    port Period( 
+                     operationValue: U32 @< Period in nanoseconds 
+                ) -> Fw.Success 
 }

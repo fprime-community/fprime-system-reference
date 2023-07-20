@@ -487,6 +487,10 @@ module SystemReference {
   }
 
   #pwm driver instance 
-  instance pwmDriver: Drv.LinuxPwmDriver base id 0x4F00 
+  instance pwmDriver: Drv.LinuxPwmDriver base id 0x4F00 {
+    phase Fpp.ToCpp.Phases.configComponents """
+        pwmDriver.open();
+    """
+  }
   
 }

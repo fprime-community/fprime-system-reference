@@ -7,24 +7,11 @@ module Gnc {
         
         async command ACTIVATE( on_off: Fw.On )
 
-        ##############################################################################
-        #### Uncomment the following examples to start customizing your component ####
-        ##############################################################################
-
-        # @ Example async command
-        # async command COMMAND_NAME(param_name: U32)
-
-        # @ Example telemetry counter
-        # telemetry ExampleCounter: U64
-
-        # @ Example event
-        # event ExampleStateEvent(example_state: Fw.On) severity activity high id 0 format "State set to {}"
-
         @ Example port: receiving calls from the rate group
         sync input port run: Svc.Sched  # TODO: ask tim if this should be driven by the reception of IMU data
 
-        @ Servo Speed 
-        param SERVO_SPEED: U32 #@TODO CONTROLLER_GAIN
+        @ Controller gain 
+        param CONTROLLER_GAIN : U32 
 
         @ Receive data from the IMU 
         guarded input port imuAccelIn: Gnc.ImuData
@@ -33,8 +20,9 @@ module Gnc {
         output port gpioSet: Drv.GpioWrite
         
         # TODO: actuator should write to manager
-        output port pwmPeriodandOnTime: Drv.PeriodAndOnTime
-        output port pwmExportAndEnable: Drv.EnableAndExport
+        output port pwmSetEnable: Drv.EnableDisable
+        output port pwmSetOnTime: Drv.OnTime
+        output port pwmSetPeriod: Drv.Period
 
         ###############################################################################
         # Standard AC Ports: Required for Channels, Events, Commands, and Parameters  #

@@ -13,12 +13,12 @@
 
 namespace Drv {
  
-  const char enablePath[] = "/sys/class/pwm/pwmchip0/pwm0/enable"; // TODO: parameterize chip & pin 
-  const char onTimePath[] = "/sys/class/pwm/pwmchip0/pwm0/duty_cycle";
-  const char periodPath[] = "/sys/class/pwm/pwmchip0/pwm0/period";
-  const char exportPath[] = "/sys/class/pwm/pwmchip0/export";
-  const char unexportPath[] = "/sys/class/pwm/pwmchip0/unexport";
-
+  const char ENABLE_PATH[] = "/sys/class/pwm/pwmchip0/pwm0/enable"; // TODO: parameterize chip & pin 
+  const char ON_TIME_PATH[] = "/sys/class/pwm/pwmchip0/pwm0/duty_cycle";
+  const char PERIOD_PATH[] = "/sys/class/pwm/pwmchip0/pwm0/period";
+  const char EXPORT_PATH[] = "/sys/class/pwm/pwmchip0/export";
+  const char UNEXPORT_PATH[] = "/sys/class/pwm/pwmchip0/unexport";
+  const NATIVE_INT_TYPE MAX_PWM_WRITE_BUF_SIZE = 11; // The largest 32 bit number is only 10 character
 
   // ----------------------------------------------------------------------
   // Construction, initialization, and destruction
@@ -35,9 +35,17 @@ namespace Drv {
   LinuxPwmDriver ::
     ~LinuxPwmDriver()
   {
-
+    setUnexport();
   }
 
+  Fw::Success LinuxPwmDriver ::
+    open()
+    {
+      if(setExport() == Os::File::OP_OK){
+        return Fw::Success::SUCCESS; 
+      }
+      return Fw::Success::FAILURE;
+    }
   // ----------------------------------------------------------------------
   // Driver functions called by the handlers 
   // ----------------------------------------------------------------------
@@ -52,104 +60,98 @@ namespace Drv {
     //printf( "write status %d\n", status);
     fd.close(); 
     return status; 
-}
+  }
 
   Os::File::Status LinuxPwmDriver::setExport(){
-    return setOneByte( exportPath, '0' );
+    return setOneByte( EXPORT_PATH, '0' );
   }
 
   Os::File::Status LinuxPwmDriver::setUnexport(){ 
-    return setOneByte( unexportPath, '0' );
+    return setOneByte( UNEXPORT_PATH, '0' );
   }
 
   Os::File::Status LinuxPwmDriver::enable(){
-    return setOneByte( enablePath, '1' );
+    return setOneByte( ENABLE_PATH, '1' );
   }
 
   Os::File::Status LinuxPwmDriver::disable(){
-    return setOneByte( enablePath, '0' );
+    return setOneByte( ENABLE_PATH, '0' );
   }
 
   // Refactor as setOneByte                                                             
   Os::File::Status LinuxPwmDriver::setBytes( const char * filePath, const char * inBuf, NATIVE_INT_TYPE inBufSize ){
       Os::File::Status status = fd.open( filePath, Os::File::Mode::OPEN_WRITE );
-      if ( status != Os::File::Status::OP_OK ){
-        fd.close();
-        return status; 
+      if ( status == Os::File::Status::OP_OK ){
+        status = fd.write( inBuf, inBufSize ); 
+        //printf( "write status %d\n", status);
       }
-      status = fd.write( inBuf, inBufSize ); 
-      //printf( "write status %d\n", status);
-      if ( status != Os::File::Status::OP_OK ){
-        fd.close();
-        return status; 
-      }
-      fd.close(); 
-      return status; 
+    fd.close(); 
+    return status; 
   }
 
 
   Os::File::Status LinuxPwmDriver::setPeriod( U32 inU32 ){ // Period is measured in nanoseconds
-    CHAR newPeriodBuf[11]; // TODO: make 11 a a constant 
-    (void)sprintf( newPeriodBuf, "%d", inU32 ); //snprintf
-    return setBytes( periodPath, newPeriodBuf, Fw::StringUtils::string_length( newPeriodBuf, 11) ); 
+    CHAR newPeriodBuf[MAX_PWM_WRITE_BUF_SIZE]; 
+    (void)snprintf( newPeriodBuf, MAX_PWM_WRITE_BUF_SIZE, "%d", inU32 ); // TODO: snprintf
+    return setBytes( PERIOD_PATH, newPeriodBuf, Fw::StringUtils::string_length( newPeriodBuf, 11) ); 
   }
   
   Os::File::Status LinuxPwmDriver::setOnTime( U32 inU32 ){
-    CHAR newOnTimeBuf[11]; 
-    sprintf( newOnTimeBuf, "%d", inU32 ); 
-    return setBytes( onTimePath, newOnTimeBuf, Fw::StringUtils::string_length( newOnTimeBuf, 11) ); 
+    CHAR newOnTimeBuf[MAX_PWM_WRITE_BUF_SIZE]; 
+    (void)snprintf( newOnTimeBuf, MAX_PWM_WRITE_BUF_SIZE,"%d", inU32 ); 
+    return setBytes( ON_TIME_PATH, newOnTimeBuf, Fw::StringUtils::string_length( newOnTimeBuf, 11) ); 
   }
 
   // ----------------------------------------------------------------------
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
 
-  // TODO: add a good/bad return type
-  void LinuxPwmDriver ::
-    enableAndExport_handler(
+   Fw::Success LinuxPwmDriver ::
+    enableDisable_handler(
         const NATIVE_INT_TYPE portNum,
-        const Drv::OneByteOps &operationType
+        const Fw::Enabled &operationType
     )
   {
-    switch (operationType){
-      case Drv::OneByteOps::ENABLE: 
-        LinuxPwmDriver::enable();
+    switch(operationType){
+      case Fw::Enabled::ENABLED:
+        if(LinuxPwmDriver::enable() == Os::File::OP_OK){
+          return Fw::Success::SUCCESS;
+        }
         break;
-      case Drv::OneByteOps::DISABLE: 
-        LinuxPwmDriver::disable(); 
-        break;
-      case Drv::OneByteOps::EXPORT: 
-        LinuxPwmDriver::setExport(); 
-        break;
-      case Drv::OneByteOps::UNEXPORT: 
-        LinuxPwmDriver::setUnexport(); 
+      case Fw::Enabled::DISABLED:
+        if(LinuxPwmDriver::disable() == Os::File::OP_OK){
+          return Fw::Success::SUCCESS;
+        }
         break;
       default:
-        // TODO: add error log 
-        FW_ASSERT(0,operationType.e);
-        break; 
+        FW_ASSERT(0);
+        return Fw::Success::FAILURE;
     }
-
+    return Fw::Success::FAILURE; 
   }
 
-  void LinuxPwmDriver ::
-      periodAndCycle_handler(
-          const NATIVE_INT_TYPE portNum,
-          const Drv::MultiByteOps &operationType,
-          U32 operationValue
-      )
-    {
-      switch (operationType){
-        case Drv::MultiByteOps::PERIOD:
-          LinuxPwmDriver::setPeriod( operationValue );
-          break;
-        case Drv::MultiByteOps::ON_TIME:
-          LinuxPwmDriver::setOnTime( operationValue ); 
-          break; 
-        default:
-          // TODO: add error log 
-          break; 
-      }
+  Fw::Success LinuxPwmDriver ::
+    onTime_handler(
+        const NATIVE_INT_TYPE portNum,
+        U32 operationValue
+    )
+  {
+    if(LinuxPwmDriver::setOnTime(operationValue) == Os::File::OP_OK){
+      return Fw::Success::SUCCESS; 
     }
+    return Fw::Success::FAILURE; 
+  }
+
+  Fw::Success LinuxPwmDriver :: //currently not making it to driver
+    period_handler(
+        const NATIVE_INT_TYPE portNum,
+        U32 operationValue
+    )
+  { 
+    if(LinuxPwmDriver::setPeriod(operationValue) == Os::File::OP_OK){
+      return Fw::Success::SUCCESS; 
+    }
+    return Fw::Success::FAILURE; 
+  }
 
 } // end namespace Drv

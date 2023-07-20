@@ -159,8 +159,9 @@ module SystemReference {
     connections Actuator{
         imu.imuAccelOut -> actuator.imuAccelIn
         actuator.gpioSet -> gpioDriver.gpioWrite
-        actuator.pwmPeriodandOnTime -> pwmDriver.periodAndCycle
-        actuator.pwmExportAndEnable -> pwmDriver.enableAndExport
+        actuator.pwmSetOnTime -> pwmDriver.onTime
+        actuator.pwmSetEnable -> pwmDriver.enableDisable
+        actuator.pwmSetPeriod -> pwmDriver.period
     }
 
     connections Camera {

@@ -3,9 +3,10 @@ module Drv {
     @ PWM driver for Linux
     passive component LinuxPwmDriver {
         
-        sync input port enableAndExport: Drv.EnableAndExport
+        sync input port enableDisable: Drv.EnableDisable
         
-        sync input port periodAndCycle: Drv.PeriodAndOnTime
+        sync input port onTime: Drv.OnTime
 
+        sync input port period: Drv.Period
     }
 }

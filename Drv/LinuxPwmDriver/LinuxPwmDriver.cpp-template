@@ -1,0 +1,62 @@
+// ======================================================================
+// \title  LinuxPwmDriver.cpp
+// \author fprime
+// \brief  cpp file for LinuxPwmDriver component implementation class
+// ======================================================================
+
+
+#include <SystemReference/Drv/LinuxPwmDriver/LinuxPwmDriver.hpp>
+#include <FpConfig.hpp>
+
+namespace Drv {
+
+  // ----------------------------------------------------------------------
+  // Construction, initialization, and destruction
+  // ----------------------------------------------------------------------
+
+  LinuxPwmDriver ::
+    LinuxPwmDriver(
+        const char *const compName
+    ) : LinuxPwmDriverComponentBase(compName)
+  {
+
+  }
+
+  LinuxPwmDriver ::
+    ~LinuxPwmDriver()
+  {
+
+  }
+
+  // ----------------------------------------------------------------------
+  // Handler implementations for user-defined typed input ports
+  // ----------------------------------------------------------------------
+
+  Fw::Success LinuxPwmDriver ::
+    enableDisable_handler(
+        const NATIVE_INT_TYPE portNum,
+        const Fw::Enabled &operationType
+    )
+  {
+    // TODO return
+  }
+
+  Fw::Success LinuxPwmDriver ::
+    onTime_handler(
+        const NATIVE_INT_TYPE portNum,
+        U32 operationValue
+    )
+  {
+    // TODO return
+  }
+
+  Fw::Success LinuxPwmDriver ::
+    period_handler(
+        const NATIVE_INT_TYPE portNum,
+        U32 operationValue
+    )
+  {
+    // TODO return
+  }
+
+} // end namespace Drv

@@ -7,8 +7,7 @@
 #ifndef LinuxPwmDriver_HPP
 #define LinuxPwmDriver_HPP
 
-#include "Drv/LinuxPwmDriver/LinuxPwmDriverComponentAc.hpp"
-#include <Os/File.hpp>
+#include "SystemReference/Drv/LinuxPwmDriver/LinuxPwmDriverComponentAc.hpp"
 
 namespace Drv {
 
@@ -32,55 +31,21 @@ namespace Drv {
       //!
       ~LinuxPwmDriver();
 
-      Fw::Success open();
-
-    PRIVATE:
-
-      // ----------------------------------------------------------------------
-      // Driver helper functions and variables used by the handlers 
-      // ----------------------------------------------------------------------
-  
-      Os::File fd; 
-      
-      Os::File::Status setOneByte( const char* filePath, U8 writeValue );
-      Os::File::Status setExport(); // export returns an error if ran twice in a row 
-                                    // this is okay however, generally export should be set
-                                    // because it creates the pwm0 file system 
-                                    //  which all other driver functions write to.
-      Os::File::Status setUnexport();
-      Os::File::Status enable();
-      Os::File::Status disable(); 
-
-
-      Os::File::Status setBytes( const char * filePath, const char * inBuf, NATIVE_INT_TYPE inBufSize );
-      Os::File::Status setPeriod( U32 inU32 );
-      Os::File::Status setOnTime( U32 inU32 );
-    
-
     PRIVATE:
 
       // ----------------------------------------------------------------------
       // Handler implementations for user-defined typed input ports
       // ----------------------------------------------------------------------
 
-      //! Handler implementation for enableAndExport
+      //! Handler implementation for enableDisable
       //!
-      // void enableAndExport_handler(
-      //     const NATIVE_INT_TYPE portNum, /*!< The port number*/
-      //     const Drv::OneByteOps &operationType 
-      // );
       Fw::Success enableDisable_handler(
           const NATIVE_INT_TYPE portNum, /*!< The port number*/
           const Fw::Enabled &operationType 
       );
 
-      //! Handler implementation for periodAndCycle
+      //! Handler implementation for onTime
       //!
-      // void periodAndCycle_handler(
-      //     const NATIVE_INT_TYPE portNum, /*!< The port number*/
-      //     const Drv::MultiByteOps &operationType, 
-      //     U32 operationValue 
-      // );
       Fw::Success onTime_handler(
           const NATIVE_INT_TYPE portNum, /*!< The port number*/
           U32 operationValue /*!< 
@@ -88,12 +53,15 @@ namespace Drv {
       */
       );
 
+      //! Handler implementation for period
+      //!
       Fw::Success period_handler(
           const NATIVE_INT_TYPE portNum, /*!< The port number*/
           U32 operationValue /*!< 
       Period in nanoseconds
       */
       );
+
 
     };
 

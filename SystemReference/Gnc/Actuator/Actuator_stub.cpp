@@ -6,15 +6,7 @@
 
 
 #include <SystemReference/Gnc/Actuator/Actuator.hpp>
-#include <FpConfig.hpp>
-#include <stdio.h> // for debugging
-
-// SG90 servo by tower pro 
-const U32 SG90_PWM_PERIOD = 5000000; 
-const U32 SG90_MIDDLE = 1300000; 
-const U32 SG90_MAX_ON_TIME = 2200000;
-const U32 SG90_MIN_ON_TIME = 500000;
-
+#include <FpConfig.hpp> 
 
 namespace Gnc {
 
@@ -39,32 +31,15 @@ namespace Gnc {
   // ----------------------------------------------------------------------
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
-
   void Actuator ::
     imuAccelIn_handler(
         const NATIVE_INT_TYPE portNum,
         const Gnc::Vector &imuVector
     )
   {
-    // P-controller algorithm 
-    error =  desiredPos - imuVector[1]; // -.01 < error < 1
-
-    if( imuVector[0] < 0 ){
-      newOnTime = currentOnTime - (gain * error);
-      if( newOnTime <= SG90_MIN_ON_TIME ){
-        newOnTime = SG90_MIN_ON_TIME;
-      }
-    }
-    if( imuVector[0] > 1 ){
-      newOnTime = currentOnTime + (gain * error);
-      if( newOnTime >= SG90_MAX_ON_TIME ){
-        newOnTime = SG90_MAX_ON_TIME;
-    }
-    }
-    this->pwmSetOnTime_out(0, newOnTime);
-    currentOnTime = newOnTime;
-    printf( "NEW ON TIME = %d\n", currentOnTime );
-    Os::Task::delay(400);
+    this->accelData[0] = imuVector[0];
+    this->accelData[1] = imuVector[1]; //the one we want
+    this->accelData[2] = imuVector[2]; 
   }
 
   void Actuator ::
@@ -73,7 +48,21 @@ namespace Gnc {
         NATIVE_UINT_TYPE context
     )
   {
-    
+    if( actuatorIsOn == Fw::On::ON ){ // If Component is activated  
+      if( accelData[1] > 1.0 ){ // Turn on LED when IMU is pointed nearly straight up
+        this->gpioSet_out( 0, Fw::Logic::HIGH );
+        // ENABLE
+        //this->pwmExportAndEnable_out(0, Drv::OneByteOps::ENABLE);
+        //this->pwmPeriodandOnTime_out(0,Drv::MultiByteOps::ON_TIME, 1500000);
+        //this->Drv::LinuxPwmDriver::setPeriod( 1500000 ); DO I DO THIS OR ABOVE????
+        Os::Task::delay(400); 
+        //this->pwmExportAndEnable_out(0, Drv::OneByteOps::DISABLE);
+      }
+      else{
+        this->gpioSet_out( 0, Fw::Logic::LOW );
+        //this->pwmExportAndEnable_out(0, Drv::OneByteOps::DISABLE); 
+      }
+    }
   }
 
   // ----------------------------------------------------------------------
@@ -88,18 +77,17 @@ namespace Gnc {
     )
   {
     this->actuatorIsOn = on_off;
-    if(on_off == Fw::On::ON){           // TODO: doesn't come on until off command is sent and on command is sent again
-      this->pwmSetPeriod_out(0,SG90_PWM_PERIOD);
-      Os::Task::delay(400);
-      this->pwmSetOnTime_out(0,SG90_MIDDLE);
-      currentOnTime = SG90_MIDDLE; 
-      Os::Task::delay(400);
-      this-pwmSetEnable_out(0,Fw::Enabled::ENABLED);
-    }
-    else{
-      this-pwmSetEnable_out(0,Fw::Enabled::DISABLED);
-    }
     this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
-  }
+    if ( actuatorIsOn == Fw::On::ON ){
+      // EXPORT
+      //this->pwmExportAndEnable_out(0, Drv::OneByteOps::EXPORT);
+      // SET PERIOD
+      //this->pwmPeriodandOnTime_out(0, Drv::MultiByteOps::PERIOD, 5000000);                                                   
+    }
+    else{ // Actuator is off
+      //this->pwmExportAndEnable_out(0, Drv::OneByteOps::DISABLE);
+    }
+  
+  } // END ACTIVATE_CMDHANDLER 
 
 } // end namespace Gnc

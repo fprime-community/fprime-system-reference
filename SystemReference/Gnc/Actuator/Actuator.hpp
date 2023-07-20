@@ -8,15 +8,13 @@
 #define Actuator_HPP
 
 #include "SystemReference/Gnc/Actuator/ActuatorComponentAc.hpp"
-#include <Drv/LinuxPwmDriver/LinuxPwmDriver.hpp> 
-#include <Os/File.hpp> // For driver testing 
-#include <Os/Task.hpp> // Wait for rotor 
 
 namespace Gnc {
 
   class Actuator :
     public ActuatorComponentBase
   {
+
     public:
 
       // ----------------------------------------------------------------------
@@ -69,11 +67,18 @@ namespace Gnc {
           Fw::On on_off 
       );
 
-      F32 accelData[3];
+    Fw::On actuatorIsOn; 
+    
+    U32 currentOnTime; 
+    U32 newOnTime;
+    const F32 desiredPos = 1.00;
+    F32 error; 
+    U32 gain = 200000; //arbitrarily chosen 
 
-      Fw::On actuatorIsOn; 
 
-      Os::File fd; 
+
+
+
     };
 
 } // end namespace Gnc

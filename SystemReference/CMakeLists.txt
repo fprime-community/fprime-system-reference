@@ -40,6 +40,7 @@ include("${FPRIME_FRAMEWORK_PATH}/cmake/FPrime-Code.cmake")
 ##
 
 # Add Topology subdirectory
+add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/../Drv/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Top/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Gnc/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Payload/")
