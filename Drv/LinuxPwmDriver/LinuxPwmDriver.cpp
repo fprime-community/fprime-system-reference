@@ -57,7 +57,6 @@ namespace Drv {
       NATIVE_INT_TYPE writeSize = (NATIVE_INT_TYPE) sizeof( writeValue);
       status = fd.write( &writeValue, writeSize ); 
     }
-    //printf( "write status %d\n", status);
     fd.close(); 
     return status; 
   }
@@ -77,13 +76,12 @@ namespace Drv {
   Os::File::Status LinuxPwmDriver::disable(){
     return setOneByte( ENABLE_PATH, '0' );
   }
-
-  // Refactor as setOneByte                                                             
+                                                             
   Os::File::Status LinuxPwmDriver::setBytes( const char * filePath, const char * inBuf, NATIVE_INT_TYPE inBufSize ){
       Os::File::Status status = fd.open( filePath, Os::File::Mode::OPEN_WRITE );
       if ( status == Os::File::Status::OP_OK ){
         status = fd.write( inBuf, inBufSize ); 
-        //printf( "write status %d\n", status);
+        
       }
     fd.close(); 
     return status; 

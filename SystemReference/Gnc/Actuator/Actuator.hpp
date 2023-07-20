@@ -14,7 +14,14 @@ namespace Gnc {
   class Actuator :
     public ActuatorComponentBase
   {
-
+    static const U32 SG90_PWM_PERIOD = 5000000; 
+    static const U32 SG90_MIDDLE = 1300000; 
+    static const U32 SG90_MAX_ON_TIME = 2200000;
+    static const U32 SG90_MIN_ON_TIME = 500000;
+    static const U32 GAIN = 31415;
+    static const U16 WINDOW_SIZE = 11;
+    static const U16 desiredPos = 1;
+    
     public:
 
       // ----------------------------------------------------------------------
@@ -67,17 +74,21 @@ namespace Gnc {
           Fw::On on_off 
       );
 
-    Fw::On actuatorIsOn; 
     
+   // SG90 servo by tower pro 
+ 
+
+    Fw::On actuatorIsOn; 
     U32 currentOnTime; 
     U32 newOnTime;
-    const F32 desiredPos = 1.00;
     F32 error; 
-    U32 gain = 200000; //arbitrarily chosen 
+    U32 gain; // minimum step size
 
+    U16 windowIndex;
+    F32 ySum; 
+    F32 windowedY; 
 
-
-
+    F32 yWindow[WINDOW_SIZE]; // TODO: initialize to 0
 
     };
 

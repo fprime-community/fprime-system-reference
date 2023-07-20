@@ -111,8 +111,8 @@ module SystemReference {
       rateGroup1Comp.RateGroupMemberOut[1] -> fileDownlink.Run
       rateGroup1Comp.RateGroupMemberOut[2] -> systemResources.run
       rateGroup1Comp.RateGroupMemberOut[3] -> imu.Run
-#      rateGroup1Comp.RateGroupMemberOut[4] -> radio.run
-      rateGroup1Comp.RateGroupMemberOut[5] -> actuator.run #remove when driving by imu data
+      #rateGroup1Comp.RateGroupMemberOut[4] -> radio.run
+      #rateGroup1Comp.RateGroupMemberOut[5] -> actuator.run #remove when driving by imu data
 
       # Rate group 2
       rateGroupDriverComp.CycleOut[Ports_RateGroups.rateGroup2] -> rateGroup2Comp.CycleIn

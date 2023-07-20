@@ -26,7 +26,7 @@ static void sighandler(int signum) {
 void run1cycle() {
     // call interrupt to emulate a clock
     SystemReference::blockDrv.callIsr();
-    Os::Task::delay(1000); //10Hz
+    Os::Task::delay(100); //1000Hz
 }
 
 void runcycles(NATIVE_INT_TYPE cycles) {

@@ -9,11 +9,6 @@
 #include <FpConfig.hpp>
 #include <stdio.h> // for debugging
 
-// SG90 servo by tower pro 
-const U32 SG90_PWM_PERIOD = 5000000; 
-const U32 SG90_MIDDLE = 1300000; 
-const U32 SG90_MAX_ON_TIME = 2200000;
-const U32 SG90_MIN_ON_TIME = 500000;
 
 
 namespace Gnc {
@@ -25,9 +20,12 @@ namespace Gnc {
   Actuator ::
     Actuator(
         const char *const compName
-    ) : ActuatorComponentBase(compName)
+    ) : ActuatorComponentBase(compName), newOnTime(SG90_MIDDLE), 
+        currentOnTime(SG90_MIDDLE), gain(GAIN), 
+        windowedY(0), ySum(0), windowIndex(0),
+        actuatorIsOn(Fw::On::OFF)
   {
-
+    
   }
 
   Actuator ::
@@ -46,25 +44,47 @@ namespace Gnc {
         const Gnc::Vector &imuVector
     )
   {
-    // P-controller algorithm 
-    error =  desiredPos - imuVector[1]; // -.01 < error < 1
+    if( actuatorIsOn == Fw::On::OFF){
+      return;
+    }
+    // TODO: migrate windowing to another component 
+    yWindow[windowIndex] = imuVector[1]; 
+    windowIndex++;
+    //printf("array entry = %f\n", yWindow[windowIndex]); 
+    if( windowIndex >= WINDOW_SIZE ){
+      windowIndex = 0;
+    }
+    ySum = 0;
+    for( int i = 0; i < WINDOW_SIZE; i++){
+      ySum += yWindow[i];
+    }
+    windowedY = ySum / WINDOW_SIZE; 
 
+    //printf("WINDOWED Y =%f\n", windowedY);
+    // P-controller algorithm 
+    error =  (desiredPos + 1) - windowedY; // 1 < error < 2 while right side up 
+
+    if( windowedY > desiredPos ){
+      this->gpioSet_out(0, Fw::Logic::HIGH);
+      return; 
+    }
+    this->gpioSet_out(0, Fw::Logic::LOW);
     if( imuVector[0] < 0 ){
       newOnTime = currentOnTime - (gain * error);
       if( newOnTime <= SG90_MIN_ON_TIME ){
         newOnTime = SG90_MIN_ON_TIME;
       }
     }
-    if( imuVector[0] > 1 ){
+    if( imuVector[0] > 0 ){
       newOnTime = currentOnTime + (gain * error);
       if( newOnTime >= SG90_MAX_ON_TIME ){
         newOnTime = SG90_MAX_ON_TIME;
-    }
+      }
     }
     this->pwmSetOnTime_out(0, newOnTime);
     currentOnTime = newOnTime;
-    printf( "NEW ON TIME = %d\n", currentOnTime );
-    Os::Task::delay(400);
+    //printf( "NEW ON TIME = %d\n", currentOnTime );
+    Os::Task::delay(50);
   }
 
   void Actuator ::
