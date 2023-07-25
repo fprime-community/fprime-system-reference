@@ -60,7 +60,7 @@ namespace Gnc {
       */
       );
 
-    PRIVATE:
+    PRIVATE: //lower case
 
       // ----------------------------------------------------------------------
       // Command handler implementations
@@ -76,12 +76,10 @@ namespace Gnc {
 
     
    // SG90 servo by tower pro 
- 
-
     Fw::On actuatorIsOn; 
     U32 currentOnTime; 
     U32 newOnTime;
-    F32 error; 
+    F32 error; //MOVE INTO FUNCTION 
     U32 gain; // minimum step size
 
     U16 windowIndex;

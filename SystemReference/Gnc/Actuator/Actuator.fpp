@@ -7,11 +7,8 @@ module Gnc {
         
         async command ACTIVATE( on_off: Fw.On )
 
-        @ Example port: receiving calls from the rate group
-        sync input port run: Svc.Sched  # TODO: ask tim if this should be driven by the reception of IMU data
-
         @ Controller gain 
-        param CONTROLLER_GAIN : U32 
+        param CONTROLLER_GAIN : U32 default 31415
 
         @ Receive data from the IMU 
         guarded input port imuAccelIn: Gnc.ImuData
@@ -20,6 +17,7 @@ module Gnc {
         output port gpioSet: Drv.GpioWrite
         
         # TODO: actuator should write to manager
+        # Add annotations 
         output port pwmSetEnable: Drv.EnableDisable
         output port pwmSetOnTime: Drv.OnTime
         output port pwmSetPeriod: Drv.Period
