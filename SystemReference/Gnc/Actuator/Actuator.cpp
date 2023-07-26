@@ -16,11 +16,8 @@ namespace Gnc {
 
 Actuator ::Actuator(const char* const compName)
     : ActuatorComponentBase(compName),
-      newOnTime(SG90_MIDDLE),
       currentOnTime(SG90_MIDDLE),
-      gain(GAIN),
-      windowedY(0),
-      ySum(0),
+      gain(300000),
       windowIndex(0),
       actuatorIsOn(Fw::On::OFF) {}
 
@@ -31,7 +28,6 @@ Actuator ::~Actuator() {}
 // ----------------------------------------------------------------------
 
 void Actuator ::imuAccelIn_handler(const NATIVE_INT_TYPE portNum, const Gnc::Vector& imuVector) {
-
     // TODO: migrate windowing to another component
     yWindow[windowIndex] = imuVector[1];
     windowIndex = (windowIndex + 1) % WINDOW_SIZE; 
@@ -39,38 +35,47 @@ void Actuator ::imuAccelIn_handler(const NATIVE_INT_TYPE portNum, const Gnc::Vec
     if (actuatorIsOn == Fw::On::OFF) {
       return;
     }
-    ySum = 0; // todo, make local 
+    F32 ySum; 
     for (int i = 0; i < WINDOW_SIZE; i++) {
         ySum += yWindow[i];
     }
 
-    windowedY = ySum / WINDOW_SIZE;
+    F32 windowedY = ySum / WINDOW_SIZE;
 
-    // printf("WINDOWED Y =%f\n", windowedY);
+    //printf("imuVector[1] = %f\n", imuVector[1]);
+    //printf("WINDOWED Y =%f\n", windowedY);
+
     //  P-controller algorithm
-    error = (desiredPos + 1) - windowedY;  // 1 < error < 2 while right side up
-
-    if (windowedY > desiredPos) {
-        this->gpioSet_out(0, Fw::Logic::HIGH);
+    F32 error = vertCriteria - windowedY;  // 1 < error < 2 while right side up
+    if (windowedY > vertCriteria) {
+        this->gpioSet_out(0, Fw::Logic::HIGH); // TODO: create is balanced telem or event 
         return;
     }
     this->gpioSet_out(0, Fw::Logic::LOW);
+    U32 newOnTime = 0; 
+    U32 correction = 0; 
+    U32 minStepSize = 31415;
     if (imuVector[0] < 0) {
-        newOnTime = currentOnTime - (gain * error);
-        if (newOnTime <= SG90_MIN_ON_TIME) {
-            newOnTime = SG90_MIN_ON_TIME;
-        }
+        correction = gain * error;
+        newOnTime = (correction > minStepSize) ? (currentOnTime - correction) : (currentOnTime - minStepSize); 
+        //newOnTime = currentOnTime - (gain * error);
     }
     if (imuVector[0] > 0) {
-        newOnTime = currentOnTime + (gain * error);
-        if (newOnTime >= SG90_MAX_ON_TIME) {
+        correction = gain * error;
+        newOnTime = (correction > minStepSize) ? (currentOnTime + correction) : (currentOnTime + minStepSize); 
+        //newOnTime = currentOnTime + (gain * error);
+    }
+    if (newOnTime >= SG90_MAX_ON_TIME) {
             newOnTime = SG90_MAX_ON_TIME;
         }
-    }
-    this->pwmSetOnTime_out(0, newOnTime);
+    if (newOnTime <= SG90_MIN_ON_TIME) {
+            newOnTime = SG90_MIN_ON_TIME;
+        }
+        // NEW ON TIME NOT SETTING 
     currentOnTime = newOnTime;
-    // printf( "NEW ON TIME = %d\n", currentOnTime );
-    Os::Task::delay(50); // REEEEEEEEEEEEEEEEEEEEEE
+    printf( "CORRECTION = %d\n", correction );
+    printf( "NEW ON TIME = %d\n", newOnTime );
+    this->pwmSetOnTime_out(0, newOnTime);
 }
 
 void Actuator ::run_handler(const NATIVE_INT_TYPE portNum, NATIVE_UINT_TYPE context) {}
@@ -83,11 +88,12 @@ void Actuator ::ACTIVATE_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq,
     this->actuatorIsOn = on_off;
     if (on_off == Fw::On::ON) {  // TODO: doesn't come on until off command is sent and on command is sent again
         this->pwmSetPeriod_out(0, SG90_PWM_PERIOD);
-        Os::Task::delay(400);
-        this->pwmSetOnTime_out(0, SG90_MIDDLE);
         currentOnTime = SG90_MIDDLE;
-        Os::Task::delay(400);
+        this->pwmSetOnTime_out(0, SG90_MIDDLE);
         this->pwmSetEnable_out(0, Fw::Enabled::ENABLED);
+        for(int i = 0; i < WINDOW_SIZE; i++){
+            yWindow[i] = 0; 
+        }
     } else {
         this->pwmSetEnable_out(0, Fw::Enabled::DISABLED);
     }

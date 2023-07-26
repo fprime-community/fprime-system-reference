@@ -33,7 +33,7 @@ To successfully use the Linux PWM driver on a Raspberry
 Pi, users need to make two edits to the Pi's files.
 
 
-1. Add the following to `/etc/udev/rules.d/TODO`:
+1. Add the following to `/etc/udev/rules.d/99-com.rules`:
 
 `SUBSYSTEM=="pwm*", PROGRAM="/bin/sh -c '\
         chown -R root:gpio /sys/class/pwm && chmod -R 770 /sys/class/pwm; \

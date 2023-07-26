@@ -18,9 +18,8 @@ namespace Gnc {
     static const U32 SG90_MIDDLE = 1300000; 
     static const U32 SG90_MAX_ON_TIME = 2200000;
     static const U32 SG90_MIN_ON_TIME = 500000;
-    static const U32 GAIN = 31415;
     static const U16 WINDOW_SIZE = 11;
-    static const U16 desiredPos = 1;
+    static const U32 vertCriteria = 1; // @TODO: make parameter 
     
     public:
 
@@ -77,15 +76,10 @@ namespace Gnc {
     
    // SG90 servo by tower pro 
     Fw::On actuatorIsOn; 
-    U32 currentOnTime; 
-    U32 newOnTime;
-    F32 error; //MOVE INTO FUNCTION 
-    U32 gain; // minimum step size
+    U64 currentOnTime; // Initially set in activate handler
+    U64 gain; // TODO: make parameter
 
-    U16 windowIndex;
-    F32 ySum; 
-    F32 windowedY; 
-
+    U16 windowIndex; //needs state
     F32 yWindow[WINDOW_SIZE]; // TODO: initialize to 0
 
     };
