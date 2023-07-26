@@ -39,6 +39,9 @@ include("${FPRIME_FRAMEWORK_PATH}/cmake/FPrime-Code.cmake")
 # core components in the topology, which is also added here.
 ##
 
+# needed for libcamera
+set(CMAKE_CXX_STANDARD 17)
+
 # Add Topology subdirectory
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Top/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Gnc/")

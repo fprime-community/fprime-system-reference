@@ -8,9 +8,7 @@
 #define Camera_HPP
 
 #include "SystemReference/Payload/Camera/CameraComponentAc.hpp"
-#ifdef USES_OPENCV
-#include <opencv2/opencv.hpp>
-#endif
+#include <libcamera/libcamera/libcamera.h>
 
 namespace Payload {
 
@@ -48,6 +46,8 @@ namespace Payload {
 
     PRIVATE:
 
+      void requestComplete(libcamera::Request *request);
+
       // ----------------------------------------------------------------------
       // Command handler implementations
       // ----------------------------------------------------------------------
@@ -69,9 +69,8 @@ namespace Payload {
       );
 
       U32 m_photoCount;
-#ifdef USES_OPENCV
-      cv::VideoCapture m_capture;
-#endif
+      std::unique_ptr<libcamera::CameraManager> camManager;
+      std::shared_ptr<libcamera::Camera> m_capture;
     };
 
 } // end namespace Payload

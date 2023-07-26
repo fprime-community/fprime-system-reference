@@ -14,7 +14,7 @@ The System Reference consists of several subsystems:
 - Communication 
 
 ## Built With
-- [OpenCV](https://github.com/opencv/opencv)
+- [libcamera](https://www.raspberrypi.com/documentation/computers/camera_software.html)
 - [F Prime](https://github.com/nasa/fprime) 
 - [RPI Cross Compile Tools](https://github.com/raspberrypi/tools)
 
@@ -26,7 +26,8 @@ have the listed requirements below before proceeding.
 
 Requirements:
 1. Linux OS
-2. OpenCV
+2. libcamera
+   - For libcamera dependencies, please see the list [here](https://github.com/raspberrypi/libcamera#dependencies).
 3. F Prime Environment
 4. Cross compilations tools for the Raspberry Pi
 
