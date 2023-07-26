@@ -47,7 +47,7 @@ namespace Drv {
       return Fw::Success::FAILURE;
     }
   // ----------------------------------------------------------------------
-  // Driver functions called by the handlers 
+  // Driver helper functions called by the handlers 
   // ----------------------------------------------------------------------
 
                                                 
@@ -81,7 +81,6 @@ namespace Drv {
       Os::File::Status status = fd.open( filePath, Os::File::Mode::OPEN_WRITE );
       if ( status == Os::File::Status::OP_OK ){
         status = fd.write( inBuf, inBufSize ); 
-        
       }
     fd.close(); 
     return status; 
@@ -90,7 +89,7 @@ namespace Drv {
 
   Os::File::Status LinuxPwmDriver::setPeriod( U32 inU32 ){ // Period is measured in nanoseconds
     CHAR newPeriodBuf[MAX_PWM_WRITE_BUF_SIZE]; 
-    (void)snprintf( newPeriodBuf, MAX_PWM_WRITE_BUF_SIZE, "%d", inU32 ); // TODO: snprintf
+    (void)snprintf( newPeriodBuf, MAX_PWM_WRITE_BUF_SIZE, "%d", inU32 ); 
     return setBytes( PERIOD_PATH, newPeriodBuf, Fw::StringUtils::string_length( newPeriodBuf, 11) ); 
   }
   
