@@ -48,3 +48,19 @@ data reads something very close to [0,1,0]. The IMU data,
 formatted [x,y,z] in the imu telemetry channel, ***must*** indicate 
 that the X vector is near zero, and the Y vector is near one 
 when the arrow is pointed straight up; the algorithm depends on this.
+
+## Pinouts
+
+Raspberry Pi | SG90 Servo 
+* 2  | Red (5V)
+* 6  | Brown (GND)
+* 12 | Orange (PWM)
+
+Rasberry Pi | MPU9250 IMU 
+* 1  | Vdd (3.3V)
+* 9  | GND 
+* 3  | SDA
+* 5  | SCL 
+
+[Pinout Diagram](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html)
+
