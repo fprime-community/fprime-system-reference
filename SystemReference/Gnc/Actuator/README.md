@@ -30,5 +30,5 @@ a P-controller is used to point the arrow vertically.
 
 ## Assembly
 
-![Body](docs/Actuator_Images/body_1.jpeg)
-
+<!-- ![Body](docs/Actuator_Images/body_1.jpeg) -->
+<img src="docs/Actuator_Images/body_1.jpeg" alt="Body" style="width: 3in;">
