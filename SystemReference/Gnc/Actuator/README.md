@@ -30,5 +30,21 @@ a P-controller is used to point the arrow vertically.
 
 ## Assembly
 
-<!-- ![Body](docs/Actuator_Images/body_1.jpeg) -->
+Below are a couple images of the of actuator component and 3D structure.
+
 <img src="docs/Actuator_Images/body_1.jpeg" alt="Body" style="width: 3in;">
+
+The RPI is attached to the 3D printed structure using small,
+self tapping screws. The servo is simply placed into the 
+servo hole in the structure. The arrow is attached to the servo 
+using two servo screws. The IMU is mounted to the arrow 
+using one 3D printed nub (on the arrow) and self tapping screw.
+
+<img src="docs/Actuator_Images/IMU_1.jpg" alt="Body" style="width: 3in;">
+
+**IMPORTANT:** When mounting the IMU, you must make sure that 
+when the arrow is pointed straight up that the IMU accelerometer 
+data reads something very close to [0,1,0]. The IMU data, 
+formatted [x,y,z] in the imu telemetry channel, ***must*** indicate 
+that the X vector is near zero, and the Y vector is near one 
+when the arrow is pointed straight up; the algorithm depends on this.
