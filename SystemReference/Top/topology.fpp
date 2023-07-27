@@ -37,7 +37,6 @@ module SystemReference {
     instance fileDownlink
     instance fileManager
     instance fileUplink
-    instance gpioDriver
     instance comBufferManager
     instance linuxTime
     instance prmDb
@@ -158,7 +157,6 @@ module SystemReference {
 
     connections Actuator{
         imu.imuAccelOut -> actuator.imuAccelIn
-        actuator.gpioSet -> gpioDriver.gpioWrite
         actuator.pwmSetOnTime -> pwmDriver.onTime
         actuator.pwmSetEnable -> pwmDriver.enableDisable
         actuator.pwmSetPeriod -> pwmDriver.period

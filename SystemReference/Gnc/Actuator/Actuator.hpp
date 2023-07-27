@@ -59,7 +59,7 @@ namespace Gnc {
       */
       );
 
-    PRIVATE: //lower case
+    private: 
 
       // ----------------------------------------------------------------------
       // Command handler implementations
@@ -76,11 +76,11 @@ namespace Gnc {
     
    // SG90 servo by tower pro 
     Fw::On actuatorIsOn; 
-    U64 currentOnTime; // Initially set in activate handler
+    U64 currentOnTime; 
     U64 gain; // TODO: make parameter
 
     U16 windowIndex; //needs state
-    F32 yWindow[WINDOW_SIZE]; // TODO: initialize to 0
+    F32 yWindow[WINDOW_SIZE]; 
 
     };
 

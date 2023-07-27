@@ -11,6 +11,11 @@ In practice, the IMU is mounted on the arrow, the arrow
 is mounted to the servo, and the servo is attached to 
 some base (or held).
 
+## For Best Results 
+
+For best results, ensure that the IMU is driven around of above 
+10Hz. Adjust gain and vertCondition as need to tune this device because
+each servo is a little different and so is each IMU.
 
 ## Design  
 
@@ -74,5 +79,7 @@ Here are a few things that would make the actuator better.
 
 * Servo manager that allows actuator to write angles, not on time. 
 
+* Move windowing to another component 
 
+* Fix activate problem, the system does not turn on until the user sends ACTIVATE(off) then  ACTIVATE(on).
 

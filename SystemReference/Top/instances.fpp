@@ -478,15 +478,7 @@ module SystemReference {
     }
     """
   }
-
-
-  instance gpioDriver: Drv.LinuxGpioDriver base id 0x4E00 {
-    phase Fpp.ToCpp.Phases.configComponents """
-        gpioDriver.open(26, Drv::LinuxGpioDriver::GpioDirection::GPIO_OUT); 
-    """
-  }
-
-  #pwm driver instance 
+ 
   instance pwmDriver: Drv.LinuxPwmDriver base id 0x4F00 {
     phase Fpp.ToCpp.Phases.configComponents """
         pwmDriver.open();

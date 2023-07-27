@@ -17,7 +17,7 @@ namespace Gnc {
 Actuator ::Actuator(const char* const compName)
     : ActuatorComponentBase(compName),
       currentOnTime(SG90_MIDDLE),
-      gain(300000),
+      gain(100000),
       windowIndex(0),
       actuatorIsOn(Fw::On::OFF) {}
 
@@ -42,39 +42,31 @@ void Actuator ::imuAccelIn_handler(const NATIVE_INT_TYPE portNum, const Gnc::Vec
 
     F32 windowedY = ySum / WINDOW_SIZE;
 
-    //printf("imuVector[1] = %f\n", imuVector[1]);
-    //printf("WINDOWED Y =%f\n", windowedY);
-
     //  P-controller algorithm
-    F32 error = vertCriteria - windowedY;  // 1 < error < 2 while right side up
+    F32 error = vertCriteria - windowedY;  // 0 < error < 1 while right side up
     if (windowedY > vertCriteria) {
-        this->gpioSet_out(0, Fw::Logic::HIGH); // TODO: create is balanced telem or event 
+        // TODO: create is balanced telem or event 
         return;
     }
-    this->gpioSet_out(0, Fw::Logic::LOW);
     U32 newOnTime = 0; 
     U32 correction = 0; 
     U32 minStepSize = 31415;
     if (imuVector[0] < 0) {
         correction = gain * error;
         newOnTime = (correction > minStepSize) ? (currentOnTime - correction) : (currentOnTime - minStepSize); 
-        //newOnTime = currentOnTime - (gain * error);
+        
     }
     if (imuVector[0] > 0) {
         correction = gain * error;
         newOnTime = (correction > minStepSize) ? (currentOnTime + correction) : (currentOnTime + minStepSize); 
-        //newOnTime = currentOnTime + (gain * error);
     }
     if (newOnTime >= SG90_MAX_ON_TIME) {
             newOnTime = SG90_MAX_ON_TIME;
         }
     if (newOnTime <= SG90_MIN_ON_TIME) {
             newOnTime = SG90_MIN_ON_TIME;
-        }
-        // NEW ON TIME NOT SETTING 
+        } 
     currentOnTime = newOnTime;
-    printf( "CORRECTION = %d\n", correction );
-    printf( "NEW ON TIME = %d\n", newOnTime );
     this->pwmSetOnTime_out(0, newOnTime);
 }
 

@@ -1,9 +1,6 @@
 module Gnc {
     @ An actuator component that demonastrates a feedback loop.
     active component Actuator {
-
-        # One async command/port is required for active components
-        # This should be overridden by the developers with a useful command/port
         
         async command ACTIVATE( on_off: Fw.On )
 
@@ -13,14 +10,15 @@ module Gnc {
         @ Receive data from the IMU 
         guarded input port imuAccelIn: Gnc.ImuData
 
-        @ Port to send commands to gpio driver
-        output port gpioSet: Drv.GpioWrite
-        
-        # TODO: actuator should write to manager
-        # Add annotations 
+        @ Enable or disable PWM 
         output port pwmSetEnable: Drv.EnableDisable
+
+        @ Set PWM on time, also known as duty cycle
         output port pwmSetOnTime: Drv.OnTime
+
+        @ Set PWM period 
         output port pwmSetPeriod: Drv.Period
+
 
         ###############################################################################
         # Standard AC Ports: Required for Channels, Events, Commands, and Parameters  #
