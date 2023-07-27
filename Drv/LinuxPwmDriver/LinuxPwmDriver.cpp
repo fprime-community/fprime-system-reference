@@ -139,7 +139,7 @@ namespace Drv {
     return Fw::Success::FAILURE; 
   }
 
-  Fw::Success LinuxPwmDriver :: //currently not making it to driver
+  Fw::Success LinuxPwmDriver :: 
     period_handler(
         const NATIVE_INT_TYPE portNum,
         U32 operationValue

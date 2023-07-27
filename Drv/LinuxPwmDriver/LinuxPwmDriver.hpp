@@ -46,7 +46,7 @@ namespace Drv {
       Os::File::Status setExport(); // export returns an error if ran twice in a row 
                                     // this is okay however, generally export should be set
                                     // because it creates the pwm0 file system 
-                                    //  which all other driver functions write to.
+                                    // which all other driver functions write to.
       Os::File::Status setUnexport();
       Os::File::Status enable();
       Os::File::Status disable(); 
@@ -63,24 +63,13 @@ namespace Drv {
       // Handler implementations for user-defined typed input ports
       // ----------------------------------------------------------------------
 
-      //! Handler implementation for enableAndExport
-      //!
-      // void enableAndExport_handler(
-      //     const NATIVE_INT_TYPE portNum, /*!< The port number*/
-      //     const Drv::OneByteOps &operationType 
-      // );
+     
       Fw::Success enableDisable_handler(
           const NATIVE_INT_TYPE portNum, /*!< The port number*/
           const Fw::Enabled &operationType 
       );
 
-      //! Handler implementation for periodAndCycle
-      //!
-      // void periodAndCycle_handler(
-      //     const NATIVE_INT_TYPE portNum, /*!< The port number*/
-      //     const Drv::MultiByteOps &operationType, 
-      //     U32 operationValue 
-      // );
+     
       Fw::Success onTime_handler(
           const NATIVE_INT_TYPE portNum, /*!< The port number*/
           U32 operationValue /*!< 
