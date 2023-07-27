@@ -64,3 +64,15 @@ Rasberry Pi | MPU9250 IMU
 
 [Pinout Diagram](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html)
 
+## Improvements 
+
+Here are a few things that would make the actuator better.
+
+* Gain and Vertical Condition as parameters.
+
+* Telememtry stating whether arrow is pointed up. 
+
+* Servo manager that allows actuator to write angles, not on time. 
+
+
+
