@@ -8,7 +8,7 @@
 #define Camera_HPP
 
 #include "SystemReference/Payload/Camera/CameraComponentAc.hpp"
-#include <libcamera/libcamera/libcamera.h>
+#include <libcamera.h>
 
 namespace Payload {
 
@@ -46,7 +46,7 @@ namespace Payload {
 
     PRIVATE:
 
-      void requestComplete(libcamera::Request *request);
+      static void requestComplete(libcamera::Request *request);
 
       // ----------------------------------------------------------------------
       // Command handler implementations

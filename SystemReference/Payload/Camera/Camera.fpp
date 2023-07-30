@@ -84,6 +84,13 @@ module Payload {
         severity activity low \
         format "Image will be processed" \
 
+        @ Camera failed to take action: save or process
+        event CameraTakeActionFail(
+            action: CameraAction
+            ) \
+        severity warning high \
+        format "Camera failed to take action {}"
+
         @ Event image configuration has been set
         event SetImgConfig(
             resolution: ImgResolution @< Image size,

@@ -6,7 +6,7 @@
 
 #include "Fw/Types/BasicTypes.hpp"
 #include <SystemReference/Payload/Camera/Camera.hpp>
-#include <libcamera/libcamera/libcamera.h>
+#include <libcamera.h>
 #include <errno.h>
 #include <unistd.h>
 
@@ -22,12 +22,13 @@ namespace Payload {
   void Camera ::init(const NATIVE_INT_TYPE queueDepth, const NATIVE_INT_TYPE instance) {
     CameraComponentBase::init(queueDepth, instance);
     camManager = std::make_unique<libcamera::CameraManager>();
-    camManager->start();
   }
 
   bool Camera::open(I32 deviceIndex) {
-    // check to see if any cameras were detected
-    if (!camManager->cameras().empty()) {
+    int returnCode = camManager->start();
+    // check to see if the camera manager was started successfully
+    // and if any cameras were detected
+    if (returnCode == 0 && !camManager->cameras().empty()) {
       // get the camera from the CameraManager and acquire it
       m_capture = camManager->cameras()[deviceIndex];
       int returnCode = m_capture->acquire();
@@ -51,7 +52,6 @@ namespace Payload {
 
   // void Camera ::processRequest(libcamera::Request *request);
   libcamera::Request *requestReceived;
-
   void Camera ::requestComplete(libcamera::Request *request) {
     if (request->status() == libcamera::Request::RequestCancelled) {
       return;
@@ -64,6 +64,10 @@ namespace Payload {
   // ----------------------------------------------------------------------
 
   void Camera ::TakeAction_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq, Payload::CameraAction cameraAction) {
+    if(!m_capture) {
+      this->log_WARNING_HI_CameraTakeActionFail(cameraAction);
+      return;
+    }
     RawImageData rawImageData;
     libcamera::FrameBufferAllocator *allocator = new libcamera::FrameBufferAllocator(m_capture);
     libcamera::StreamConfiguration streamConfig = m_capture->generateConfiguration( { libcamera::StreamRole::StillCapture } )->at(0);
@@ -72,11 +76,12 @@ namespace Payload {
     const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers = allocator->buffers(stream);
 
     unsigned int imgSize = streamConfig.size.height * streamConfig.size.width;
-    if(buffers.max_size() < imgSize) {
+    Fw::Buffer imgBuffer = allocate_out(0, imgSize);
+    if(buffers.max_size() < imgSize || imgBuffer.getSize() < imgSize) {
       this->log_WARNING_HI_InvalidBufferSizeError(buffers.max_size(), imgSize);
       allocator->free(stream);
       delete allocator;
-      m_camera->release();
+      this->deallocate_out(0, imgBuffer);
       return;
     }
 
@@ -97,26 +102,27 @@ namespace Payload {
     
     m_capture->start();
     for (std::unique_ptr<libcamera::Request> &request : requests) {
-      camera->queueRequest(request.get());
+      m_capture->queueRequest(request.get());
     }
     sleep(3);
     if (requestReceived->status() == libcamera::Request::RequestComplete) {
       const libcamera::Request::BufferMap &buffers = requestReceived->buffers();
       for (auto bufferPair : buffers) {
         libcamera::FrameBuffer *buffer = bufferPair.second;
+        memcpy(imgBuffer.getData(), buffer, imgSize);
         switch (cameraAction.e) {
           case CameraAction::PROCESS:
             // need to figure out how to specify the libcamera FrameBuffer type in FPP
-            rawImageData.setimgData(buffer);
-            rawImageData.setheight(frame.rows);
-            rawImageData.setwidth(frame.cols);
-            rawImageData.setpixelFormat(frame.type());
+            rawImageData.setimgData(imgBuffer);
+            rawImageData.setheight(streamConfig.size.height);
+            rawImageData.setwidth(streamConfig.size.width);
+            // rawImageData.setpixelFormat(frame.type());
             this->log_ACTIVITY_LO_CameraProcess();
             this->process_out(0, rawImageData);
             break;
           case CameraAction::SAVE:
             // need to figure out how to specify the libcamera FrameBuffer type in FPP
-            this->save_out(0, buffer);
+            this->save_out(0, imgBuffer);
             this->log_ACTIVITY_LO_CameraSave();
             break;
           default:
@@ -126,53 +132,18 @@ namespace Payload {
     }
     // no data, send blank frame event
     else {
-      this->log_WARNING_HI_BlankFrame();
-      m_camera->stop();
+      m_capture->stop();
       allocator->free(stream);
       delete allocator;
-      m_camera->release();
+      this->log_WARNING_HI_BlankFrame();
       return;
     }
 
     // need to do after the image has been processed/saved
-    m_camera->stop();
+    m_capture->stop();
     allocator->free(stream);
     delete allocator;
-    m_camera->release();
 
-
-    /*std::vector<uchar> buffer;
-    cv::Mat frame;
-    m_capture.read(frame);
-
-    if (frame.empty()) {
-      this->log_WARNING_HI_BlankFrame();
-      return;
-    }
-
-    FW_ASSERT(imgSize == frame.total()*frame.elemSize(), imgSize, frame.total()*frame.elemSize());
-    FW_ASSERT(frame.isContinuous());
-
-    memcpy(imgBuffer.getData(), frame.data, imgSize);
-    imgBuffer.setSize(imgSize);
-
-    switch (cameraAction.e) {
-      case CameraAction::PROCESS:
-        rawImageData.setimgData(imgBuffer);
-        rawImageData.setheight(frame.rows);
-        rawImageData.setwidth(frame.cols);
-        rawImageData.setpixelFormat(frame.type());
-        this->log_ACTIVITY_LO_CameraProcess();
-        this->process_out(0, rawImageData);
-        break;
-      case CameraAction::SAVE:
-        this->save_out(0, imgBuffer);
-        this->log_ACTIVITY_LO_CameraSave();
-        break;
-      default:
-        FW_ASSERT(0);
-      }
-    */
     m_photoCount++;
     this->tlmWrite_photosTaken(m_photoCount);
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
@@ -180,6 +151,11 @@ namespace Payload {
 
   void Camera ::ConfigImg_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq,
                                     Payload::ImgResolution resolution) {
+    if(!m_capture) {
+       this->log_WARNING_HI_ImgConfigSetFail(resolution);
+      return; 
+    }
+
     bool widthStatus = true;
     bool heightStatus = true;
 

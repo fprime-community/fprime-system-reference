@@ -20,8 +20,9 @@ message(STATUS "    version: ${LIBCAMERA_VERSION}")
 message(STATUS "    libraries: ${LIBCAMERA_LINK_LIBRARIES}")
 message(STATUS "    include path: ${LIBCAMERA_INCLUDE_DIRS}")
 
-include_directories(${CMAKE_SOURCE_DIR} ${LIBCAMERA_INCLUDE_DIRS} )
-get_module_name("${CMAKE_CURRENT_LIST_DIR}")
+
+get_module_name(${CMAKE_CURRENT_LIST_DIR})
+# include_directories(${MODULE_NAME} ${LIBCAMERA_INCLUDE_DIRS})
 target_link_libraries(${MODULE_NAME} PUBLIC PkgConfig::LIBCAMERA)
 
 # Register the unit test build
