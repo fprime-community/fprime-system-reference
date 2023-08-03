@@ -23,14 +23,14 @@ We recommend you to test your XBee radios before implementing them into the F Pr
 
 ## 2. Topology Changes for UART Driver
 
-Find the following code snippets and uncomment them in the `SystemReference/Top/topology.fpp` file. 
+Find the following code snippets and uncomment them in the `SystemReference/Top/topology.fpp` file.
+
+All segments you need to uncomment start with `# XBee Radio Integration`
 
 ```
-Line: 111 * Subject to change * 
 #      rateGroup1Comp.RateGroupMemberOut[4] -> radio.run
 ```
 ```
-Line: 145-148 * Subject to change *
 #    connections Radio {
 #      radio.allocate -> comBufferManager.bufferGetCallee
 #      radio.deallocate -> comBufferManager.bufferSendIn
@@ -42,8 +42,9 @@ Line: 145-148 * Subject to change *
 
 Find the following code snippets and uncomment them in `SystemReference/Top/instances.fpp` file.
 
+All segments you need to uncomment start with `# XBee Radio Integration`
+
 ```
-Line: 334-380
 # instance comDriver: Drv.LinuxUartDriver base id 0x4000 {
 #    phase Fpp.ToCpp.Phases.configConstants """
 #    enum {
@@ -80,7 +81,6 @@ Line: 334-380
 ```
 
 ```
-Line 263-266
 #  instance radio: Com.XBee base id 0x1200 \
 #    queue size Default.queueSize \
 #    stack size Default.stackSize \
@@ -88,8 +88,10 @@ Line 263-266
 ```
 
 Comment out the following:
+
+All segments you need to comment out start with `# TCP/IP Integration`
+
 ```
-Line: 297-332
   instance radio: Svc.ComStub base id 0x1200
 
 #  @ Communications driver. May be swapped with other comm drivers like UART
