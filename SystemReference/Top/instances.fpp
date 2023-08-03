@@ -260,6 +260,7 @@ module SystemReference {
 
     }
 
+# XBee Radio Integration
 #  instance radio: Com.XBee base id 0x1200 \
 #    queue size Default.queueSize \
 #    stack size Default.stackSize \
@@ -294,6 +295,7 @@ module SystemReference {
   # ----------------------------------------------------------------------
 
   # NOTE: use only one of XBee or comStub
+  # TCP/IP Integration
   instance radio: Svc.ComStub base id 0x1200
 
 #  @ Communications driver. May be swapped with other comm drivers like UART
@@ -331,6 +333,7 @@ module SystemReference {
 
  }
 
+# XBee Radio Integration
 # instance comDriver: Drv.LinuxUartDriver base id 0x4000 {
 #    phase Fpp.ToCpp.Phases.configConstants """
 #    enum {
