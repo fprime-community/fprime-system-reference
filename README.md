@@ -81,4 +81,4 @@ After logging into the Raspberry Pi via SSH, you can run the Ref deployment as f
 ```
 ### Device Wiring
 
-![wiring diagram](../img/wiring-diagram.png)
+![wiring diagram](./docs/img/wiring-diagram.png)

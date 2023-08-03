@@ -6,7 +6,7 @@
 
 #include "Fw/Types/BasicTypes.hpp"
 #include <SystemReference/Payload/Camera/Camera.hpp>
-#include <libcamera.h>
+#include <libcamera/libcamera.h>
 #include <errno.h>
 #include <unistd.h>
 
@@ -72,11 +72,15 @@ namespace Payload {
     libcamera::FrameBufferAllocator *allocator = new libcamera::FrameBufferAllocator(m_capture);
     libcamera::StreamConfiguration streamConfig = m_capture->generateConfiguration( { libcamera::StreamRole::StillCapture } )->at(0);
     libcamera::Stream *stream = streamConfig.stream();
+
+    // determine buffer size required
+    unsigned int imgSize = streamConfig.size.height * streamConfig.size.width;
     // Set up buffer for image data
     const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers = allocator->buffers(stream);
 
-    unsigned int imgSize = streamConfig.size.height * streamConfig.size.width;
     Fw::Buffer imgBuffer = allocate_out(0, imgSize);
+    // check to see if the buffer is the correct size
+    // if not, emit a InvalidBufferSizeError event
     if(buffers.max_size() < imgSize || imgBuffer.getSize() < imgSize) {
       this->log_WARNING_HI_InvalidBufferSizeError(buffers.max_size(), imgSize);
       allocator->free(stream);
@@ -109,10 +113,10 @@ namespace Payload {
       const libcamera::Request::BufferMap &buffers = requestReceived->buffers();
       for (auto bufferPair : buffers) {
         libcamera::FrameBuffer *buffer = bufferPair.second;
+        // copy data to framework buffer
         memcpy(imgBuffer.getData(), buffer, imgSize);
         switch (cameraAction.e) {
           case CameraAction::PROCESS:
-            // need to figure out how to specify the libcamera FrameBuffer type in FPP
             rawImageData.setimgData(imgBuffer);
             rawImageData.setheight(streamConfig.size.height);
             rawImageData.setwidth(streamConfig.size.width);
@@ -121,7 +125,6 @@ namespace Payload {
             this->process_out(0, rawImageData);
             break;
           case CameraAction::SAVE:
-            // need to figure out how to specify the libcamera FrameBuffer type in FPP
             this->save_out(0, imgBuffer);
             this->log_ACTIVITY_LO_CameraSave();
             break;

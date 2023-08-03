@@ -8,7 +8,7 @@
 #define Camera_HPP
 
 #include "SystemReference/Payload/Camera/CameraComponentAc.hpp"
-#include <libcamera.h>
+#include <libcamera/libcamera.h>
 
 namespace Payload {
 
