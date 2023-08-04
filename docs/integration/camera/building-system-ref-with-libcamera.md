@@ -1,9 +1,8 @@
 # Building the System Reference with libcamera
 1. Open a terminal, source the project python virtual environment, and navigate to the `SystemReference` deployment
-2. Set the PKG_CONFIG_PATH variable to path to where the 
-libcamera pkgconfig is located:
+2. Set the PKG_CONFIG_PATH variable to the location where the libcamera pkgconfig directory is:
 ```bash
-export PKG_CONFIG_PATH=<libcamera-build-directory/lib/pkgconfig/>
+export PKG_CONFIG_PATH=<libcamera-build-directory>/lib/pkgconfig/
 ```
 3. Next run `fprime-util generate <options>` and `fprime-util build <options>` to build the System Reference
 
