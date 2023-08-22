@@ -55,7 +55,18 @@ namespace Payload {
 
   Camera ::~Camera() {}
 
-  // void Camera ::processRequest(libcamera::Request *request);
+  void Camera ::parameterUpdated(FwPrmIdType id) {
+    // Read the parameter value
+    Fw::ParamValid isValid;
+    ImgResolution resolution = this->paramGet_IMG_RESOLUTION(isValid);
+    FW_ASSERT(isValid == Fw::ParamValid::VALID, isValid);
+
+    if(PARAMID_IMG_RESOLUTION == id) {
+      // update the camera configuration to use the updated IMG_RESOLUTION parameter value
+      setCameraConfiguration(resolution);
+    }
+  }
+
   libcamera::Request *requestReceived;
   void Camera ::requestComplete(libcamera::Request *request) {
     if (request->status() == libcamera::Request::RequestCancelled) {
@@ -122,10 +133,6 @@ namespace Payload {
     m_capture->requestCompleted.connect(requestComplete);
   }
 
-  void Camera ::cleanupRequests() {
-    m_capture->requestCompleted.disconnect(requestComplete);
-  }
-
   // ----------------------------------------------------------------------
   // Command handler implementations
   // ----------------------------------------------------------------------
@@ -135,15 +142,20 @@ namespace Payload {
       this->log_WARNING_HI_CameraCaptureFail();
       return;
     }
+    // Read back the parameter value
+    Fw::ParamValid isValid;
+    ImgResolution currentResolution = this->paramGet_IMG_RESOLUTION(isValid);
+    // if the IMG_RESOLUTION parameter is invalid or not set, use the default image resolution
+    currentResolution = ((Fw::ParamValid::INVALID == isValid) || (Fw::ParamValid::UNINIT == isValid)) ? DEFAULT_IMG_RESOLTION : currentResolution;
 
+    // setup we need to do before we capture frames
     setCameraConfiguration(currentResolution);
-    allocateBuffers();
-
-    createBufferMap();
     Fw::Buffer imgBuffer;
-
+    allocateBuffers();
+    createBufferMap();
     configureRequests();
     
+    // start the camera
     if(!cameraStarted) {
       m_capture->start();
       cameraStarted = true;
@@ -158,59 +170,43 @@ namespace Payload {
       for (auto bufferPair : buffers) {
         libcamera::FrameBuffer *buffer = bufferPair.second;
         const libcamera::FrameMetadata &metadata = buffer->metadata();
-      
+
+        // allocate memory to the framework buffer for storing frame data
         imgBuffer = allocate_out(0, metadata.planes()[0].bytesused);
         // check to see if the buffer is the correct size
         // if not, emit a InvalidBufferSizeError event
         if(imgBuffer.getSize() < metadata.planes()[0].bytesused) {
           this->log_WARNING_HI_InvalidBufferSizeError(imgBuffer.getSize(), metadata.planes()[0].bytesused);
-          // cleanup(allocator, stream, imgBuffer);
+          cleanup(cameraConfig->at(0).stream(), imgBuffer);
           return;
         }
 
         // copy data to framework buffer
         memcpy(imgBuffer.getData(), mappedBuffers.find(buffer)->second.back().data(), metadata.planes()[0].bytesused);
         // just for testing purposes
-        std::ofstream MyFile("test_" + std::to_string(m_photoCount) + ".dat");
+        std::ofstream MyFile("capture_" + std::to_string(m_photoCount) + ".dat");
         for (int i = 0; i < metadata.planes()[0].bytesused; i++) {
           MyFile << mappedBuffers.find(buffer)->second.back().data()[i];
-          // printf("%c", imgBuffer.getData()[i]);
         }
         MyFile.close();
 
+        // need to debug the fatal we get here
         // this->save_out(0, imgBuffer);
         this->log_ACTIVITY_LO_CameraSave();
       }
     }
     // no data, send blank frame event
     else {
-      // cleanup(allocator, stream, imgBuffer);
+      cleanup(cameraConfig->at(0).stream(), imgBuffer);
       this->log_WARNING_HI_BlankFrame();
       return;
     }
-
-    // requestReceived = nullptr;
-    printf("cleanup\n");
-    // this->deallocate_out(0, imgBuffer);
-    for (auto &iter : mappedBuffers) {
-      for (auto &span : iter.second) {
-        munmap(span.data(), span.size());
-      }
-    }
-    mappedBuffers.clear();
-    frameBuffers.clear();
-    frameRequest = nullptr;
-    m_capture->requestCompleted.disconnect(requestComplete);
+    // cleanup we need to do after capturing frames
+    // ie: stop camera, deallocate memory, etc.
     cleanup(cameraConfig->at(0).stream(), imgBuffer);
     m_photoCount++;
     this->tlmWrite_photosTaken(m_photoCount);
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
-  }
-
-  void Camera ::ConfigImg_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq,
-                                    Payload::ImgResolution resolution) {
-
-    if(setCameraConfiguration(resolution)) this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
   }
 
   // Other methods
@@ -219,6 +215,8 @@ namespace Payload {
        this->log_WARNING_HI_ImgConfigSetFail(resolution);
       return false; 
     }
+
+    // need to stop the camera before configuring it
     if(cameraStarted) {
       m_capture->stop();
       cameraStarted = false;
@@ -277,23 +275,28 @@ namespace Payload {
   }
 
   void Camera :: cleanup(libcamera::Stream *stream, Fw::Buffer imgBuffer) {
+    printf("Clean up\n");
+    // remove requestCompleted signal
+    m_capture->requestCompleted.disconnect(requestComplete);
+    // stop camera
     if(cameraStarted) {
       m_capture->stop();
       cameraStarted = false;
     }
+    // deallocate mapped buffers
     for (auto &iter : mappedBuffers) {
       for (auto &span : iter.second) {
         munmap(span.data(), span.size());
       }
-    }
+    } 
     mappedBuffers.clear();
     frameBuffers.clear();
     frameRequest = nullptr;
+    // free buffers previously allocated for stream
     allocator->free(stream);
-    // need to do after the image has been saved
     delete allocator;
     allocator = nullptr;
-    printf("deallocate img buffer\n");
+    // dellocate framework image buffer
     this->deallocate_out(0, imgBuffer);
   }
 

@@ -30,7 +30,8 @@ Requirements:
    - Python virtual environment with fprime-fpp, fprime-tools, and fprime-gds installed
 4. Cross-Compilation tools for ARM
    - For steps on how to install all the dependencies required for cross-compiling for different architectures, see the [F´ Cross-Compilation Setup Tutorial](https://github.com/nasa/fprime/blob/devel/docs/Tutorials/CrossCompilationSetup/CrossCompilationSetupTutorial.md).
-5. Raspberry Pi
+5. Raspberry Pi with Bullseye OS
+   - In order to run the System Reference with libcamera, Bullseye OS is required. In addition, the firmware version may need to be upgraded in the event the system is configured to use the legacy camera stack.
 
 
 ## Clone the F´ System Reference
@@ -79,5 +80,5 @@ After logging into the Raspberry Pi via SSH, you can run the Ref deployment as f
 ./SystemReference -a <ground system ip> -p 50000
 ```
 
-
+### RPI Wiring
 ![wiring diagram](./docs/img/wiring-diagram.png)

@@ -40,19 +40,20 @@ namespace Payload {
       //!
       bool open(I32 deviceIndex = 0);
 
+      // allocate buffers
       void allocateBuffers();
-
       void createBufferMap();
-
-      // void createRequests();
-
-      // Other methods
+      
+      // update camera configuration based on specified resolution
       bool setCameraConfiguration(ImgResolution resolution);
 
+      // parameter updates
+      void parameterUpdated(FwPrmIdType id);
+
+      // create or re-use request
       void configureRequests();
 
-      void cleanupRequests();
-
+      // stop camera, deallocate memory, etc. 
       void cleanup(libcamera::Stream *stream, Fw::Buffer imgBuffer);
 
       //! Destroy object Camera
@@ -82,6 +83,7 @@ namespace Payload {
           Payload::ImgResolution resolution
       );
 
+      const ImgResolution DEFAULT_IMG_RESOLTION = ImgResolution::SIZE_640x480;
       U32 m_photoCount;
       std::unique_ptr<libcamera::CameraManager> camManager;
       std::shared_ptr<libcamera::Camera> m_capture;

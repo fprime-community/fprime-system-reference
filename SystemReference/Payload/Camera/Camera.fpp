@@ -42,6 +42,12 @@ module Payload {
         @ Telemetry port
         telemetry port Tlm
 
+        @ Port to return the value of a parameter
+        param get port prmGetOut
+
+        @Port to set the value of a parameter
+        param set port prmSetOut
+
         # ----------------------------------------------------------------------
         # Commands
         # ----------------------------------------------------------------------
@@ -49,12 +55,6 @@ module Payload {
         @ Capture image and save the raw data
         async command CaptureImage() \
         opcode 0x01
-
-        @ Command to configure image
-        async command ConfigImg(
-            resolution: ImgResolution
-            ) \
-        opcode 0x03
 
         # ----------------------------------------------------------------------
         # Events
@@ -84,7 +84,7 @@ module Payload {
             resolution: ImgResolution @< Image size,
             ) \
         severity activity high \
-        format "The image has resolution {}" \
+        format "The image resolution has been set to {}" \
 
         @ Failed to set size and color format
         event ImgConfigSetFail(
@@ -112,6 +112,14 @@ module Payload {
 
         @ Total number of files captured
         telemetry photosTaken: U32 id 0 update on change
+
+
+        # ----------------------------------------------------------------------
+        # Parameters
+        # ----------------------------------------------------------------------
+        
+        @ Image resolution that the camera should be configured for
+        param IMG_RESOLUTION: ImgResolution
 
     }
 }
