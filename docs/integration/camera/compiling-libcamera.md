@@ -1,7 +1,7 @@
 ## Compiling libcamera for Native Linux
 To compile libcamera for Native Linux, do the below:
 ```bash
-meson build -Dprefix=<path-to-system-reference-root>/libcamera/build/
+meson setup build -Dprefix=<path-to-system-reference-root>/libcamera/build/
 cd build
 ninja
 ninja install
@@ -21,7 +21,7 @@ export PATH=$RPI_TOOLS:$PATH
 
 For ARM 64-bit:
 ```bash
-meson build -Dprefix=<path-to-system-reference-root>/libcamera/build/ --cross-file ../libcamera-aarch64.txt
+meson setup build -Dprefix=<path-to-system-reference-root>/libcamera/build/ -Dpipelines=rpi/vc4 -Dipas=rpi/vc4 --cross-file ../libcamera-aarch64.txt
 cd build
 ninja
 ninja install
@@ -29,7 +29,7 @@ ninja install
 
 For ARM 32-bit:
 ```bash
-meson build -Dprefix=<path-to-system-reference-root>/libcamera/build/ --cross-file ../libcamera-aarch32.txt
+meson setup build -Dprefix=<path-to-system-reference-root>/libcamera/build/ -Dpipelines=rpi/vc4 -Dipas=rpi/vc4 --cross-file ../libcamera-aarch32.txt
 cd build
 ninja
 ninja install

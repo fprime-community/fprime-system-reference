@@ -1,16 +1,12 @@
 module Payload {
 
     enum ImgResolution { SIZE_640x480 = 0 , SIZE_800x600 = 1 }
-    enum CameraAction { SAVE = 0, PROCESS = 1 }
 
     @ Component to capture raw images
     active component Camera {
         # ----------------------------------------------------------------------
         # General ports
         # ----------------------------------------------------------------------
-
-        @ Sends photo to another component to get processed
-        output port process: ImageData
 
         @ Allocates memory to hold photo buffers
         output port allocate: Fw.BufferGet
@@ -50,10 +46,8 @@ module Payload {
         # Commands
         # ----------------------------------------------------------------------
 
-        @ Set the action that camera should take
-        async command TakeAction(
-            cameraAction: CameraAction @< State where camera either saves or takes photo
-            ) \
+        @ Capture image and save the raw data
+        async command CaptureImage() \
         opcode 0x01
 
         @ Command to configure image
@@ -80,16 +74,10 @@ module Payload {
         severity activity low \
         format "Image was saved"
 
-        event CameraProcess \
-        severity activity low \
-        format "Image will be processed" \
-
-        @ Camera failed to take action: save or process
-        event CameraTakeActionFail(
-            action: CameraAction
-            ) \
+        @ Camera failed to capture image
+        event CameraCaptureFail \
         severity warning high \
-        format "Camera failed to take action {}"
+        format "Camera failed to capture image"
 
         @ Event image configuration has been set
         event SetImgConfig(

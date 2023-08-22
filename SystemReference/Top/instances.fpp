@@ -229,37 +229,6 @@ module SystemReference {
 
     }
 
-
-   instance imageProcessor: Payload.ImageProcessor base id 0x1000 \
-    queue size 30 \
-    stack size Default.stackSize \
-    priority 100 
-
-   instance processedImageBufferLogger: Svc.BufferLogger base id 0x1100 \
-    queue size 30 \
-    stack size Default.stackSize \
-    priority 100 \
-    {
-        phase Fpp.ToCpp.Phases.configConstants """
-        enum {
-            MAX_FILE_SIZE = 1024*1024,
-            SIZE_OF_SIZE = 4,
-            };
-        """
-
-        phase Fpp.ToCpp.Phases.configComponents """
-        const char* const filename = "/home/pi/images/process/processedImage";
-        const char* const filetype = ".data";
-        processedImageBufferLogger.initLog(
-            filename,
-            filetype,
-            ConfigConstants::processedImageBufferLogger::MAX_FILE_SIZE,
-            ConfigConstants::processedImageBufferLogger::SIZE_OF_SIZE
-        );
-        """
-
-    }
-
 #  instance radio: Com.XBee base id 0x1200 \
 #    queue size Default.queueSize \
 #    stack size Default.stackSize \
