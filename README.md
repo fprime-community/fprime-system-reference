@@ -82,7 +82,7 @@ After logging into the Raspberry Pi via SSH, you can run the Ref deployment as f
 ```
 
 ## Examples
-- [Camera Component Tutorial](./docs//integration/camera/example.md) - Tutorial on how to captures frames, downlink the image data to the ground, and how to process it as PNG or JPEG.
+- [Camera Component Tutorial](./docs//integration/camera/example.md) - Tutorial on how to capture frames, downlink the image data to the ground, and how to process it as PNG or JPEG.
 
 ### RPI Wiring
 ![wiring diagram](./docs/img/wiring-diagram.png)
