@@ -33,15 +33,15 @@ From the project root, navigate to the ground tools directory: `cd ground-tools`
 
 Process the image data as PNG by running:
 ```
-python process_raw_image.py -in <.dat filename on ground> -r <image resolution, 640x480 or 800x600> -f PNG
+python process_raw_image.py -i <.dat filename on ground> -r <image resolution, 640x480 or 800x600> -f PNG
 ```
 
 Process the image data as JPEG by running:
 ```
-python process_raw_image.py -in <.dat filename on ground> -r <image resolution, 640x480 or 800x600>  -f JPEG
+python process_raw_image.py -i <.dat filename on ground> -r <image resolution, 640x480 or 800x600>  -f JPEG
 ```
 
-Processed images will be saved in the current working directory as the input file name followed by the .png or .jpg extension.
+Processed images will be saved in the same directory as the input file as the input file name followed by the .png or .jpg extension.
 
 
 
