@@ -6,4 +6,4 @@
 ## Usage
 `process_raw_image.py`: Script that takes in a .dat file consisting of raw images data and processes it as either JPEG or PNG. Run the script with the `--help` option for more details.
 
-Example: `python process_raw_image.py -in capture_1.dat -f PNG -r 800x600`
+Example: `python process_raw_image.py -i capture_1.dat -f PNG -r 800x600`

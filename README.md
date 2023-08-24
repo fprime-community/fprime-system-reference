@@ -26,6 +26,7 @@ Requirements:
 1. Linux OS
 2. libcamera
    - For libcamera dependencies, please see the list [here](https://github.com/raspberrypi/libcamera#dependencies). Ensure that the required dependencies are installed before building libcamera (steps for building libcamera are in the [Setup libcamera](#build-libcamera)) section below.
+   - In addition, will need pkg-config installed
 3. F Prime Environment
    - Python virtual environment with fprime-fpp, fprime-tools, and fprime-gds installed
 4. Cross-Compilation tools for ARM
@@ -81,7 +82,7 @@ After logging into the Raspberry Pi via SSH, you can run the Ref deployment as f
 ```
 
 ## Examples
-- [Camera Component Tutorial](./docs//integration/camera/example.md) - Tutorial on how to captures frames, downlink the image data to the ground, and how to process it as PNG or JPEG.
+- [Camera Component Tutorial](./docs//integration/camera/example.md) - Tutorial on how to capture frames, downlink the image data to the ground, and how to process it as PNG or JPEG.
 
 ### RPI Wiring
 ![wiring diagram](./docs/img/wiring-diagram.png)
