@@ -59,7 +59,12 @@ module Payload {
         # ----------------------------------------------------------------------
         # Events
         # ----------------------------------------------------------------------
-
+        
+        @ Event where no camera was detected
+        event CameraNotDetected \
+        severity warning high \
+        format "No cameras were detected" \
+        
         @ Event where error occurred when setting up camera
         event CameraOpenError \
         severity warning high \

@@ -43,15 +43,14 @@ namespace Payload {
       // allocate buffers
       void allocateBuffers();
       void createBufferMap();
+      // create or re-use request
+      void configureRequests();
       
       // update camera configuration based on specified resolution
       bool setCameraConfiguration(ImgResolution resolution);
 
       // parameter updates
       void parameterUpdated(FwPrmIdType id);
-
-      // create or re-use request
-      void configureRequests();
 
       // stop camera, deallocate memory, etc. 
       void cleanup(libcamera::Stream *stream, Fw::Buffer imgBuffer);
@@ -75,14 +74,6 @@ namespace Payload {
           const U32 cmdSeq /*!< The command sequence number*/
       );
 
-      //! Implementation for ConfigImg command handler
-      //! Command to configure image
-      void ConfigImg_cmdHandler(
-          const FwOpcodeType opCode, /*!< The opcode*/
-          const U32 cmdSeq, /*!< The command sequence number*/
-          Payload::ImgResolution resolution
-      );
-
       const ImgResolution DEFAULT_IMG_RESOLTION = ImgResolution::SIZE_640x480;
       U32 m_photoCount;
       std::unique_ptr<libcamera::CameraManager> camManager;
@@ -94,7 +85,6 @@ namespace Payload {
 	    std::map<libcamera::FrameBuffer *, std::vector<libcamera::Span<uint8_t>>> mappedBuffers;
       std::map<libcamera::Stream *, std::queue<libcamera::FrameBuffer *>> frameBuffers;
       bool cameraStarted = false;
-      ImgResolution currentResolution = ImgResolution::SIZE_640x480;
     };
 
 } // end namespace Payload

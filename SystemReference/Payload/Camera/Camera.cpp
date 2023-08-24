@@ -26,20 +26,23 @@ namespace Payload {
     CameraComponentBase::init(queueDepth, instance);
     camManager = std::make_unique<libcamera::CameraManager>();
   }
-
+  // start camera manager and acquire camera
+  // return true on success, false otherwise
   bool Camera::open(I32 deviceIndex) {
     int returnCode = camManager->start();
     // check to see if the camera manager was started successfully
-    // and if any cameras were detected
-    if (returnCode == 0 && !camManager->cameras().empty()) {
+    if (returnCode == 0) {
+      // if no cameras were detected, emit a CameraNotDetect event
+      if(camManager->cameras().empty()) {
+        this->log_WARNING_HI_CameraNotDetected();
+        return false;
+      }
       // get the camera from the CameraManager and acquire it
       m_capture = camManager->cameras()[deviceIndex];
-      int returnCode = m_capture->acquire();
+      returnCode = m_capture->acquire();
 
       // camera was acquired successfully
       if (returnCode == 0) {
-        // setCameraConfiguration(ImgResolution::SIZE_640x480);
-        // allocateBuffers();
         return true;
       }
       // camera was previously acquired, emit a CameraAlreadyOpen event
@@ -48,7 +51,7 @@ namespace Payload {
         return true;
       }
     }
-    // no cameras were detected or some error occurred, emit a CameraOpenError event
+    // some other error occurred, emit a CameraOpenError event
     this->log_WARNING_HI_CameraOpenError();
     return false;
   }
@@ -88,7 +91,6 @@ namespace Payload {
     libcamera::StreamConfiguration streamConfig = cameraConfig->at(0);
     libcamera::Stream *stream = streamConfig.stream();
     const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers = allocator->buffers(stream);
-
     for (const std::unique_ptr<libcamera::FrameBuffer> &buffer : buffers) {
       size_t buffer_size = 0;
       for (unsigned i = 0; i < buffer->planes().size(); i++) {
@@ -100,6 +102,7 @@ namespace Payload {
           buffer_size = 0;
         }
       }
+      // multiple buffers may be allocated for the stream so we keep track of each
       frameBuffers[stream].push(buffer.get());
 	  }
   }
@@ -109,6 +112,7 @@ namespace Payload {
     printf("Creating requests\n");
     libcamera::Stream *stream = cameraConfig->at(0).stream();
     if (free_buffers[stream].empty()) {
+      // might want to return something here so we can check for success/failure later on
       return;
     }
     else {
@@ -126,6 +130,8 @@ namespace Payload {
             int returnCode = frameRequest->addBuffer(stream, buffer);
             // success return code
             if(returnCode == 0) {
+              // might want to return something here so we can check for success/failure later on
+              return;
             }
         }
       }
@@ -170,23 +176,24 @@ namespace Payload {
       for (auto bufferPair : buffers) {
         libcamera::FrameBuffer *buffer = bufferPair.second;
         const libcamera::FrameMetadata &metadata = buffer->metadata();
+        unsigned int bytesUsed =  metadata.planes()[0].bytesused;  
 
         // allocate memory to the framework buffer for storing frame data
-        imgBuffer = allocate_out(0, metadata.planes()[0].bytesused);
+        imgBuffer = allocate_out(0, bytesUsed);
         // check to see if the buffer is the correct size
         // if not, emit a InvalidBufferSizeError event
-        if(imgBuffer.getSize() < metadata.planes()[0].bytesused) {
-          this->log_WARNING_HI_InvalidBufferSizeError(imgBuffer.getSize(), metadata.planes()[0].bytesused);
+        if(imgBuffer.getSize() < bytesUsed) {
+          this->log_WARNING_HI_InvalidBufferSizeError(imgBuffer.getSize(), bytesUsed);
           cleanup(cameraConfig->at(0).stream(), imgBuffer);
           return;
         }
 
         // copy data to framework buffer
-        memcpy(imgBuffer.getData(), mappedBuffers.find(buffer)->second.back().data(), metadata.planes()[0].bytesused);
+        memcpy(imgBuffer.getData(), mappedBuffers.find(buffer)->second.back().data(), bytesUsed);
         // just for testing purposes
         std::ofstream MyFile("capture_" + std::to_string(m_photoCount) + ".dat");
-        for (int i = 0; i < metadata.planes()[0].bytesused; i++) {
-          MyFile << mappedBuffers.find(buffer)->second.back().data()[i];
+        for (int i = 0; i < imgBuffer.getSize(); i++) {
+          MyFile << imgBuffer.getData()[i];
         }
         MyFile.close();
 
@@ -263,7 +270,6 @@ namespace Payload {
         return false;
       }
 
-      currentResolution = resolution;
       this->log_ACTIVITY_HI_SetImgConfig(resolution);
       return true;
     }
