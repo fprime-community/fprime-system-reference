@@ -73,15 +73,15 @@ namespace Payload {
     if (request->status() == libcamera::Request::RequestCancelled) {
       return;
     }
-    requestReceived = request;
+    requestReceivedPtr = request;
   }
 
   void Camera ::allocateBuffers() {
-    allocator = new libcamera::FrameBufferAllocator(m_capture);
+    allocatorPtr = new libcamera::FrameBufferAllocator(m_capture);
     libcamera::Stream *stream = cameraConfig->at(0).stream();
     // Set up buffer for image data
-    allocator->allocate(stream);
-    const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers = allocator->buffers(stream);
+    allocatorPtr->allocate(stream);
+    const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers = allocatorPtr->buffers(stream);
     for (const std::unique_ptr<libcamera::FrameBuffer> &buffer : buffers) {
       size_t buffer_size = 0;
       for (unsigned i = 0; i < buffer->planes().size(); i++) {
@@ -94,33 +94,22 @@ namespace Payload {
         }
       }
       // multiple buffers may be allocated for the stream so we keep track of each
-      frameBuffers[stream].push(buffer.get());
+      availableFrameBuffers[stream].push(buffer.get());
 	  }
   }
 
   void Camera::configureRequests() {
-    auto free_buffers(frameBuffers);
     libcamera::Stream *stream = cameraConfig->at(0).stream();
-    if (free_buffers[stream].empty()) {
-      // might want to return something here so we can check for success/failure later on
-      return;
-    }
-    else {
-      // request was previously created, re-use it
-      if(frameRequest) {
-        frameRequest->reuse(libcamera::Request::ReuseBuffers);
+    if (!availableFrameBuffers[stream].empty()) {
+      // create an empty frame capture request for the application to fill with buffers
+      std::unique_ptr<libcamera::Request> request = m_capture->createRequest();
+      if(request) {
+          frameRequest = std::move(request);
+          libcamera::FrameBuffer *buffer = availableFrameBuffers[stream].front();
+          availableFrameBuffers[stream].pop();
+          frameRequest->addBuffer(stream, buffer);
+          m_capture->requestCompleted.connect(this, &Camera::requestComplete);
       }
-      else {
-        // create an empty frame capture request for the application to fill with buffers
-        std::unique_ptr<libcamera::Request> request = m_capture->createRequest();
-        if(request) {
-            frameRequest = std::move(request);
-            libcamera::FrameBuffer *buffer = free_buffers[stream].front();
-            free_buffers[stream].pop();
-            frameRequest->addBuffer(stream, buffer);
-        }
-      }
-      m_capture->requestCompleted.connect(this, &Camera::requestComplete);
     }
   }
 
@@ -130,6 +119,7 @@ namespace Payload {
 
   void Camera ::CaptureImage_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq) {
     if(!m_capture) {
+      this->log_WARNING_HI_CameraNotDetected();
       this->log_WARNING_HI_CameraCaptureFail();
       return;
     }
@@ -151,12 +141,12 @@ namespace Payload {
       cameraStarted = true;
     }
     // queue request for capture
-    int res = m_capture->queueRequest(frameRequest.get());
-    // wait a few seconds
+    m_capture->queueRequest(frameRequest.get());
+    // wait a few seconds for the request to complete
     sleep(3);
     // check to see if the request was completed
-    if (requestReceived && requestReceived->status() == libcamera::Request::RequestComplete) {
-      const libcamera::Request::BufferMap &buffers = requestReceived->buffers();
+    if (requestReceivedPtr && requestReceivedPtr->status() == libcamera::Request::RequestComplete) {
+      const libcamera::Request::BufferMap &buffers = requestReceivedPtr->buffers();
       for (auto bufferPair : buffers) {
         libcamera::FrameBuffer *buffer = bufferPair.second;
         const libcamera::FrameMetadata &metadata = buffer->metadata();
@@ -195,6 +185,7 @@ namespace Payload {
   // update camera configuration based on specified resolution
   bool Camera ::setCameraConfiguration(ImgResolution resolution) {
      if(!m_capture) {
+       this->log_WARNING_HI_CameraNotDetected();
        this->log_WARNING_HI_ImgConfigSetFail(resolution);
       return false; 
     }
@@ -252,7 +243,7 @@ namespace Payload {
     }
   }
 
-  void Camera :: cleanup() {
+  void Camera ::cleanup() {
     // remove requestCompleted signal
     m_capture->requestCompleted.disconnect(this, &Camera::requestComplete);
     // stop camera
@@ -267,12 +258,12 @@ namespace Payload {
       }
     } 
     mappedBuffers.clear();
-    frameBuffers.clear();
+    availableFrameBuffers.clear();
     frameRequest = nullptr;
     // free buffers previously allocated for stream
-    allocator->free(cameraConfig->at(0).stream());
-    delete allocator;
-    allocator = nullptr;
+    allocatorPtr->free(cameraConfig->at(0).stream());
+    delete allocatorPtr;
+    allocatorPtr = nullptr;
   }
 
 } // end namespace Payload
