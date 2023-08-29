@@ -69,7 +69,6 @@ namespace Payload {
     }
   }
 
-  libcamera::Request *requestReceived;
   void Camera ::requestComplete(libcamera::Request *request) {
     if (request->status() == libcamera::Request::RequestCancelled) {
       return;
@@ -121,7 +120,7 @@ namespace Payload {
             frameRequest->addBuffer(stream, buffer);
         }
       }
-      m_capture->requestCompleted.connect(requestComplete);
+      m_capture->requestCompleted.connect(this, &Camera::requestComplete);
     }
   }
 
@@ -255,7 +254,7 @@ namespace Payload {
 
   void Camera :: cleanup() {
     // remove requestCompleted signal
-    m_capture->requestCompleted.disconnect(requestComplete);
+    m_capture->requestCompleted.disconnect(this, &Camera::requestComplete);
     // stop camera
     if(cameraStarted) {
       m_capture->stop();

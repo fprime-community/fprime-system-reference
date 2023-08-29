@@ -20,13 +20,13 @@ export ARM_TOOLS_PATH=<path to installation directory of ARM cross compilers>
 #You can check to make sure the environment variable is set by running:
 echo $ARM_TOOLS_PATH
 
+# For Raspberry Pi/ARM 32-bit hardware
+# In: Deployment Folder
+fprime-util generate raspberrypi
+fprime-util build raspberrypi
+
 # For ARM 64-bit hardware
 # In: Deployment Folder
 fprime-util generate aarch64-linux
 fprime-util build aarch64-linux
-
-# For ARM 32-bit hardware
-# In: Deployment Folder
-fprime-util generate arm-hf-linux
-fprime-util build arm-hf-linux
  ```
