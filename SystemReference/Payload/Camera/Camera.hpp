@@ -53,7 +53,7 @@ namespace Payload {
       void parameterUpdated(FwPrmIdType id);
 
       // stop camera, deallocate memory, etc. 
-      void cleanup(libcamera::Stream *stream, Fw::Buffer imgBuffer);
+      void cleanup();
 
       //! Destroy object Camera
       //!
@@ -74,7 +74,7 @@ namespace Payload {
           const U32 cmdSeq /*!< The command sequence number*/
       );
 
-      const ImgResolution DEFAULT_IMG_RESOLTION = ImgResolution::SIZE_640x480;
+      const ImgResolution DEFAULT_IMG_RESOLUTION = ImgResolution::SIZE_640x480;
       U32 m_photoCount;
       std::unique_ptr<libcamera::CameraManager> camManager;
       std::shared_ptr<libcamera::Camera> m_capture;

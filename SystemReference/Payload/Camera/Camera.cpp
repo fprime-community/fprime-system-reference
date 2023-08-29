@@ -127,16 +127,11 @@ namespace Payload {
             frameRequest = std::move(request);
             libcamera::FrameBuffer *buffer = free_buffers[stream].front();
             free_buffers[stream].pop();
-            int returnCode = frameRequest->addBuffer(stream, buffer);
-            // success return code
-            if(returnCode == 0) {
-              // might want to return something here so we can check for success/failure later on
-              return;
-            }
+            frameRequest->addBuffer(stream, buffer);
         }
       }
+      m_capture->requestCompleted.connect(requestComplete);
     }
-    m_capture->requestCompleted.connect(requestComplete);
   }
 
   // ----------------------------------------------------------------------
@@ -152,7 +147,7 @@ namespace Payload {
     Fw::ParamValid isValid;
     ImgResolution currentResolution = this->paramGet_IMG_RESOLUTION(isValid);
     // if the IMG_RESOLUTION parameter is invalid or not set, use the default image resolution
-    currentResolution = ((Fw::ParamValid::INVALID == isValid) || (Fw::ParamValid::UNINIT == isValid)) ? DEFAULT_IMG_RESOLTION : currentResolution;
+    currentResolution = ((Fw::ParamValid::INVALID == isValid) || (Fw::ParamValid::UNINIT == isValid)) ? DEFAULT_IMG_RESOLUTION : currentResolution;
 
     // setup we need to do before we capture frames
     setCameraConfiguration(currentResolution);
@@ -184,7 +179,7 @@ namespace Payload {
         // if not, emit a InvalidBufferSizeError event
         if(imgBuffer.getSize() < bytesUsed) {
           this->log_WARNING_HI_InvalidBufferSizeError(imgBuffer.getSize(), bytesUsed);
-          cleanup(cameraConfig->at(0).stream(), imgBuffer);
+          this->deallocate_out(0, imgBuffer);
           return;
         }
 
@@ -198,19 +193,19 @@ namespace Payload {
         MyFile.close();
 
         // need to debug the fatal we get here
-        // this->save_out(0, imgBuffer);
+        this->save_out(0, imgBuffer);
         this->log_ACTIVITY_LO_CameraSave();
       }
     }
     // no data, send blank frame event
     else {
-      cleanup(cameraConfig->at(0).stream(), imgBuffer);
+      cleanup();
       this->log_WARNING_HI_BlankFrame();
       return;
     }
     // cleanup we need to do after capturing frames
     // ie: stop camera, deallocate memory, etc.
-    cleanup(cameraConfig->at(0).stream(), imgBuffer);
+    cleanup();
     m_photoCount++;
     this->tlmWrite_photosTaken(m_photoCount);
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
@@ -280,7 +275,7 @@ namespace Payload {
     }
   }
 
-  void Camera :: cleanup(libcamera::Stream *stream, Fw::Buffer imgBuffer) {
+  void Camera :: cleanup() {
     printf("Clean up\n");
     // remove requestCompleted signal
     m_capture->requestCompleted.disconnect(requestComplete);
@@ -299,11 +294,9 @@ namespace Payload {
     frameBuffers.clear();
     frameRequest = nullptr;
     // free buffers previously allocated for stream
-    allocator->free(stream);
+    allocator->free(cameraConfig->at(0).stream());
     delete allocator;
     allocator = nullptr;
-    // dellocate framework image buffer
-    this->deallocate_out(0, imgBuffer);
   }
 
 } // end namespace Payload
