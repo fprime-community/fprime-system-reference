@@ -24,7 +24,6 @@ namespace Payload {
 
   void Camera ::init(const NATIVE_INT_TYPE queueDepth, const NATIVE_INT_TYPE instance) {
     CameraComponentBase::init(queueDepth, instance);
-    camManager = std::make_unique<libcamera::CameraManager>();
   }
   // start camera manager and acquire camera
   // return true on success, false otherwise
@@ -81,15 +80,9 @@ namespace Payload {
   void Camera ::allocateBuffers() {
     printf("Allocating buffers\n");
     allocator = new libcamera::FrameBufferAllocator(m_capture);
-    libcamera::StreamConfiguration streamConfig = cameraConfig->at(0);
-    libcamera::Stream *stream = streamConfig.stream();
+    libcamera::Stream *stream = cameraConfig->at(0).stream();
     // Set up buffer for image data
     allocator->allocate(stream);
-  }
-
-  void Camera ::createBufferMap() {
-    libcamera::StreamConfiguration streamConfig = cameraConfig->at(0);
-    libcamera::Stream *stream = streamConfig.stream();
     const std::vector<std::unique_ptr<libcamera::FrameBuffer>> &buffers = allocator->buffers(stream);
     for (const std::unique_ptr<libcamera::FrameBuffer> &buffer : buffers) {
       size_t buffer_size = 0;
@@ -153,7 +146,6 @@ namespace Payload {
     setCameraConfiguration(currentResolution);
     Fw::Buffer imgBuffer;
     allocateBuffers();
-    createBufferMap();
     configureRequests();
     
     // start the camera
@@ -183,16 +175,8 @@ namespace Payload {
           return;
         }
 
-        // copy data to framework buffer
+        // copy data to framework buffer and send it to the BufferLogger
         memcpy(imgBuffer.getData(), mappedBuffers.find(buffer)->second.back().data(), bytesUsed);
-        // just for testing purposes
-        std::ofstream MyFile("capture_" + std::to_string(m_photoCount) + ".dat");
-        for (int i = 0; i < imgBuffer.getSize(); i++) {
-          MyFile << imgBuffer.getData()[i];
-        }
-        MyFile.close();
-
-        // need to debug the fatal we get here
         this->save_out(0, imgBuffer);
         this->log_ACTIVITY_LO_CameraSave();
       }
@@ -211,7 +195,7 @@ namespace Payload {
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
   }
 
-  // Other methods
+  // update camera configuration based on specified resolution
   bool Camera ::setCameraConfiguration(ImgResolution resolution) {
      if(!m_capture) {
        this->log_WARNING_HI_ImgConfigSetFail(resolution);
@@ -232,30 +216,26 @@ namespace Payload {
       return false; 
     }
 
-    libcamera::StreamConfiguration &streamConfig = cameraConfig->at(0);
-
     // set stream height and width
     switch (resolution.e) {
       case ImgResolution::SIZE_640x480:
-        streamConfig.size.width = 640;
-        streamConfig.size.height = 480;
+        cameraConfig->at(0).size.width = 640;
+        cameraConfig->at(0).size.height = 480;
         break;
       case ImgResolution::SIZE_800x600:
-        streamConfig.size.width = 800;
-        streamConfig.size.height = 600;
+        cameraConfig->at(0).size.width = 800;
+        cameraConfig->at(0).size.height = 600;
         break;
       default:
         FW_ASSERT(0);
     }
     
     // set the pixel format
-    streamConfig.pixelFormat = libcamera::formats::RGB888;
+    cameraConfig->at(0).pixelFormat = libcamera::formats::RGB888;
 
     // check to see if the configuration was valid
     libcamera::CameraConfiguration::Status validationStatus = cameraConfig->validate();
     if (validationStatus != libcamera::CameraConfiguration::Status::Invalid) {
-      printf("Validated camera configuration: ");
-      printf(streamConfig.toString().c_str());
       // apply the configuration and keep track of the return code
       int returnCode = m_capture->configure(cameraConfig.get());
 

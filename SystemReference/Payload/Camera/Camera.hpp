@@ -41,8 +41,8 @@ namespace Payload {
       bool open(I32 deviceIndex = 0);
 
       // allocate buffers
+
       void allocateBuffers();
-      void createBufferMap();
       // create or re-use request
       void configureRequests();
       
@@ -76,7 +76,7 @@ namespace Payload {
 
       const ImgResolution DEFAULT_IMG_RESOLUTION = ImgResolution::SIZE_640x480;
       U32 m_photoCount;
-      std::unique_ptr<libcamera::CameraManager> camManager;
+      std::unique_ptr<libcamera::CameraManager> camManager = std::make_unique<libcamera::CameraManager>();
       std::shared_ptr<libcamera::Camera> m_capture;
       std::unique_ptr<libcamera::CameraConfiguration> cameraConfig;
       libcamera::FrameBufferAllocator *allocator = nullptr;

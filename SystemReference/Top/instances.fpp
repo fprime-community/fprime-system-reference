@@ -217,8 +217,8 @@ module SystemReference {
         """
 
         phase Fpp.ToCpp.Phases.configComponents """
-        const char* const name = "/home/pi/images/save/saveImage";
-        const char* const type = ".data";
+        const char* const name = "/home/pi/images/saveImage";
+        const char* const type = ".dat";
         saveImageBufferLogger.initLog(
             name,
             type,
