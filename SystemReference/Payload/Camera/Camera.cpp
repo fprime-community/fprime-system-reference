@@ -78,7 +78,6 @@ namespace Payload {
   }
 
   void Camera ::allocateBuffers() {
-    printf("Allocating buffers\n");
     allocator = new libcamera::FrameBufferAllocator(m_capture);
     libcamera::Stream *stream = cameraConfig->at(0).stream();
     // Set up buffer for image data
@@ -102,7 +101,6 @@ namespace Payload {
 
   void Camera::configureRequests() {
     auto free_buffers(frameBuffers);
-    printf("Creating requests\n");
     libcamera::Stream *stream = cameraConfig->at(0).stream();
     if (free_buffers[stream].empty()) {
       // might want to return something here so we can check for success/failure later on
@@ -256,7 +254,6 @@ namespace Payload {
   }
 
   void Camera :: cleanup() {
-    printf("Clean up\n");
     // remove requestCompleted signal
     m_capture->requestCompleted.disconnect(requestComplete);
     // stop camera
