@@ -1,16 +1,12 @@
 module Payload {
 
     enum ImgResolution { SIZE_640x480 = 0 , SIZE_800x600 = 1 }
-    enum CameraAction { SAVE = 0, PROCESS = 1 }
 
     @ Component to capture raw images
     active component Camera {
         # ----------------------------------------------------------------------
         # General ports
         # ----------------------------------------------------------------------
-
-        @ Sends photo to another component to get processed
-        output port process: ImageData
 
         @ Allocates memory to hold photo buffers
         output port allocate: Fw.BufferGet
@@ -46,26 +42,29 @@ module Payload {
         @ Telemetry port
         telemetry port Tlm
 
+        @ Port to return the value of a parameter
+        param get port prmGetOut
+
+        @Port to set the value of a parameter
+        param set port prmSetOut
+
         # ----------------------------------------------------------------------
         # Commands
         # ----------------------------------------------------------------------
 
-        @ Set the action that camera should take
-        async command TakeAction(
-            cameraAction: CameraAction @< State where camera either saves or takes photo
-            ) \
+        @ Capture image and save the raw data
+        async command CaptureImage() \
         opcode 0x01
-
-        @ Command to configure image
-        async command ConfigImg(
-            resolution: ImgResolution
-            ) \
-        opcode 0x03
 
         # ----------------------------------------------------------------------
         # Events
         # ----------------------------------------------------------------------
-
+        
+        @ Event where no camera was detected
+        event CameraNotDetected \
+        severity warning high \
+        format "No cameras were detected" \
+        
         @ Event where error occurred when setting up camera
         event CameraOpenError \
         severity warning high \
@@ -80,16 +79,17 @@ module Payload {
         severity activity low \
         format "Image was saved"
 
-        event CameraProcess \
-        severity activity low \
-        format "Image will be processed" \
+        @ Camera failed to capture image
+        event CameraCaptureFail \
+        severity warning high \
+        format "Camera failed to capture image"
 
         @ Event image configuration has been set
         event SetImgConfig(
             resolution: ImgResolution @< Image size,
             ) \
         severity activity high \
-        format "The image has resolution {}" \
+        format "The image resolution has been set to {}" \
 
         @ Failed to set size and color format
         event ImgConfigSetFail(
@@ -117,6 +117,14 @@ module Payload {
 
         @ Total number of files captured
         telemetry photosTaken: U32 id 0 update on change
+
+
+        # ----------------------------------------------------------------------
+        # Parameters
+        # ----------------------------------------------------------------------
+        
+        @ Image resolution that the camera should be configured for
+        param IMG_RESOLUTION: ImgResolution
 
     }
 }

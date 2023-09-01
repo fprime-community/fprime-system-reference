@@ -1,0 +1,11 @@
+[binaries]
+c = 'arm-none-linux-gnueabihf-gcc'
+cpp = 'arm-none-linux-gnueabihf-g++'
+ar = 'arm-none-linux-gnueabihf-ar'
+strip = 'arm-none-linux-gnueabihf-strip'
+
+[host_machine]
+system = 'linux'
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+endian = 'little'

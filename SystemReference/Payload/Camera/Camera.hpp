@@ -8,9 +8,8 @@
 #define Camera_HPP
 
 #include "SystemReference/Payload/Camera/CameraComponentAc.hpp"
-#ifdef USES_OPENCV
-#include <opencv2/opencv.hpp>
-#endif
+#include <libcamera/libcamera.h>
+#include <queue>
 
 namespace Payload {
 
@@ -41,6 +40,20 @@ namespace Payload {
       //!
       bool open(I32 deviceIndex = 0);
 
+      // allocate buffers
+
+      void allocateBuffers();
+      // create or re-use request
+      void configureRequests();
+      
+      // update camera configuration based on specified resolution
+      bool setCameraConfiguration(ImgResolution resolution);
+
+      // parameter updates
+      void parameterUpdated(FwPrmIdType id);
+
+      // stop camera, deallocate memory, etc. 
+      void cleanup();
 
       //! Destroy object Camera
       //!
@@ -48,30 +61,30 @@ namespace Payload {
 
     PRIVATE:
 
+      void requestComplete(libcamera::Request *request);
+
       // ----------------------------------------------------------------------
       // Command handler implementations
       // ----------------------------------------------------------------------
 
-      //! Implementation for TakeAction command handler
-      //! Set the action that camera should take
-      void TakeAction_cmdHandler(
+      //! Implementation for CaptureImage command handler
+      //! Capture image and save the raw data
+      void CaptureImage_cmdHandler(
           const FwOpcodeType opCode, /*!< The opcode*/
-          const U32 cmdSeq, /*!< The command sequence number*/
-          Payload::CameraAction cameraAction /*!< State where camera either saves or takes photo*/
+          const U32 cmdSeq /*!< The command sequence number*/
       );
 
-      //! Implementation for ConfigImg command handler
-      //! Command to configure image
-      void ConfigImg_cmdHandler(
-          const FwOpcodeType opCode, /*!< The opcode*/
-          const U32 cmdSeq, /*!< The command sequence number*/
-          Payload::ImgResolution resolution
-      );
-
+      const ImgResolution DEFAULT_IMG_RESOLUTION = ImgResolution::SIZE_640x480;
       U32 m_photoCount;
-#ifdef USES_OPENCV
-      cv::VideoCapture m_capture;
-#endif
+      std::unique_ptr<libcamera::CameraManager> camManager = std::make_unique<libcamera::CameraManager>();
+      std::shared_ptr<libcamera::Camera> m_capture;
+      std::unique_ptr<libcamera::CameraConfiguration> cameraConfig;
+      libcamera::Request *requestReceivedPtr;
+      libcamera::FrameBufferAllocator *allocatorPtr = nullptr;
+      std::unique_ptr<libcamera::Request> frameRequest;
+	    std::map<libcamera::FrameBuffer *, std::vector<libcamera::Span<uint8_t>>> mappedBuffers;
+      std::map<libcamera::Stream *, std::queue<libcamera::FrameBuffer *>> availableFrameBuffers;
+      bool cameraStarted = false;
     };
 
 } // end namespace Payload

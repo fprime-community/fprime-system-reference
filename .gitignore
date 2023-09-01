@@ -1,0 +1,6 @@
+.vscode
+.idea
+venv
+**/logs
+**/build-artifacts
+**/build-fprime-*

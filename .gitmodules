@@ -2,3 +2,8 @@
 	path = fprime
 	url = https://github.com/nasa/fprime.git
 	branch = devel
+
+[submodule "libcamera"]
+	path = libcamera
+	url = https://github.com/raspberrypi/libcamera.git
+	branch = main
