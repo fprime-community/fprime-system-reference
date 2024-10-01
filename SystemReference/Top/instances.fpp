@@ -32,7 +32,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::rateGroup1Comp.configure(
+    rateGroup1Comp.configure(
         ConfigObjects::SystemReference_rateGroup1Comp::context,
         FW_NUM_ARRAY_ELEMENTS(ConfigObjects::SystemReference_rateGroup1Comp::context)
     );
@@ -51,7 +51,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::rateGroup2Comp.configure(
+    rateGroup2Comp.configure(
         ConfigObjects::SystemReference_rateGroup2Comp::context,
         FW_NUM_ARRAY_ELEMENTS(ConfigObjects::SystemReference_rateGroup2Comp::context)
     );
@@ -70,7 +70,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::rateGroup3Comp.configure(
+    rateGroup3Comp.configure(
         ConfigObjects::SystemReference_rateGroup3Comp::context,
         FW_NUM_ARRAY_ELEMENTS(ConfigObjects::SystemReference_rateGroup3Comp::context)
     );
@@ -100,7 +100,7 @@ module SystemReference {
     // File Downlink
     ConfigObjects::SystemReference_comQueue::configurationTable.entries[2] = {.depth = 100, .priority = 1};
     // Allocation identifier is 0 as the MallocAllocator discards it
-    SystemReference::comQueue.configure(ConfigObjects::SystemReference_comQueue::configurationTable, 0, Allocation::mallocator);
+    comQueue.configure(ConfigObjects::SystemReference_comQueue::configurationTable, 0, Allocation::mallocator);
     """
   }
 
@@ -116,7 +116,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::cmdSeq.allocateBuffer(
+    cmdSeq.allocateBuffer(
         0,
         Allocation::mallocator,
         ConfigConstants::SystemReference_cmdSeq::BUFFER_SIZE
@@ -124,7 +124,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.tearDownComponents """
-    SystemReference::cmdSeq.deallocateBuffer(Allocation::mallocator);
+    cmdSeq.deallocateBuffer(Allocation::mallocator);
     """
 
   }
@@ -145,7 +145,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::fileDownlink.configure(
+    fileDownlink.configure(
         ConfigConstants::SystemReference_fileDownlink::TIMEOUT,
         ConfigConstants::SystemReference_fileDownlink::COOLDOWN,
         ConfigConstants::SystemReference_fileDownlink::CYCLE_TIME,
@@ -251,7 +251,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::health.setPingEntries(
+    health.setPingEntries(
         ConfigObjects::SystemReference_health::pingEntries,
         FW_NUM_ARRAY_ELEMENTS(ConfigObjects::SystemReference_health::pingEntries),
         ConfigConstants::SystemReference_health::WATCHDOG_CODE
@@ -284,8 +284,8 @@ module SystemReference {
     if (state.hostName != nullptr && state.portNumber != 0) {
         Os::TaskString name("ReceiveTask");
         // Uplink is configured for receive so a socket task is started
-        SystemReference::comDriver.configure(state.hostName, state.portNumber);
-        SystemReference::comDriver.start(
+        comDriver.configure(state.hostName, state.portNumber);
+        comDriver.start(
             name,
             ConfigConstants::SystemReference_comDriver::PRIORITY,
             ConfigConstants::SystemReference_comDriver::STACK_SIZE
@@ -294,12 +294,12 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.stopTasks """
-    SystemReference::comDriver.stop();
+    comDriver.stop();
     """
     
 
     phase Fpp.ToCpp.Phases.freeThreads """
-    (void) SystemReference::comDriver.join();
+    (void) comDriver.join();
     """
 
  }
@@ -318,9 +318,9 @@ module SystemReference {
 #    if (state.hostName != nullptr) {
 #        Os::TaskString name("ReceiveTask");
 #        // Uplink is configured for receive so a socket task is started
-#        if (SystemReference::comDriver.open(state.hostName, static_cast<Drv::LinuxUartDriver::UartBaudRate>(state.portNumber), Drv::LinuxUartDriver::NO_FLOW,
+#        if (comDriver.open(state.hostName, static_cast<Drv::LinuxUartDriver::UartBaudRate>(state.portNumber), Drv::LinuxUartDriver::NO_FLOW,
 #                       Drv::LinuxUartDriver::PARITY_NONE, 1024)) {
-#            SystemReference::comDriver.start(
+#            comDriver.start(
 #                ConfigConstants::SystemReference_comDriver::PRIORITY,
 #                ConfigConstants::SystemReference_comDriver::STACK_SIZE
 #            );
@@ -331,11 +331,11 @@ module SystemReference {
 #    """
 #
 #    phase Fpp.ToCpp.Phases.stopTasks """
-#    SystemReference::comDriver.quitReadThread();
+#    comDriver.quitReadThread();
 #    """
 #
 #    phase Fpp.ToCpp.Phases.freeThreads """
-#    SystemReference::comDriver.join();
+#    comDriver.join();
 #    """
 # }
 
@@ -347,7 +347,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::framer.setup(ConfigObjects::SystemReference_framer::framing);
+    framer.setup(ConfigObjects::SystemReference_framer::framing);
     """
 
   }
@@ -384,7 +384,7 @@ module SystemReference {
       upBuffMgrBins.bins[3].bufferSize = 1024*1024*32;
       upBuffMgrBins.bins[3].numBuffers = 3;
 
-      SystemReference::comBufferManager.setup(
+      comBufferManager.setup(
           BUFFER_MANAGER_ID,
           0,
           Allocation::mallocator,
@@ -394,7 +394,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.tearDownComponents """
-    SystemReference::comBufferManager.cleanup();
+    comBufferManager.cleanup();
     """
 
   }
@@ -407,7 +407,7 @@ module SystemReference {
     """
     
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::rateGroupDriverComp.configure(
+    rateGroupDriverComp.configure(
         ConfigObjects::SystemReference_rateGroupDriverComp::rgDivs
     );
     """
@@ -422,7 +422,7 @@ module SystemReference {
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
-    SystemReference::deframer.setup(ConfigObjects::SystemReference_deframer::deframing);
+    deframer.setup(ConfigObjects::SystemReference_deframer::deframing);
     """
 
   }
@@ -431,7 +431,7 @@ module SystemReference {
   instance imu: Gnc.Imu base id 0x4C00 {
     phase Fpp.ToCpp.Phases.configComponents """
     // The AdaFruit board uses AD0 = 0
-    SystemReference::imu.setup(Gnc::Imu::I2cDevAddr::AD0_0);
+    imu.setup(Gnc::Imu::I2cDevAddr::AD0_0);
     """
   }
 
