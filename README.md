@@ -68,7 +68,7 @@ If compiling for ARM Linux, see the steps in the [Cross Compilation Tutorial](ht
 ## Upload to the Raspberry Pi
 To run the ground system:
 ```
-fprime-gds -n --dictionary raspberrypi/dict/SystemReferenceTopologyAppDictionary.xml
+fprime-gds -n --dictionary raspberrypi/dict/SystemReferenceTopologyDictionary.json
 ```
 
 To copy the binary to the Raspberry Pi 
