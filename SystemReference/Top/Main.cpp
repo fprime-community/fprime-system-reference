@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <ctype.h>
 
-#include <Os/Log.hpp>
+#include <Os/Console.hpp>
 #include <SystemReference/Top/SystemReferenceTopologyAc.hpp>
 
 void print_usage(const char* app) {
@@ -14,7 +14,7 @@ void print_usage(const char* app) {
 
 SystemReference::TopologyState state;
 // Enable the console logging provided by Os::Log
-Os::Log logger;
+Os::Console logger;
 
 volatile sig_atomic_t terminate = 0;
 
@@ -26,7 +26,7 @@ static void sighandler(int signum) {
 void run1cycle() {
     // call interrupt to emulate a clock
     SystemReference::blockDrv.callIsr();
-    Os::Task::delay(1000); //10Hz
+    Os::Task::delay(Fw::Time(1, 0)); //10Hz
 }
 
 void runcycles(NATIVE_INT_TYPE cycles) {
@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
 
     // Give time for threads to exit
     (void) printf("Waiting for threads...\n");
-    Os::Task::delay(1000);
+    Os::Task::delay(Fw::Time(1, 0));
 
     (void) printf("Exiting...\n");
 

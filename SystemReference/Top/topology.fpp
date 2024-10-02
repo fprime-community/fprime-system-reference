@@ -37,7 +37,7 @@ module SystemReference {
     instance fileManager
     instance fileUplink
     instance comBufferManager
-    instance linuxTime
+    instance posixTime
     instance prmDb
     instance rateGroup1Comp
     instance rateGroup2Comp
@@ -64,7 +64,7 @@ module SystemReference {
 
     text event connections instance textLogger
 
-    time connections instance linuxTime
+    time connections instance posixTime
 
     health connections instance $health
 
@@ -86,7 +86,7 @@ module SystemReference {
       framer.framedOut -> radio.comDataIn
       comDriver.deallocate -> comBufferManager.bufferSendIn
 
-      radio.drvDataOut -> comDriver.send
+      radio.drvDataOut -> comDriver.$send
       comDriver.ready -> radio.drvConnected
       radio.comStatus -> comQueue.comStatusIn
     }
