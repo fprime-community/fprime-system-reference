@@ -26,7 +26,7 @@ static void sighandler(int signum) {
 void run1cycle() {
     // call interrupt to emulate a clock
     SystemReference::blockDrv.callIsr();
-    Os::Task::delay(Fw::Time(1, 0)); //10Hz
+    Os::Task::delay(Fw::TimeInterval(1, 0)); //10Hz
 }
 
 void runcycles(NATIVE_INT_TYPE cycles) {
@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
 
     // Give time for threads to exit
     (void) printf("Waiting for threads...\n");
-    Os::Task::delay(Fw::Time(1, 0));
+    Os::Task::delay(Fw::TimeInterval(1, 0));
 
     (void) printf("Exiting...\n");
 

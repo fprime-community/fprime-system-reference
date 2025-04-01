@@ -36,6 +36,7 @@ module SystemReference {
     instance fileDownlink
     instance fileManager
     instance fileUplink
+    instance frameAccumulator
     instance comBufferManager
     instance posixTime
     instance prmDb
@@ -43,6 +44,7 @@ module SystemReference {
     instance rateGroup2Comp
     instance rateGroup3Comp
     instance rateGroupDriverComp
+    instance router
     instance textLogger
     instance deframer
     instance systemResources
@@ -130,15 +132,17 @@ module SystemReference {
       comDriver.allocate -> comBufferManager.bufferGetCallee
       comDriver.$recv -> radio.drvDataIn
 
-      radio.comDataOut -> deframer.framedIn
-      deframer.framedDeallocate -> comBufferManager.bufferSendIn
+      radio.comDataOut -> frameAccumulator.dataIn
+      frameAccumulator.frameOut -> deframer.framedIn
+      deframer.deframedOut -> router.dataIn
+      router.bufferDeallocate -> comBufferManager.bufferSendIn
 
-      deframer.comOut -> cmdDisp.seqCmdBuff
-      cmdDisp.seqCmdStatus -> deframer.cmdResponseIn
+      router.commandOut -> cmdDisp.seqCmdBuff
+      cmdDisp.seqCmdStatus -> router.cmdResponseIn
 
-      deframer.bufferAllocate -> comBufferManager.bufferGetCallee
-      deframer.bufferOut -> fileUplink.bufferSendIn
-      deframer.bufferDeallocate -> comBufferManager.bufferSendIn
+      frameAccumulator.bufferAllocate -> comBufferManager.bufferGetCallee
+      router.fileOut -> fileUplink.bufferSendIn
+      frameAccumulator.bufferDeallocate -> comBufferManager.bufferSendIn
       fileUplink.bufferSendOut -> comBufferManager.bufferSendIn
     }
 
@@ -163,3 +167,4 @@ module SystemReference {
   }
 
 }
+

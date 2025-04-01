@@ -6,6 +6,7 @@
 #include "SystemReference/Top/FppConstantsAc.hpp"
 #include "Svc/FramingProtocol/FprimeProtocol.hpp"
 #include "Fw/Logger/Logger.hpp"
+#include <Svc/FrameAccumulator/FrameDetector/FprimeFrameDetector.hpp>
 
 namespace SystemReference {
 
