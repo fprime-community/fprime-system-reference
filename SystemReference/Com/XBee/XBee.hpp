@@ -13,7 +13,7 @@
 
 namespace Com {
 
-class XBee : public XBeeComponentBase {
+class XBee final : public XBeeComponentBase {
   public:
     static const NATIVE_UINT_TYPE retryLimit = 10; // Arbitrary limit to the number of retries
     static const NATIVE_UINT_TYPE xbeeQuiescentTime_ms = 1000; // Milliseconds to quiesce the radio prior to sending +++

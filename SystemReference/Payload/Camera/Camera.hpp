@@ -13,7 +13,7 @@
 
 namespace Payload {
 
-  class Camera :
+  class Camera final :
     public CameraComponentBase
   {
 
