@@ -55,6 +55,7 @@ namespace SystemReference {
     namespace SystemReference_saveImageBufferLogger { enum {WARN = 3, FATAL = 5}; }
     namespace SystemReference_imageProcessor { enum {WARN = 3, FATAL = 5}; }
     namespace SystemReference_processedImageBufferLogger { enum {WARN = 3, FATAL = 5}; }
+    namespace SystemReference_tlmSend { enum {WARN = 3, FATAL = 5}; }
   }
 
 }

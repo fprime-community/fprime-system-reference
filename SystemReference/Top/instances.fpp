@@ -170,10 +170,24 @@ module SystemReference {
     stack size Default.stackSize \
     priority 98
 
-  instance chanTlm: Svc.TlmChan base id 0x0C00 \
-    queue size Default.queueSize \
-    stack size Default.stackSize \
-    priority 97
+  #instance tlmSend: Svc.TlmChan base id 0x0C00 \
+  #  queue size Default.queueSize \
+  #  stack size Default.stackSize \
+  #  priority 97
+
+  instance tlmSend: Svc.TlmPacketizer base id 0x0C00 \
+      queue size Default.queueSize \
+      stack size Default.stackSize \
+      priority 97 \
+  {
+    phase Fpp.ToCpp.Phases.configComponents """
+    tlmSend.setPacketList(
+       SystemReference::SystemReference_SystemReferencePacketsTlmPackets::packetList,
+       SystemReference::SystemReference_SystemReferencePacketsTlmPackets::omittedChannels,
+       1
+    );
+    """  
+  }
 
   instance prmDb: Svc.PrmDb base id 0x0D00 \
     queue size Default.queueSize \
