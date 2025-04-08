@@ -30,7 +30,7 @@ XBee ::XBee(const char* const compName)
 
 XBee ::~XBee() {}
 
-void XBee ::init(const NATIVE_INT_TYPE queueDepth, const NATIVE_INT_TYPE instance) {
+void XBee ::init(const FwSizeType queueDepth, const FwIndexType instance) {
     XBeeComponentBase::init(queueDepth, instance);
 }
 
@@ -38,11 +38,11 @@ void XBee ::init(const NATIVE_INT_TYPE queueDepth, const NATIVE_INT_TYPE instanc
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
-void XBee ::drvConnected_handler(const NATIVE_INT_TYPE portNum) {
+void XBee ::drvConnected_handler(const FwIndexType portNum) {
     report_ready();
 }
 
-void XBee ::drvDataIn_handler(const NATIVE_INT_TYPE portNum,
+void XBee ::drvDataIn_handler(const FwIndexType portNum,
                               Fw::Buffer& recvBuffer,
                               const Drv::RecvStatus& recvStatus) {
     m_lock.lock();
@@ -63,13 +63,13 @@ void XBee ::drvDataIn_handler(const NATIVE_INT_TYPE portNum,
     }
 }
 
-Drv::SendStatus XBee ::comDataIn_handler(const NATIVE_INT_TYPE portNum, Fw::Buffer& sendBuffer) {
+Drv::SendStatus XBee ::comDataIn_handler(const FwIndexType portNum, Fw::Buffer& sendBuffer) {
     Fw::Success radioReady = Fw::Success::FAILURE;
     m_lock.lock();
     // Only attempt to send data when in transparent mode. Sending data in command mode is an error
     if (PASSTHROUGH == m_state) {
         Drv::SendStatus driverStatus = Drv::SendStatus::SEND_RETRY;
-        for (NATIVE_UINT_TYPE i = 0; driverStatus == Drv::SendStatus::SEND_RETRY && i < retryLimit; i++) {
+        for (FwIndexType i = 0; driverStatus == Drv::SendStatus::SEND_RETRY && i < retryLimit; i++) {
             driverStatus = drvDataOut_out(0, const_cast<Fw::Buffer&>(sendBuffer));
         }
         radioReady =
@@ -85,7 +85,7 @@ Drv::SendStatus XBee ::comDataIn_handler(const NATIVE_INT_TYPE portNum, Fw::Buff
     return Drv::SendStatus::SEND_OK;  // Always send ok to deframer as it does not handle this anyway
 }
 
-void XBee ::run_handler(const NATIVE_INT_TYPE portNum, U32 context) {
+void XBee ::run_handler(const FwIndexType portNum, U32 context) {
     m_lock.lock();
     if (m_state != PASSTHROUGH) {
         m_timeoutCount = m_timeoutCount + 1;

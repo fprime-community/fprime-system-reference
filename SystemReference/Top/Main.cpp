@@ -29,14 +29,14 @@ void run1cycle() {
     Os::Task::delay(Fw::TimeInterval(1, 0)); //10Hz
 }
 
-void runcycles(NATIVE_INT_TYPE cycles) {
+void runcycles(FwSizeType cycles) {
     if (cycles == -1) {
         while (true) {
             run1cycle();
         }
     }
 
-    for (NATIVE_INT_TYPE cycle = 0; cycle < cycles; cycle++) {
+    for (FwSizeType cycle = 0; cycle < cycles; cycle++) {
         run1cycle();
     }
 }

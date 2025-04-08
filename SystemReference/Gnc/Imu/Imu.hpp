@@ -52,7 +52,7 @@ class Imu final : public ImuComponentBase {
 
     //! Initialize object Imu
     //!
-    void init(const NATIVE_INT_TYPE instance = 0 /*!< The instance number*/
+    void init(const FwIndexType instance = 0 /*!< The instance number*/
     );
 
     //! Destroy object Imu

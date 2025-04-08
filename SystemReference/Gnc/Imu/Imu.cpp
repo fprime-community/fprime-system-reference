@@ -15,7 +15,7 @@ namespace Gnc {
 
 Imu ::Imu(const char* const compName) : ImuComponentBase(compName), m_power(PowerState::OFF) {}
 
-void Imu ::init(const NATIVE_INT_TYPE instance) {
+void Imu ::init(const FwIndexType instance) {
     ImuComponentBase::init(instance);
 }
 
