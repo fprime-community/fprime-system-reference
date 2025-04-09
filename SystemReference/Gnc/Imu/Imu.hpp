@@ -76,7 +76,7 @@ class Imu final : public ImuComponentBase {
     //! Command to turn on the device
     void PowerSwitch_cmdHandler(const FwOpcodeType opCode, /*!< The opcode*/
                                 const U32 cmdSeq,          /*!< The command sequence number*/
-                                PowerState powerState) final;
+                                PowerState powerState);
 
     // ----------------------------------------------------------------------
     // Helper Functions
