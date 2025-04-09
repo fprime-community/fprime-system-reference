@@ -36,7 +36,7 @@ void runcycles(FwSizeType cycles) {
         }
     }
 
-    for (FwSizeType cycle = 0; cycle < cycles; cycle++) {
+    for (FwIndexType cycle = 0; cycle < cycles; cycle++) {
         run1cycle();
     }
 }
