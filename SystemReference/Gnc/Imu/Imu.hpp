@@ -68,14 +68,14 @@ class Imu final : public ImuComponentBase {
 
     //! Handler implementation for Run
     //!
-    void Run_handler(FwIndexType portNum, /*!< The port number*/
+    void Run_handler(const FwIndexType portNum, /*!< The port number*/
                      U32 context       /*!<The call order*/
     );
 
     //! Implementation for PowerSwitch command handler
     //! Command to turn on the device
-    void PowerSwitch_cmdHandler(FwOpcodeType opCode, /*!< The opcode*/
-                                U32 cmdSeq,          /*!< The command sequence number*/
+    void PowerSwitch_cmdHandler(const FwOpcodeType opCode, /*!< The opcode*/
+                                const U32 cmdSeq,          /*!< The command sequence number*/
                                 PowerState powerState) final;
 
     // ----------------------------------------------------------------------
