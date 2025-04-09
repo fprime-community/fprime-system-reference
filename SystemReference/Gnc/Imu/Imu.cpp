@@ -29,14 +29,14 @@ Imu ::~Imu() {}
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
-void Imu ::Run_handler(FwIndexType portNum, U32 context) {
+void Imu ::Run_handler(const FwIndexType portNum, U32 context) {
     if (m_power == PowerState::ON) {
         updateAccel();
         updateGyro();
     }
 }
 
-void Imu ::PowerSwitch_cmdHandler(FwOpcodeType opCode, U32 cmdSeq, PowerState powerState) {
+void Imu ::PowerSwitch_cmdHandler(const FwOpcodeType opCode, const U32 cmdSeq, PowerState powerState) {
     power(powerState);
     this->log_ACTIVITY_HI_PowerStatus(powerState);
     this->cmdResponse_out(opCode, cmdSeq, Fw::CmdResponse::OK);
