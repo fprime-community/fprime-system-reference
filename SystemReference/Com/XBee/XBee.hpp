@@ -123,7 +123,7 @@ class XBee final : public XBeeComponentBase {
 
     //! Handler implementation for drvConnected
     //!
-    void drvConnected_handler(const  portNum);
+    void drvConnected_handler(const FwIndexType portNum);
 
     //! Handler implementation for drvDataIn
     //!
