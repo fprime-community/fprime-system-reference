@@ -66,7 +66,7 @@ Gnc::Vector Imu ::deserializeVector(Fw::Buffer& buffer, F32 scaleFactor) {
     FW_ASSERT(buffer.getSize() >= 6, buffer.getSize());
     FW_ASSERT(buffer.getData() != nullptr);
     // Data is big-endian as is fprime internal storage so we can use the built-in buffer deserialization
-    auto deserializeHelper = data.getDeserializer();
+    auto deserializeHelper = buffer.getDeserializer();
     FW_ASSERT(deserializeHelper.deserialize(value) == Fw::FW_SERIALIZE_OK);
     vector[0] = static_cast<F32>(value) / scaleFactor;
 
