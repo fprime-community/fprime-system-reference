@@ -13,7 +13,7 @@
 
 namespace Payload {
 
-  class Camera :
+  class Camera final :
     public CameraComponentBase
   {
 
@@ -32,8 +32,8 @@ namespace Payload {
       //! Initialize object Camera
       //!
       void init(
-          const NATIVE_INT_TYPE queueDepth, /*!< The queue depth*/
-          const NATIVE_INT_TYPE instance = 0 /*!< The instance number*/
+          const FwIndexType queueDepth, /*!< The queue depth*/
+          const FwIndexType instance = 0 /*!< The instance number*/
       );
 
       //! Startup camera device

@@ -23,7 +23,7 @@ module SystemReference {
 
     instance $health
     instance blockDrv
-    instance chanTlm
+
     instance cmdDisp
     instance cmdSeq
     instance comDriver
@@ -36,6 +36,7 @@ module SystemReference {
     instance fileDownlink
     instance fileManager
     instance fileUplink
+    instance frameAccumulator
     instance comBufferManager
     instance posixTime
     instance prmDb
@@ -43,13 +44,16 @@ module SystemReference {
     instance rateGroup2Comp
     instance rateGroup3Comp
     instance rateGroupDriverComp
+    instance router
     instance textLogger
+    instance tlmSend
     instance deframer
     instance systemResources
     instance imu
     instance imuI2cBus
     instance camera
     instance saveImageBufferLogger
+
     # ----------------------------------------------------------------------
     # Pattern graph specifiers
     # ----------------------------------------------------------------------
@@ -60,7 +64,7 @@ module SystemReference {
 
     param connections instance prmDb
 
-    telemetry connections instance chanTlm
+    telemetry connections instance tlmSend
 
     text event connections instance textLogger
 
@@ -68,12 +72,19 @@ module SystemReference {
 
     health connections instance $health
 
+    # ---------------------------------------------------------------------- 
+    # Telemetry packets
+    # ---------------------------------------------------------------------- 
+
+    include "SystemReferenceTelemetryPackets.fppi"
+
+
     # ----------------------------------------------------------------------
     # Direct graph specifiers
     # ----------------------------------------------------------------------
 
     connections Downlink {
-      chanTlm.PktSend -> comQueue.comQueueIn[0]
+      tlmSend.PktSend -> comQueue.comQueueIn[0]
       eventLogger.PktSend -> comQueue.comQueueIn[1]
 
       fileDownlink.bufferSendOut -> comQueue.buffQueueIn[0]
@@ -102,7 +113,7 @@ module SystemReference {
 
       # Rate group 1
       rateGroupDriverComp.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1Comp.CycleIn
-      rateGroup1Comp.RateGroupMemberOut[0] -> chanTlm.Run
+      rateGroup1Comp.RateGroupMemberOut[0] -> tlmSend.Run
       rateGroup1Comp.RateGroupMemberOut[1] -> fileDownlink.Run
       rateGroup1Comp.RateGroupMemberOut[2] -> systemResources.run
       rateGroup1Comp.RateGroupMemberOut[3] -> imu.Run
@@ -130,15 +141,17 @@ module SystemReference {
       comDriver.allocate -> comBufferManager.bufferGetCallee
       comDriver.$recv -> radio.drvDataIn
 
-      radio.comDataOut -> deframer.framedIn
-      deframer.framedDeallocate -> comBufferManager.bufferSendIn
+      radio.comDataOut -> frameAccumulator.dataIn
+      frameAccumulator.frameOut -> deframer.framedIn
+      deframer.deframedOut -> router.dataIn
+      router.bufferDeallocate -> comBufferManager.bufferSendIn
 
-      deframer.comOut -> cmdDisp.seqCmdBuff
-      cmdDisp.seqCmdStatus -> deframer.cmdResponseIn
+      router.commandOut -> cmdDisp.seqCmdBuff
+      cmdDisp.seqCmdStatus -> router.cmdResponseIn
 
-      deframer.bufferAllocate -> comBufferManager.bufferGetCallee
-      deframer.bufferOut -> fileUplink.bufferSendIn
-      deframer.bufferDeallocate -> comBufferManager.bufferSendIn
+      frameAccumulator.bufferAllocate -> comBufferManager.bufferGetCallee
+      router.fileOut -> fileUplink.bufferSendIn
+      frameAccumulator.bufferDeallocate -> comBufferManager.bufferSendIn
       fileUplink.bufferSendOut -> comBufferManager.bufferSendIn
     }
 
@@ -163,3 +176,4 @@ module SystemReference {
   }
 
 }
+

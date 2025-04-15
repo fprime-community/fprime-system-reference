@@ -13,10 +13,10 @@
 
 namespace Com {
 
-class XBee : public XBeeComponentBase {
+class XBee final : public XBeeComponentBase {
   public:
-    static const NATIVE_UINT_TYPE retryLimit = 10; // Arbitrary limit to the number of retries
-    static const NATIVE_UINT_TYPE xbeeQuiescentTime_ms = 1000; // Milliseconds to quiesce the radio prior to sending +++
+    static const FwSizeType retryLimit = 10; // Arbitrary limit to the number of retries
+    static const FwSizeType xbeeQuiescentTime_ms = 1000; // Milliseconds to quiesce the radio prior to sending +++
     static const U32 MAX_COMMAND_DATA = 48; // Max size of data from command mode NI command: 20 bytes, ED: 3x16: 48
     static const U32 TIMEOUT_TICKS_1HZ = 10; // Number of 1Hz ticks to timeout of command mode
     static const U32 QUIET_TICKS_1HZ = xbeeQuiescentTime_ms/1000 + 1; // Number of 1Hz ticks to quiet radio
@@ -107,8 +107,8 @@ class XBee : public XBeeComponentBase {
 
     //! Initialize object XBee
     //!
-    void init(const NATIVE_INT_TYPE queueDepth,  /*!< The queue depth*/
-              const NATIVE_INT_TYPE instance = 0 /*!< The instance number*/
+    void init(const FwSizeType queueDepth,  /*!< The queue depth*/
+              const FwIndexType instance = 0 /*!< The instance number*/
     );
 
   PRIVATE:
@@ -118,22 +118,22 @@ class XBee : public XBeeComponentBase {
 
     //! Handler implementation for comDataIn
     //!
-    Drv::SendStatus comDataIn_handler(const NATIVE_INT_TYPE portNum, /*!< The port number*/
+    Drv::SendStatus comDataIn_handler(const FwIndexType portNum, /*!< The port number*/
                                       Fw::Buffer& sendBuffer);
 
     //! Handler implementation for drvConnected
     //!
-    void drvConnected_handler(const NATIVE_INT_TYPE portNum);
+    void drvConnected_handler(const FwIndexType portNum);
 
     //! Handler implementation for drvDataIn
     //!
-    void drvDataIn_handler(const NATIVE_INT_TYPE portNum,
+    void drvDataIn_handler(const FwIndexType portNum,
                            /*!< The port number*/ Fw::Buffer& recvBuffer,
                            const Drv::RecvStatus& recvStatus);
 
     //! Handler implementation for Run port
     //!
-    void run_handler(const NATIVE_INT_TYPE portNum, /*!< The port number*/
+    void run_handler(const FwIndexType portNum, /*!< The port number*/
                      U32 context);
 
   PRIVATE:

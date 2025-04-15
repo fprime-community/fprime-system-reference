@@ -11,7 +11,7 @@
 
 namespace Gnc {
 
-class Imu : public ImuComponentBase {
+class Imu final : public ImuComponentBase {
   public:
     // ----------------------------------------------------------------------
     // Constants and Types
@@ -52,7 +52,7 @@ class Imu : public ImuComponentBase {
 
     //! Initialize object Imu
     //!
-    void init(const NATIVE_INT_TYPE instance = 0 /*!< The instance number*/
+    void init(const FwIndexType instance = 0 /*!< The instance number*/
     );
 
     //! Destroy object Imu
@@ -68,8 +68,8 @@ class Imu : public ImuComponentBase {
 
     //! Handler implementation for Run
     //!
-    void Run_handler(const NATIVE_INT_TYPE portNum, /*!< The port number*/
-                     NATIVE_UINT_TYPE context       /*!<The call order*/
+    void Run_handler(const FwIndexType portNum, /*!< The port number*/
+                     U32 context       /*!<The call order*/
     );
 
     //! Implementation for PowerSwitch command handler

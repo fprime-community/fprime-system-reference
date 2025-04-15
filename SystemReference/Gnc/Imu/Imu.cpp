@@ -15,7 +15,7 @@ namespace Gnc {
 
 Imu ::Imu(const char* const compName) : ImuComponentBase(compName), m_power(PowerState::OFF) {}
 
-void Imu ::init(const NATIVE_INT_TYPE instance) {
+void Imu ::init(const FwIndexType instance) {
     ImuComponentBase::init(instance);
 }
 
@@ -29,7 +29,7 @@ Imu ::~Imu() {}
 // Handler implementations for user-defined typed input ports
 // ----------------------------------------------------------------------
 
-void Imu ::Run_handler(const NATIVE_INT_TYPE portNum, NATIVE_UINT_TYPE context) {
+void Imu ::Run_handler(const FwIndexType portNum, U32 context) {
     if (m_power == PowerState::ON) {
         updateAccel();
         updateGyro();

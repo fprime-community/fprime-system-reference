@@ -28,7 +28,7 @@ module SystemReference {
   {
 
     phase Fpp.ToCpp.Phases.configObjects """
-    NATIVE_INT_TYPE context[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    U32 context[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
@@ -47,7 +47,7 @@ module SystemReference {
   {
 
     phase Fpp.ToCpp.Phases.configObjects """
-    NATIVE_INT_TYPE context[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    U32 context[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
@@ -66,7 +66,7 @@ module SystemReference {
   {
 
     phase Fpp.ToCpp.Phases.configObjects """
-    NATIVE_INT_TYPE context[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    U32 context[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     """
 
     phase Fpp.ToCpp.Phases.configComponents """
@@ -170,10 +170,24 @@ module SystemReference {
     stack size Default.stackSize \
     priority 98
 
-  instance chanTlm: Svc.TlmChan base id 0x0C00 \
-    queue size Default.queueSize \
-    stack size Default.stackSize \
-    priority 97
+  #instance tlmSend: Svc.TlmChan base id 0x0C00 \
+  #  queue size Default.queueSize \
+  #  stack size Default.stackSize \
+  #  priority 97
+
+  instance tlmSend: Svc.TlmPacketizer base id 0x0C00 \
+      queue size Default.queueSize \
+      stack size Default.stackSize \
+      priority 97 \
+  {
+    phase Fpp.ToCpp.Phases.configComponents """
+    tlmSend.setPacketList(
+       SystemReference::SystemReference_SystemReferencePacketsTlmPackets::packetList,
+       SystemReference::SystemReference_SystemReferencePacketsTlmPackets::omittedChannels,
+       1
+    );
+    """  
+  }
 
   instance prmDb: Svc.PrmDb base id 0x0D00 \
     queue size Default.queueSize \
@@ -416,16 +430,7 @@ module SystemReference {
 
   instance textLogger: Svc.PassiveTextLogger base id 0x4900
 
-  instance deframer: Svc.Deframer base id 0x4A00 {
-    phase Fpp.ToCpp.Phases.configObjects """
-    Svc::FprimeDeframing deframing;
-    """
-
-    phase Fpp.ToCpp.Phases.configComponents """
-    deframer.setup(ConfigObjects::SystemReference_deframer::deframing);
-    """
-
-  }
+  instance deframer: Svc.FprimeDeframer base id 0x4A00
 
   instance systemResources: Svc.SystemResources base id 0x4B00
   instance imu: Gnc.Imu base id 0x4C00 {
@@ -442,5 +447,28 @@ module SystemReference {
     }
     """
   }
+  
+  instance frameAccumulator: Svc.FrameAccumulator base id 0x4E00 \
+  {
+     phase Fpp.ToCpp.Phases.configObjects """
+         Svc::FrameDetectors::FprimeFrameDetector fprimeFrameDetector;
+     """
+ 
+     phase Fpp.ToCpp.Phases.configComponents """
+     {
+       SystemReference::frameAccumulator.configure(ConfigObjects::SystemReference_frameAccumulator::fprimeFrameDetector, 1, Allocation::mallocator, 2048);
+     }
+     """
+ 
+     phase Fpp.ToCpp.Phases.tearDownComponents """
+     {
+       SystemReference::frameAccumulator.cleanup();
+     }
+     """
+ 
+   }
+
+  instance router: Svc.FprimeRouter base id 0x4F00
+
 
 }

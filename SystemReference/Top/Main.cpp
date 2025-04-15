@@ -26,17 +26,17 @@ static void sighandler(int signum) {
 void run1cycle() {
     // call interrupt to emulate a clock
     SystemReference::blockDrv.callIsr();
-    Os::Task::delay(Fw::Time(1, 0)); //10Hz
+    Os::Task::delay(Fw::TimeInterval(1, 0)); //1Hz
 }
 
-void runcycles(NATIVE_INT_TYPE cycles) {
+void runcycles(FwSizeType cycles) {
     if (cycles == -1) {
         while (true) {
             run1cycle();
         }
     }
 
-    for (NATIVE_INT_TYPE cycle = 0; cycle < cycles; cycle++) {
+    for (FwIndexType cycle = 0; cycle < cycles; cycle++) {
         run1cycle();
     }
 }
@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
 
     // Give time for threads to exit
     (void) printf("Waiting for threads...\n");
-    Os::Task::delay(Fw::Time(1, 0));
+    Os::Task::delay(Fw::TimeInterval(1, 0));
 
     (void) printf("Exiting...\n");
 

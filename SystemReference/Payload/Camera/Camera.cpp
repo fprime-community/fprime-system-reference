@@ -22,7 +22,7 @@ namespace Payload {
 
   Camera ::Camera(const char *const compName): CameraComponentBase(compName), m_photoCount(0){}
 
-  void Camera ::init(const NATIVE_INT_TYPE queueDepth, const NATIVE_INT_TYPE instance) {
+  void Camera ::init(const FwIndexType queueDepth, const FwIndexType instance) {
     CameraComponentBase::init(queueDepth, instance);
   }
   // start camera manager and acquire camera

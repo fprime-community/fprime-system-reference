@@ -6,6 +6,7 @@
 #include "SystemReference/Top/FppConstantsAc.hpp"
 #include "Svc/FramingProtocol/FprimeProtocol.hpp"
 #include "Fw/Logger/Logger.hpp"
+#include <Svc/FrameAccumulator/FrameDetector/FprimeFrameDetector.hpp>
 
 namespace SystemReference {
 
@@ -54,6 +55,7 @@ namespace SystemReference {
     namespace SystemReference_saveImageBufferLogger { enum {WARN = 3, FATAL = 5}; }
     namespace SystemReference_imageProcessor { enum {WARN = 3, FATAL = 5}; }
     namespace SystemReference_processedImageBufferLogger { enum {WARN = 3, FATAL = 5}; }
+    namespace SystemReference_tlmSend { enum {WARN = 3, FATAL = 5}; }
   }
 
 }
