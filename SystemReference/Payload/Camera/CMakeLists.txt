@@ -14,7 +14,7 @@ register_fprime_module()
 
 find_package(PkgConfig)
 
-pkg_check_modules(LIBCAMERA REQUIRED IMPORTED_TARGET libcamera)
+pkg_check_modules(LIBCAMERA REQUIRED IMPORTED_TARGET GLOBAL libcamera)
 message(STATUS "libcamera library found:")
 message(STATUS "    version: ${LIBCAMERA_VERSION}")
 message(STATUS "    libraries: ${LIBCAMERA_LINK_LIBRARIES}")
