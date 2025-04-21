@@ -92,7 +92,7 @@ module SystemReference {
       framer.dataReturn -> comQueue.bufferReturnIn
       comQueue.bufferReturnOut[0] -> fileDownlink.bufferReturn
 
-      framer.bufferAllocate -> bufferManager.bufferGetCallee
+      framer.bufferAllocate -> comBufferManager.bufferGetCallee
       framer.framedDataOut -> comStub.comDataIn
 
       comDriver.deallocate -> comBufferManager.bufferSendIn
