@@ -84,17 +84,17 @@ module SystemReference {
     # ----------------------------------------------------------------------
 
     connections Downlink {
-      tlmSend.PktSend -> comQueue.comQueueIn[0]
-      eventLogger.PktSend -> comQueue.comQueueIn[1]
-
+      eventLogger.PktSend -> comQueue.comPktQueueIn[0]
+      tlmSend.PktSend -> comQueue.comPktQueueIn[1]
       fileDownlink.bufferSendOut -> comQueue.buffQueueIn[0]
-      framer.bufferDeallocate -> fileDownlink.bufferReturn
 
-      comQueue.comQueueSend -> framer.comIn
-      comQueue.buffQueueSend -> framer.bufferIn
+      comQueue.queueSend -> framer.dataIn
+      framer.dataReturn -> comQueue.bufferReturnIn
+      comQueue.bufferReturnOut[0] -> fileDownlink.bufferReturn
 
-      framer.framedAllocate -> comBufferManager.bufferGetCallee
-      framer.framedOut -> radio.comDataIn
+      framer.bufferAllocate -> bufferManager.bufferGetCallee
+      framer.framedDataOut -> comStub.comDataIn
+
       comDriver.deallocate -> comBufferManager.bufferSendIn
 
       radio.drvDataOut -> comDriver.$send
