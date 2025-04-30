@@ -355,16 +355,7 @@ module SystemReference {
 
 
 
-  instance framer: Svc.Framer base id 0x4200 {
-    phase Fpp.ToCpp.Phases.configObjects """
-    Svc::FprimeFraming framing;
-    """
-
-    phase Fpp.ToCpp.Phases.configComponents """
-    framer.setup(ConfigObjects::SystemReference_framer::framing);
-    """
-
-  }
+  instance framer: Svc.FprimeFramer base id 0x4200
 
   instance fatalAdapter: Svc.AssertFatalAdapter base id 0x4300
 

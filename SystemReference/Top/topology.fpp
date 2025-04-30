@@ -84,22 +84,26 @@ module SystemReference {
     # ----------------------------------------------------------------------
 
     connections Downlink {
-      tlmSend.PktSend -> comQueue.comQueueIn[0]
-      eventLogger.PktSend -> comQueue.comQueueIn[1]
+      eventLogger.PktSend         -> comQueue.comPacketQueueIn[0]
+      tlmSend.PktSend             -> comQueue.comPacketQueueIn[1]
+      fileDownlink.bufferSendOut  -> comQueue.bufferQueueIn[0]
+      comQueue.bufferReturnOut[0] -> fileDownlink.bufferReturn
 
-      fileDownlink.bufferSendOut -> comQueue.buffQueueIn[0]
-      framer.bufferDeallocate -> fileDownlink.bufferReturn
+      comQueue.queueSend   -> framer.dataIn
+      framer.dataReturnOut -> comQueue.bufferReturnIn
+      framer.comStatusOut  -> comQueue.comStatusIn
 
-      comQueue.comQueueSend -> framer.comIn
-      comQueue.buffQueueSend -> framer.bufferIn
+      framer.bufferAllocate   -> comBufferManager.bufferGetCallee
+      framer.bufferDeallocate -> comBufferManager.bufferSendIn
 
-      framer.framedAllocate -> comBufferManager.bufferGetCallee
-      framer.framedOut -> radio.comDataIn
-      comDriver.deallocate -> comBufferManager.bufferSendIn
+      framer.dataOut        -> radio.comDataIn
+      radio.dataReturnOut   -> framer.dataReturnIn
+      radio.comStatusOut    -> framer.comStatusIn
 
-      radio.drvDataOut -> comDriver.$send
-      comDriver.ready -> radio.drvConnected
-      radio.comStatus -> comQueue.comStatusIn
+      radio.drvDataOut        -> comDriver.$send
+      comDriver.dataReturnOut -> radio.dataReturnIn
+      comDriver.ready         -> radio.drvConnected
+
     }
 
     connections FaultProtection {
