@@ -97,13 +97,13 @@ module SystemReference {
       framer.bufferAllocate   -> comBufferManager.bufferGetCallee
       framer.bufferDeallocate -> comBufferManager.bufferSendIn
       # Framer <-> ComStub
-      framer.dataOut        -> comStub.dataIn
-      comStub.dataReturnOut -> framer.dataReturnIn
-      comStub.comStatusOut  -> framer.comStatusIn
+      framer.dataOut        -> radio.dataIn
+      radio.dataReturnOut -> framer.dataReturnIn
+      radio.comStatusOut  -> framer.comStatusIn
       # ComStub <-> ComDriver
-      comStub.drvSendOut      -> comDriver.$send
-      comDriver.sendReturnOut -> comStub.drvSendReturnIn
-      comDriver.ready         -> comStub.drvConnected
+      radio.drvSendOut      -> comDriver.$send
+      comDriver.sendReturnOut -> radio.drvSendReturnIn
+      comDriver.ready         -> radio.drvConnected
     }
 
     connections FaultProtection {
@@ -146,11 +146,11 @@ module SystemReference {
       comDriver.allocate      -> comBufferManager.bufferGetCallee
       comDriver.deallocate    -> comBufferManager.bufferSendIn
       # ComDriver <-> ComStub
-      comDriver.$recv             -> comStub.drvReceiveIn
-      comStub.drvReceiveReturnOut -> comDriver.recvReturnIn
+      comDriver.$recv             -> radio.drvReceiveIn
+      radio.drvReceiveReturnOut -> comDriver.recvReturnIn
       # ComStub <-> FrameAccumulator
-      comStub.dataOut                -> frameAccumulator.dataIn
-      frameAccumulator.dataReturnOut -> comStub.dataReturnIn
+      radio.dataOut                -> frameAccumulator.dataIn
+      frameAccumulator.dataReturnOut -> radio.dataReturnIn
       # FrameAccumulator buffer allocations
       frameAccumulator.bufferDeallocate -> comBufferManager.bufferSendIn
       frameAccumulator.bufferAllocate   -> comBufferManager.bufferGetCallee
