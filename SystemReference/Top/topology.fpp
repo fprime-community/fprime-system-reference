@@ -44,7 +44,7 @@ module SystemReference {
     instance rateGroup2Comp
     instance rateGroup3Comp
     instance rateGroupDriverComp
-    instance router
+    instance fprimeRouter
     instance textLogger
     instance tlmSend
     instance deframer
