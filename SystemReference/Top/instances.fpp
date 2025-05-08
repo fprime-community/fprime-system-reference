@@ -459,7 +459,7 @@ module SystemReference {
  
    }
 
-  instance router: Svc.FprimeRouter base id 0x4F00
+  instance fprimeRouter: Svc.FprimeRouter base id 0x4F00
 
 
 }

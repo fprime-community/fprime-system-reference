@@ -44,7 +44,7 @@ module SystemReference {
     instance rateGroup2Comp
     instance rateGroup3Comp
     instance rateGroupDriverComp
-    instance router
+    instance fprimeRouter
     instance textLogger
     instance tlmSend
     instance deframer
@@ -84,26 +84,26 @@ module SystemReference {
     # ----------------------------------------------------------------------
 
     connections Downlink {
+      # Inputs to ComQueue (events, telemetry, file)
       eventLogger.PktSend         -> comQueue.comPacketQueueIn[0]
       tlmSend.PktSend             -> comQueue.comPacketQueueIn[1]
       fileDownlink.bufferSendOut  -> comQueue.bufferQueueIn[0]
       comQueue.bufferReturnOut[0] -> fileDownlink.bufferReturn
-
-      comQueue.queueSend   -> framer.dataIn
-      framer.dataReturnOut -> comQueue.bufferReturnIn
+      # ComQueue <-> Framer
+      comQueue.dataOut   -> framer.dataIn
+      framer.dataReturnOut -> comQueue.dataReturnIn
       framer.comStatusOut  -> comQueue.comStatusIn
-
+      # Buffer Management for Framer
       framer.bufferAllocate   -> comBufferManager.bufferGetCallee
       framer.bufferDeallocate -> comBufferManager.bufferSendIn
-
-      framer.dataOut        -> radio.comDataIn
-      radio.dataReturnOut   -> framer.dataReturnIn
-      radio.comStatusOut    -> framer.comStatusIn
-
-      radio.drvDataOut        -> comDriver.$send
-      comDriver.dataReturnOut -> radio.dataReturnIn
+      # Framer <-> ComStub
+      framer.dataOut        -> radio.dataIn
+      radio.dataReturnOut -> framer.dataReturnIn
+      radio.comStatusOut  -> framer.comStatusIn
+      # ComStub <-> ComDriver
+      radio.drvSendOut      -> comDriver.$send
+      comDriver.sendReturnOut -> radio.drvSendReturnIn
       comDriver.ready         -> radio.drvConnected
-
     }
 
     connections FaultProtection {
@@ -142,21 +142,32 @@ module SystemReference {
     }
 
     connections Uplink {
-      comDriver.allocate -> comBufferManager.bufferGetCallee
-      comDriver.$recv -> radio.drvDataIn
-
-      radio.comDataOut -> frameAccumulator.dataIn
-      frameAccumulator.frameOut -> deframer.framedIn
-      deframer.deframedOut -> router.dataIn
-      router.bufferDeallocate -> comBufferManager.bufferSendIn
-
-      router.commandOut -> cmdDisp.seqCmdBuff
-      cmdDisp.seqCmdStatus -> router.cmdResponseIn
-
-      frameAccumulator.bufferAllocate -> comBufferManager.bufferGetCallee
-      router.fileOut -> fileUplink.bufferSendIn
+      # ComDriver buffer allocations
+      comDriver.allocate      -> comBufferManager.bufferGetCallee
+      comDriver.deallocate    -> comBufferManager.bufferSendIn
+      # ComDriver <-> ComStub
+      comDriver.$recv             -> radio.drvReceiveIn
+      radio.drvReceiveReturnOut -> comDriver.recvReturnIn
+      # ComStub <-> FrameAccumulator
+      radio.dataOut                -> frameAccumulator.dataIn
+      frameAccumulator.dataReturnOut -> radio.dataReturnIn
+      # FrameAccumulator buffer allocations
       frameAccumulator.bufferDeallocate -> comBufferManager.bufferSendIn
-      fileUplink.bufferSendOut -> comBufferManager.bufferSendIn
+      frameAccumulator.bufferAllocate   -> comBufferManager.bufferGetCallee
+      # FrameAccumulator <-> Deframer
+      frameAccumulator.dataOut  -> deframer.dataIn
+      deframer.dataReturnOut    -> frameAccumulator.dataReturnIn
+      # Deframer <-> Router
+      deframer.dataOut           -> fprimeRouter.dataIn
+      fprimeRouter.dataReturnOut -> deframer.dataReturnIn
+      # Router buffer allocations
+      fprimeRouter.bufferAllocate   -> comBufferManager.bufferGetCallee
+      fprimeRouter.bufferDeallocate -> comBufferManager.bufferSendIn
+      # Router <-> CmdDispatcher/FileUplink
+      fprimeRouter.commandOut  -> cmdDisp.seqCmdBuff
+      cmdDisp.seqCmdStatus     -> fprimeRouter.cmdResponseIn
+      fprimeRouter.fileOut     -> fileUplink.bufferSendIn
+      fileUplink.bufferSendOut -> fprimeRouter.fileBufferReturnIn
     }
 
 #    XBee Radio Integration
