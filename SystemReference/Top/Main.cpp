@@ -16,29 +16,16 @@ SystemReference::TopologyState state;
 // Enable the console logging provided by Os::Log
 Os::Console logger;
 
-volatile sig_atomic_t terminate = 0;
-
-static void sighandler(int signum) {
-    SystemReference::teardown(state);
-    terminate = 1;
+void stopSimulatedCycle() {
+    linuxTimer.quit();
 }
 
-void run1cycle() {
-    // call interrupt to emulate a clock
-    SystemReference::blockDrv.callIsr();
-    Os::Task::delay(Fw::TimeInterval(1, 0)); //1Hz
+static void signalHandler(int signum) {
+    stopSimulatedCycle();
 }
 
-void runcycles(FwSizeType cycles) {
-    if (cycles == -1) {
-        while (true) {
-            run1cycle();
-        }
-    }
-
-    for (FwIndexType cycle = 0; cycle < cycles; cycle++) {
-        run1cycle();
-    }
+void startSimulatedCycle(Fw::TimeInterval interval) {
+    linuxTimer.startTimer(interval.getSeconds()*1000+interval.getUSeconds()/1000);
 }
 
 int main(int argc, char* argv[]) {
@@ -77,17 +64,8 @@ int main(int argc, char* argv[]) {
     signal(SIGINT,sighandler);
     signal(SIGTERM,sighandler);
 
-    int cycle = 0;
-
-    while (!terminate) {
-//        (void) printf("Cycle %d\n",cycle);
-        runcycles(1);
-        cycle++;
-    }
-
-    // Give time for threads to exit
-    (void) printf("Waiting for threads...\n");
-    Os::Task::delay(Fw::TimeInterval(1, 0));
+    SystemReference::startSimulatedCycle(Fw::TimeInterval(1, 0));  // Program loop cycling rate groups at 1Hz
+    SystemReference::teardownTopology(inputs);
 
     (void) printf("Exiting...\n");
 
