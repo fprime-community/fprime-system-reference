@@ -40,7 +40,6 @@ namespace SystemReference {
 
   // Health ping entries
   namespace PingEntries {
-    namespace SystemReference_blockDrv { enum { WARN = 3, FATAL = 5 }; }
     namespace SystemReference_chanTlm { enum { WARN = 3, FATAL = 5 }; }
     namespace SystemReference_cmdDisp { enum { WARN = 3, FATAL = 5 }; }
     namespace SystemReference_cmdSeq { enum { WARN = 3, FATAL = 5 }; }
