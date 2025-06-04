@@ -22,7 +22,6 @@ module SystemReference {
     # ----------------------------------------------------------------------
 
     instance $health
-    instance blockDrv
 
     instance cmdDisp
     instance cmdSeq
@@ -53,6 +52,7 @@ module SystemReference {
     instance imuI2cBus
     instance camera
     instance saveImageBufferLogger
+    instance linuxTimer
 
     # ----------------------------------------------------------------------
     # Pattern graph specifiers
@@ -112,8 +112,8 @@ module SystemReference {
 
     connections RateGroups {
 
-      # Block driver
-      blockDrv.CycleOut -> rateGroupDriverComp.CycleIn
+      # Linux Timer to drive rate groups
+      linuxTimer.CycleOut -> rateGroupDriverComp.CycleIn
 
       # Rate group 1
       rateGroupDriverComp.CycleOut[Ports_RateGroups.rateGroup1] -> rateGroup1Comp.CycleIn
@@ -132,8 +132,7 @@ module SystemReference {
       # Rate group 3
       rateGroupDriverComp.CycleOut[Ports_RateGroups.rateGroup3] -> rateGroup3Comp.CycleIn
       rateGroup3Comp.RateGroupMemberOut[0] -> $health.Run
-      rateGroup3Comp.RateGroupMemberOut[1] -> blockDrv.Sched
-      rateGroup3Comp.RateGroupMemberOut[2] -> comBufferManager.schedIn
+      rateGroup3Comp.RateGroupMemberOut[1] -> comBufferManager.schedIn
     }
 
     connections Sequencer {

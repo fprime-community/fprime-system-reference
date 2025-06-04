@@ -16,11 +16,6 @@ module SystemReference {
   # Active component instances
   # ----------------------------------------------------------------------
 
-  instance blockDrv: Drv.BlockDriver base id 0x0100 \
-    queue size Default.queueSize \
-    stack size Default.stackSize \
-    priority 140
-
   instance rateGroup1Comp: Svc.ActiveRateGroup base id 0x0200 \
     queue size Default.queueSize \
     stack size Default.stackSize \
@@ -461,5 +456,5 @@ module SystemReference {
 
   instance fprimeRouter: Svc.FprimeRouter base id 0x4F00
 
-
+  instance linuxTimer: Svc.LinuxTimer base id 0x5000
 }

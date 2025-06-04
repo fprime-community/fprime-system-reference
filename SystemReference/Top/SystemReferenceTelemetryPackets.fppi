@@ -36,10 +36,6 @@ telemetry packets SystemReferencePackets {
         SystemReference.fileManager.Errors
     }
 
-    packet DriveTlm id 3 group 1 {
-        SystemReference.blockDrv.BD_Cycles
-    }
-
     packet SystemResources1 id 5 group 2 {
         SystemReference.systemResources.MEMORY_TOTAL
         SystemReference.systemResources.MEMORY_USED

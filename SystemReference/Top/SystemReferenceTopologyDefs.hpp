@@ -1,7 +1,6 @@
 #ifndef SystemReferenceTopologyDefs_HPP
 #define SystemReferenceTopologyDefs_HPP
 
-#include "Drv/BlockDriver/BlockDriver.hpp"
 #include "Fw/Types/MallocAllocator.hpp"
 #include "SystemReference/Top/FppConstantsAc.hpp"
 #include "Svc/FramingProtocol/FprimeProtocol.hpp"
@@ -40,7 +39,6 @@ namespace SystemReference {
 
   // Health ping entries
   namespace PingEntries {
-    namespace SystemReference_blockDrv { enum { WARN = 3, FATAL = 5 }; }
     namespace SystemReference_chanTlm { enum { WARN = 3, FATAL = 5 }; }
     namespace SystemReference_cmdDisp { enum { WARN = 3, FATAL = 5 }; }
     namespace SystemReference_cmdSeq { enum { WARN = 3, FATAL = 5 }; }
