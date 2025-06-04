@@ -57,8 +57,8 @@ int main(int argc, char* argv[]) {
     SystemReference::setup(state);
 
     // register signal handlers to exit program
-    signal(SIGINT,sighandler);
-    signal(SIGTERM,sighandler);
+    signal(SIGINT,signalHandler);
+    signal(SIGTERM,signalHandler);
 
     SystemReference::linuxTimer.startTimer(1000);
     SystemReference::teardown(state);
