@@ -1,7 +1,6 @@
 #ifndef SystemReferenceTopologyDefs_HPP
 #define SystemReferenceTopologyDefs_HPP
 
-#include "Drv/BlockDriver/BlockDriver.hpp"
 #include "Fw/Types/MallocAllocator.hpp"
 #include "SystemReference/Top/FppConstantsAc.hpp"
 #include "Svc/FramingProtocol/FprimeProtocol.hpp"
