@@ -21,7 +21,7 @@ void stopCycle() {
 }
 
 static void signalHandler(int signum) {
-    stopSimulatedCycle();
+    stopCycle();
 }
 
 int main(int argc, char* argv[]) {
@@ -60,8 +60,8 @@ int main(int argc, char* argv[]) {
     signal(SIGINT,sighandler);
     signal(SIGTERM,sighandler);
 
-    SystemReference::linuxTimer.startTimer(interval.getSeconds()*1000+interval.getUSeconds()/1000);
-    SystemReference::teardownTopology(inputs);
+    SystemReference::linuxTimer.startTimer(1000);
+    SystemReference::teardown(state);
 
     (void) printf("Exiting...\n");
 
