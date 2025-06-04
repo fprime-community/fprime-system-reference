@@ -16,16 +16,12 @@ SystemReference::TopologyState state;
 // Enable the console logging provided by Os::Log
 Os::Console logger;
 
-void stopSimulatedCycle() {
-    linuxTimer.quit();
+void stopCycle() {
+    SystemReference::linuxTimer.quit();
 }
 
 static void signalHandler(int signum) {
     stopSimulatedCycle();
-}
-
-void startSimulatedCycle(Fw::TimeInterval interval) {
-    linuxTimer.startTimer(interval.getSeconds()*1000+interval.getUSeconds()/1000);
 }
 
 int main(int argc, char* argv[]) {
@@ -64,7 +60,7 @@ int main(int argc, char* argv[]) {
     signal(SIGINT,sighandler);
     signal(SIGTERM,sighandler);
 
-    SystemReference::startSimulatedCycle(Fw::TimeInterval(1, 0));  // Program loop cycling rate groups at 1Hz
+    SystemReference::linuxTimer.startTimer(interval.getSeconds()*1000+interval.getUSeconds()/1000);
     SystemReference::teardownTopology(inputs);
 
     (void) printf("Exiting...\n");
