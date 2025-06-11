@@ -102,7 +102,7 @@ pass in a dictionary, which was automatically built in the build step.
 **Launching the GDS**
 ```bash
 cd ~/fprime-system-reference/SystemReference
-fprime-gds -n --dictionary build-artifacts/aarch64-linux/dict/SystemReferenceTopologyAppDictionary.xml
+fprime-gds -n --dictionary build-artifacts/aarch64-linux/dict/SystemReferenceTopologyDictionary.json
 ```
 
 Next we run the binary and tell it to connect back to the running GDS. This is done from within the PI.
