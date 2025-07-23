@@ -61,7 +61,7 @@ class Imu final : public ImuComponentBase {
 
     void setup(I2cDevAddr::T devAddress);
 
-  PRIVATE:
+  private:
     // ----------------------------------------------------------------------
     // Handler implementations for user-defined typed input ports
     // ----------------------------------------------------------------------
