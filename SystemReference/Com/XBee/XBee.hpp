@@ -111,7 +111,7 @@ class XBee final : public XBeeComponentBase {
               const FwIndexType instance = 0 /*!< The instance number*/
     );
 
-  private:
+  PRIVATE:
     // ----------------------------------------------------------------------
     // Handler implementations for user-defined typed input ports
     // ----------------------------------------------------------------------
@@ -136,7 +136,7 @@ class XBee final : public XBeeComponentBase {
     void run_handler(const FwIndexType portNum, /*!< The port number*/
                      U32 context);
 
-  private:
+  PRIVATE:
     // ----------------------------------------------------------------------
     // Command handler implementations
     // ----------------------------------------------------------------------
@@ -153,7 +153,7 @@ class XBee final : public XBeeComponentBase {
                                 const U32 cmdSeq           /*!< The command sequence number*/
     );
 
-  private:
+  PRIVATE:
     // ----------------------------------------------------------------------
     // Helper functions
     // ----------------------------------------------------------------------
