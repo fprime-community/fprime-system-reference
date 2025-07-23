@@ -45,21 +45,21 @@ namespace Payload {
       void allocateBuffers();
       // create or re-use request
       void configureRequests();
-
+      
       // update camera configuration based on specified resolution
       bool setCameraConfiguration(ImgResolution resolution);
 
       // parameter updates
       void parameterUpdated(FwPrmIdType id);
 
-      // stop camera, deallocate memory, etc.
+      // stop camera, deallocate memory, etc. 
       void cleanup();
 
       //! Destroy object Camera
       //!
       ~Camera();
 
-    private:
+    PRIVATE:
 
       void requestComplete(libcamera::Request *request);
 
