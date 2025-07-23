@@ -160,7 +160,7 @@ module SystemReference {
     stack size Default.stackSize \
     priority 100
 
-  instance eventLogger: Svc.ActiveLogger base id 0x0B00 \
+  instance eventLogger: Svc.EventManager base id 0x0B00 \
     queue size Default.queueSize \
     stack size Default.stackSize \
     priority 98
