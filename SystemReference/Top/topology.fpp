@@ -102,7 +102,6 @@ module SystemReference {
       radio.comStatusOut  -> framer.comStatusIn
       # ComStub <-> ComDriver
       radio.drvSendOut      -> comDriver.$send
-      comDriver.sendReturnOut -> radio.drvSendReturnIn
       comDriver.ready         -> radio.drvConnected
     }
 
