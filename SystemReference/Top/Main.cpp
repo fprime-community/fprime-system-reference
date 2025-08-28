@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     signal(SIGINT,signalHandler);
     signal(SIGTERM,signalHandler);
 
-    SystemReference::linuxTimer.startTimer(1000);
+    SystemReference::linuxTimer.startTimer(Fw::TimeInterval(0, 1000000));
     SystemReference::teardown(state);
 
     (void) printf("Exiting...\n");
