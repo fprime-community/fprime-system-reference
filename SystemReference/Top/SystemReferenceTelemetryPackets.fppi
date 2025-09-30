@@ -2,6 +2,7 @@ telemetry packets SystemReferencePackets {
 
     packet CDH id 1 group 1 {
         SystemReference.cmdDisp.CommandsDispatched
+        SystemReference.cmdDisp.CommandsDropped
         SystemReference.rateGroup1Comp.RgMaxTime
         SystemReference.rateGroup2Comp.RgMaxTime
         SystemReference.rateGroup3Comp.RgMaxTime
