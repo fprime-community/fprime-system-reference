@@ -13,7 +13,7 @@ module Com {
         output port comStatus: Fw.SuccessCondition
 
         @ Com data passing back out
-        output port comDataOut: Drv.ByteStreamSend
+        output port comDataOut: Drv.ByteStreamRecv
 
         # ----------------------------------------------------------------------
         # Byte stream model
@@ -23,7 +23,7 @@ module Com {
         sync input port drvConnected: Drv.ByteStreamReady
 
         @ Data received from driver
-        sync input port drvDataIn: Drv.ByteStreamSend
+        sync input port drvDataIn: Drv.ByteStreamRecv
 
         @ Data going to the underlying driver
         output port drvDataOut: Drv.ByteStreamSend
