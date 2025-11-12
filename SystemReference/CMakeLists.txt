@@ -46,7 +46,6 @@ set(CMAKE_CXX_STANDARD 17)
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Top/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Gnc/")
 add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Payload/")
-add_fprime_subdirectory("${CMAKE_CURRENT_LIST_DIR}/Com/")
 set(SOURCE_FILES "${CMAKE_CURRENT_LIST_DIR}/Top/Main.cpp")
 set(MOD_DEPS ${PROJECT_NAME}/Top)
 

@@ -1,0 +1,1 @@
+The communication component XBeeManager can be found in fprime-sensors: https://github.com/fprime-community/fprime-sensors/tree/devel/fprime-sensors/XBee/Components/XBeeManager
