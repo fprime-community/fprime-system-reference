@@ -1,5 +1,8 @@
 # F´ System Reference: A Reference Project Using an Open-Source Flight Software Framework
 
+> [!WARNING]
+> This reference project has been discontinued and is no longer maintained. To browse up-to-date references, please refer to https://github.com/fprime-community or https://fprime.jpl.nasa.gov/docs
+
 ## Table of Contents 
 1. [About The Project](#about-the-project)
 2. [Getting Started](#getting-started)
