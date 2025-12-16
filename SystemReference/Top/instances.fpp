@@ -132,7 +132,6 @@ module SystemReference {
 
     phase Fpp.ToCpp.Phases.configConstants """
     enum {
-      TIMEOUT = 1000,
       COOLDOWN = 1000,
       CYCLE_TIME = 1000,
       FILE_QUEUE_DEPTH = 10
@@ -141,7 +140,6 @@ module SystemReference {
 
     phase Fpp.ToCpp.Phases.configComponents """
     fileDownlink.configure(
-        ConfigConstants::SystemReference_fileDownlink::TIMEOUT,
         ConfigConstants::SystemReference_fileDownlink::COOLDOWN,
         ConfigConstants::SystemReference_fileDownlink::CYCLE_TIME,
         ConfigConstants::SystemReference_fileDownlink::FILE_QUEUE_DEPTH
